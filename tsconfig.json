@@ -1,0 +1,43 @@
+{
+  "compilerOptions": {
+    "allowJs": false,
+    "checkJs": false,
+    "declaration": false,
+    "downlevelIteration": true,
+    "importHelpers": true,
+    "incremental": true,
+    "lib": [
+      "ES2020",
+      "DOM"
+    ],
+    "module": "CommonJS",
+    "outDir": "dist",
+    "removeComments": true,
+    "target": "ESNext",
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strict": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "preserveSymlinks": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+    "charset": "utf8"
+  },
+  "typeAcquisition": {
+    "enable": true
+  },
+  "include": ["src/**/*.ts"]
+}
