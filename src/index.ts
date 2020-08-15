@@ -1,11 +1,12 @@
 // @ts-ignore
 import { green } from 'colors';
-import { Client, Invite, MessageEmbed, Collection, TextChannel } from 'discord.js';
+import { Invite, MessageEmbed, Collection, TextChannel } from 'discord.js';
 import { readdirSync } from 'fs';
 
+import { DanteClient } from './lib/DanteClient';
 import Command, { CommandUseIn } from './lib/structures/Command';
 
-const client = new Client();
+const client = new DanteClient();
 client.commands = new Collection();
 const invites: Record<string, Collection<string, Invite>> = {};
 const commandFiles = readdirSync('./dist/commands').filter((file: string) => file.endsWith('.js'));
