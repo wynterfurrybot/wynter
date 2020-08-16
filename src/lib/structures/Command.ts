@@ -1,6 +1,9 @@
 import { Message } from 'discord.js';
+import { DanteClient } from '../DanteClient';
 
 export default abstract class Command {
+	public client!: DanteClient;
+
 	public name: string;
 	public usage: string;
 	public useIn: CommandUseIn;

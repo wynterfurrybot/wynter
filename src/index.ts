@@ -486,6 +486,7 @@ client.on('message', async (msg) => {
 		} else if (command!.useIn === CommandUseIn.dm && msg.channel.type !== 'dm') {
 			await msg.reply('you can only run this command in DMs!');
 		} else {
+			command!.client = client;
 			await command!.run(msg, args);
 		}
 	} catch (error) {
