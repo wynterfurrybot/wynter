@@ -1,5 +1,6 @@
 import { Invite, MessageEmbed, Collection, TextChannel } from 'discord.js';
 import { readdirSync } from 'fs';
+import { token } from '../config.json';
 
 import { DanteClient } from './lib/DanteClient';
 import Command, { CommandUseIn } from './lib/structures/Command';
@@ -620,4 +621,4 @@ client.on('guildBanRemove', (guild, member) => {
 	}
 });
 
-client.login('');
+client.login(token);
