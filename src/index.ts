@@ -387,6 +387,8 @@ client.on('message', async (msg) => {
 	const prefix = '!';
 	const cooldownBypass = ['512608629992456192', '370535760757260289'];
 
+	let staff = false;
+
 	if (msg.content!.includes('dark') && msg.content!.includes('cute')) {
 		msg.channel.send('Dark is the cutest person in the world!');
 	}
@@ -421,6 +423,20 @@ client.on('message', async (msg) => {
 		if (!/^(\*|_)*awo+f?(!|\*|_)*( ?(:3|<3|owo|uwu))?( ?❤️)?(\*|_)*$/iu.test(msg.content)) {
 			msg.delete();
 			msg.author.send(`No ${msg.content}, only awoo!`);
+		}
+	}
+
+	if (msg.guild!.id === '725201209358549012') {
+		msg.member!.roles.cache.forEach((val) => {
+			if (val.id === '739727880799518741') {
+				staff = true;
+			}
+		});
+
+		if (msg.content.includes('discord.gg') && !staff) {
+			await msg.reply(
+				"please do not promote your server here! \n\nIf you're looking to partner, please check <#729753696199508088>",
+			);
 		}
 	}
 
@@ -604,4 +620,4 @@ client.on('guildBanRemove', (guild, member) => {
 	}
 });
 
-client.login('NTEzMjkyMzg1ODE2Njc0MzIw.Xf0k6A.YrhY22ZuUz6htdYC9JOcWyz2c0k');
+client.login('');
