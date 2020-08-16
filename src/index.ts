@@ -1,13 +1,22 @@
+import 'reflect-metadata';
+
 import { Invite, MessageEmbed, Collection, TextChannel } from 'discord.js';
 import { readdirSync } from 'fs';
-import { token } from '../config.json';
+import { createConnection } from 'typeorm';
+
+import { token, db } from '../config.json';
 
 import { DanteClient } from './lib/DanteClient';
+
 import Command, { CommandUseIn } from './lib/structures/Command';
+
+import { Guilds } from './lib/Models/guild';
 
 const client = new DanteClient();
 const invites: Record<string, Collection<string, Invite>> = {};
-const commandFiles = readdirSync('./dist/commands').filter((file: string) => file.endsWith('.js'));
+const commandFiles = readdirSync('./dist/src/commands').filter((file: string) =>
+	file.endsWith('.js'),
+);
 const regex = RegExp(/[^a-zA-Z\d\s:]/g);
 
 for (const file of commandFiles) {
@@ -18,7 +27,7 @@ for (const file of commandFiles) {
 	client.commands.set(command.name, command);
 }
 
-client.on('ready', () => {
+client.on('ready', async () => {
 	console.log(`Logged in as ${client.user!.tag}!`);
 	client.user!.setActivity(`Eating Pi | !help`);
 
@@ -26,6 +35,15 @@ client.on('ready', () => {
 		g.fetchInvites().then((guildInvites) => {
 			invites[g.id] = guildInvites;
 		});
+	});
+
+	await createConnection({
+		type: 'postgres',
+		...db,
+		database: 'wynter',
+		entities: [Guilds],
+		logging: true,
+		synchronize: true,
 	});
 });
 
