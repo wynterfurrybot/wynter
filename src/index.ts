@@ -1,5 +1,3 @@
-// @ts-ignore
-import { green } from 'colors';
 import { Invite, MessageEmbed, Collection, TextChannel } from 'discord.js';
 import { readdirSync } from 'fs';
 
@@ -7,7 +5,6 @@ import { DanteClient } from './lib/DanteClient';
 import Command, { CommandUseIn } from './lib/structures/Command';
 
 const client = new DanteClient();
-client.commands = new Collection();
 const invites: Record<string, Collection<string, Invite>> = {};
 const commandFiles = readdirSync('./dist/commands').filter((file: string) => file.endsWith('.js'));
 const regex = RegExp(/[^a-zA-Z\d\s:]/g);
@@ -21,7 +18,7 @@ for (const file of commandFiles) {
 }
 
 client.on('ready', () => {
-	console.log(`Logged in as ${client.user!.tag}!`.green);
+	console.log(`Logged in as ${client.user!.tag}!`);
 	client.user!.setActivity(`Eating Pi | !help`);
 
 	client.guilds!.cache.forEach((g) => {
@@ -388,6 +385,7 @@ client.on('messageUpdate', (msg, newMsg) => {
 
 client.on('message', async (msg) => {
 	const prefix = '!';
+	const cooldownBypass = ['512608629992456192', '370535760757260289'];
 
 	if (msg.content!.includes('dark') && msg.content!.includes('cute')) {
 		msg.channel.send('Dark is the cutest person in the world!');
@@ -439,41 +437,43 @@ client.on('message', async (msg) => {
 
 	if (!command) return;
 
-	if (!client.commandCooldowns.has(command!.name)) {
-		client.commandCooldowns!.set(command!.name, new Collection());
-	}
-
-	const now = Date.now();
-	const timestamps = client.commandCooldowns.get(command!.name);
-	const cooldownAmount = command!.cooldown * 1000;
-
-	if (timestamps!.has(msg.author.id)) {
-		const expirationTime = timestamps!.get(msg.author.id)! + cooldownAmount;
-
-		if (now < expirationTime) {
-			const timeLeft = (expirationTime - now) / 1000;
-			return msg.reply(
-				`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${
-					command!.name
-				}\` command.`,
-			);
+	if (!cooldownBypass.includes(msg.author.id)) {
+		if (!client.commandCooldowns.has(command!.name)) {
+			client.commandCooldowns!.set(command!.name, new Collection());
 		}
-	}
 
-	timestamps!.set(msg.author.id, now);
-	setTimeout(() => timestamps!.delete(msg.author.id), cooldownAmount);
+		const now = Date.now();
+		const timestamps = client.commandCooldowns.get(command!.name);
+		const cooldownAmount = command!.cooldown * 1000;
+
+		if (timestamps!.has(msg.author.id)) {
+			const expirationTime = timestamps!.get(msg.author.id)! + cooldownAmount;
+
+			if (now < expirationTime) {
+				const timeLeft = (expirationTime - now) / 1000;
+				return msg.reply(
+					`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${
+						command!.name
+					}\` command.`,
+				);
+			}
+		}
+
+		timestamps!.set(msg.author.id, now);
+		setTimeout(() => timestamps!.delete(msg.author.id), cooldownAmount);
+	}
 
 	try {
 		if (command!.useIn === CommandUseIn.guild && msg.channel.type !== 'text') {
-			await msg.reply('You can only run this command in server text channels!');
+			await msg.reply('you can only run this command in server text channels!');
 		} else if (command!.useIn === CommandUseIn.dm && msg.channel.type !== 'dm') {
-			await msg.reply('You can only run this command in DMs!');
+			await msg.reply('you can only run this command in DMs!');
 		} else {
 			await command!.run(msg, args);
 		}
 	} catch (error) {
 		console.error(error);
-		await msg.reply('There was an error trying to execute that command!');
+		await msg.reply('there was an error trying to execute that command!');
 	}
 
 	return;
@@ -604,4 +604,4 @@ client.on('guildBanRemove', (guild, member) => {
 	}
 });
 
-client.login('');
+client.login('NTEzMjkyMzg1ODE2Njc0MzIw.Xf0k6A.YrhY22ZuUz6htdYC9JOcWyz2c0k');
