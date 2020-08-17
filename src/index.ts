@@ -384,10 +384,6 @@ client.on('guildMemberUpdate', (oldMem, newMem) => {
 });
 
 client.on('messageUpdate', (msg, newMsg) => {
-	if (newMsg.content!.includes('dark') && newMsg.content!.includes('cute')) {
-		newMsg.channel.send('Dark is the cutest person in the world!');
-	}
-
 	if (
 		msg.channel.id === '717430439396245577' ||
 		msg.channel.id === '721808001098448896' ||
@@ -448,9 +444,22 @@ client.on('message', async (msg) => {
 		}
 	});
 
-	if (msg.content!.includes('dark') && msg.content!.includes('cute')) {
-		msg.channel.send('Dark is the cutest person in the world!');
+	if(msg.content.toLowerCase() === 'f'){
+		msg.channel.send(`${msg.author} has paid respects`);
 	}
+
+	if(msg.content.toLowerCase() === 'x'){
+		msg.channel.send(`${msg.author} very much has doubts about this`);
+	}
+
+	if(msg.content.toLowerCase() === 'make me a sandwich'){
+		msg.channel.send(`${msg.author} I can't, I have no condiments`);
+	}
+
+	if(msg.content.toLowerCase() === 'what is the meaning of life?'){
+		msg.channel.send(`${msg.author} 42`);
+	}
+
 
 	if (msg.channel.id === '462044347794456605' && msg.author.id === '155149108183695360') {
 		msg.channel.send('<@&462043912169586699> Please check the latest dyno case log.');
