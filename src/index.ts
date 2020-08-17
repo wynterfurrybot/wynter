@@ -59,8 +59,8 @@ client.on('guildCreate', (guild) => {
   guildDB.name = guild.name;
   guildDB.prefix = "!"
   guildDB.deleteInvLinks = false
-  guildDB.blacklistedWords = []
-
+  guildDB.blacklistedWords = ['none']
+	guildDB.bypassChannels = ['none']
 	addGuild(guildDB);
 })
 
@@ -434,7 +434,12 @@ client.on('message', async (msg) => {
 	// Swear filter
 	const guild = await getGuild(msg.guild!.id);
 	const blacklist = guild!.blacklistedWords;
+	const bchan = guild!.bypassChannels;
 	blacklist.forEach(word => {
+		if(bchan.includes(msg.channel!.id))
+		{
+			return;
+		}
 		if(word == "none"){
 			return
 		}

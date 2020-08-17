@@ -45,4 +45,13 @@ export class Guilds {
 		comment: 'Blacklisted words',
 	})
 	blacklistedWords!: string[];
+
+	@Column('varchar', {
+		array: true,
+		name: 'bypasschannels',
+		default: '{}',
+		nullable: false,
+		comment: 'Channels that bypass swear filter',
+	})
+	bypassChannels!: string[];
 }
