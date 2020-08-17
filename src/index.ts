@@ -47,6 +47,39 @@ client.on('ready', async () => {
 	});
 });
 
+client.on('guildCreate', (guild) => {
+	guild.owner.send("Thanks for adding Wynter to your guild! \n\nThe default prefix is `!` - Our documentation can be found at https://docs.furrycentr.al/ \n\nWe hope you have fun using Wynter!")
+
+	// Add guild to database
+
+	const guild = new Guilds();
+    guild.id = guild.id;
+    guild.name = guild.name;
+    guild.prefix = "!"
+    guild.deleteinvlinks = false
+    guild.blacklistedwords = ['None']
+    await connection.manager.save(guild);
+})
+
+client.on('guildDelete', (guild) => {
+	// Remove guild from database
+	async (id: string): Promise<DeleteResult | undefined> => {
+		const guildRepo = getRepository(Guilds);
+		id = guild.id;
+
+		const guild = await guildRepo.findOne({
+			where: { id },
+		});
+
+		if (guild === undefined) {
+			return undefined;
+		}
+
+		return guildRepo.delete(guild);
+	};
+
+})
+
 client.on('guildMemberRemove', (member) => {
 	if (member.guild.id === '667466143585402900') {
 		client.channels.fetch('667495189832794162').then((channel) => {
