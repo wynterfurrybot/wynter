@@ -14,6 +14,7 @@ import { Guilds } from './lib/Models/guild';
 
 import deleteGuild from './lib/DatabaseWrapper/DeleteGuild';
 import addGuild from './lib/DatabaseWrapper/AddGuild';
+import getGuild from './lib/DatabaseWrapper/FindGuild';
 
 const client = new DanteClient();
 const invites: Record<string, Collection<string, Invite>> = {};
@@ -51,21 +52,21 @@ client.on('ready', async () => {
 });
 
 client.on('guildCreate', (guild) => {
-	guild.owner.send("Thanks for adding Wynter to your guild! \n\nThe default prefix is `!` - Our documentation can be found at https://docs.furrycentr.al/ \n\nWe hope you have fun using Wynter!")
-	
+	guild.owner!.send("Thanks for adding Wynter to your guild! \n\nThe default prefix is `!` - Our documentation can be found at https://docs.furrycentr.al/ \n\nWe hope you have fun using Wynter!");
+
 	const guildDB = new Guilds();
   guildDB.id = guild.id;
   guildDB.name = guild.name;
   guildDB.prefix = "!"
-  guildDB.deleteinvlinks = false
-  guildDB.blacklistedwords = []
-	
-	addGuild(guildDB);	
+  guildDB.deleteInvLinks = false
+  guildDB.blacklistedWords = []
+
+	addGuild(guildDB);
 })
 
 client.on('guildDelete', (guild) => {
 	// Remove guild from database
-	
+
 	deleteGuild(guild.id)
 })
 
@@ -429,6 +430,18 @@ client.on('message', async (msg) => {
 	const cooldownBypass = ['512608629992456192', '370535760757260289'];
 
 	let staff = false;
+
+	// Swear filter
+	const guild = await getGuild(msg.guild!.id);
+	const blacklist = guild!.blacklistedWords;
+	blacklist.forEach(word => {
+		if(word == "none"){
+			return
+		}
+		else if(msg.content.toLowerCase().includes(word)){
+			msg.delete();
+		}
+	});
 
 	if (msg.content!.includes('dark') && msg.content!.includes('cute')) {
 		msg.channel.send('Dark is the cutest person in the world!');
