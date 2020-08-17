@@ -12,6 +12,9 @@ import Command, { CommandUseIn } from './lib/structures/Command';
 
 import { Guilds } from './lib/Models/guild';
 
+import deleteGuild from './lib/DatabaseWrapper/DeleteGuild';
+import addGuild from './lib/DatabaseWrapper/AddGuild';
+
 const client = new DanteClient();
 const invites: Record<string, Collection<string, Invite>> = {};
 const commandFiles = readdirSync('./dist/src/commands').filter((file: string) =>
@@ -46,6 +49,25 @@ client.on('ready', async () => {
 		synchronize: true,
 	});
 });
+
+client.on('guildCreate', (guild) => {
+	guild.owner.send("Thanks for adding Wynter to your guild! \n\nThe default prefix is `!` - Our documentation can be found at https://docs.furrycentr.al/ \n\nWe hope you have fun using Wynter!")
+	
+	const guildDB = new Guilds();
+  guildDB.id = guild.id;
+  guildDB.name = guild.name;
+  guildDB.prefix = "!"
+  guildDB.deleteinvlinks = false
+  guildDB.blacklistedwords = []
+	
+	addGuild(guildDB);	
+})
+
+client.on('guildDelete', (guild) => {
+	// Remove guild from database
+	
+	deleteGuild(guild.id)
+})
 
 client.on('guildMemberRemove', (member) => {
 	if (member.guild.id === '667466143585402900') {
