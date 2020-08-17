@@ -12,6 +12,9 @@ import Command, { CommandUseIn } from './lib/structures/Command';
 
 import { Guilds } from './lib/Models/guild';
 
+import deleteGuild from './lib/DatabaseWrapper/DeleteGuild';
+import addGuild from './lib/DatabaseWrapper/AddGuild';
+
 const client = new DanteClient();
 const invites: Record<string, Collection<string, Invite>> = {};
 const commandFiles = readdirSync('./dist/src/commands').filter((file: string) =>
@@ -49,35 +52,21 @@ client.on('ready', async () => {
 
 client.on('guildCreate', (guild) => {
 	guild.owner.send("Thanks for adding Wynter to your guild! \n\nThe default prefix is `!` - Our documentation can be found at https://docs.furrycentr.al/ \n\nWe hope you have fun using Wynter!")
-
-	// Add guild to database
-
-	const guild = new Guilds();
-    guild.id = guild.id;
-    guild.name = guild.name;
-    guild.prefix = "!"
-    guild.deleteinvlinks = false
-    guild.blacklistedwords = ['None']
-    await connection.manager.save(guild);
+	
+	const guildDB = new Guilds();
+  guildDB.id = guild.id;
+  guildDB.name = guild.name;
+  guildDB.prefix = "!"
+  guildDB.deleteinvlinks = false
+  guildDB.blacklistedwords = []
+	
+	addGuild(guildDB);	
 })
 
 client.on('guildDelete', (guild) => {
 	// Remove guild from database
-	async (id: string): Promise<DeleteResult | undefined> => {
-		const guildRepo = getRepository(Guilds);
-		id = guild.id;
-
-		const guild = await guildRepo.findOne({
-			where: { id },
-		});
-
-		if (guild === undefined) {
-			return undefined;
-		}
-
-		return guildRepo.delete(guild);
-	};
-
+	
+	deleteGuild(guild.id)
 })
 
 client.on('guildMemberRemove', (member) => {
