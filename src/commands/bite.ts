@@ -5,7 +5,7 @@ import Command from '../lib/structures/Command';
 export default class extends Command {
 	public constructor() {
 		super({
-			name: 'snowball',
+			name: 'bite',
 			cooldown: 5,
 			usage: '<member>',
 		});
@@ -15,12 +15,10 @@ export default class extends Command {
 		msg.channel.send(
 			new MessageEmbed()
 				.setColor(0x00ff00)
-				.setTitle('Snowball!')
-				.setDescription(
-					`${msg.author} has thrown a snowball directly at ${msg.mentions.users.first()}`,
-				)
+				.setTitle('Bite!')
+				.setDescription(`${msg.author} has nibbled at ${msg.mentions.users.first()}'s ear!'`)
 				.setThumbnail(
-					'http://d.facdn.net/art/olypixandstuff/1265692624/1265692624.olypixandstuff_1263408058.sapphwolf_snowballfight2.png',
+					'https://i.pinimg.com/originals/d3/83/57/d383575a560d2cdc413d5945ea608286.png',
 				),
 		);
 	}

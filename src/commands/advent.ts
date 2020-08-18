@@ -3,13 +3,14 @@ import { Message } from 'discord.js';
 import Command from '../lib/structures/Command';
 
 export default class extends Command {
-	constructor() {
+	public constructor() {
 		super({
 			name: 'advent',
 			cooldown: 5,
 			usage: '',
 		});
 	}
+
 	public async run(msg: Message) {
 		const items = [
 			'Chocolate Reindeer',
@@ -18,6 +19,7 @@ export default class extends Command {
 			'Chocolate Santa',
 			'Chocolate Christmas Tree',
 		];
+
 		const today = new Date(Date.now());
 
 		if (today.getMonth() == 12 && today.getDay() <= 25) {
