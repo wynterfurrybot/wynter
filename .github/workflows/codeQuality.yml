@@ -17,27 +17,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Use Node.js 14
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2-beta
         with:
-          node-version: 14
+          node-version: "14"
       - name: Install Dependencies
         run: npm install
       - name: Run ESLint
-        run: npx eslint
+        run: npx eslint src/**/*.ts
 
   Typescript:
     name: Typescript
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Project
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
       - name: Use Node.js 14
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2-beta
         with:
-          node-version: 14
+          node-version: "14"
       - name: Install Dependencies
         run: npm install
       - name: Run TSC
-        run: npx tsc
+        run: npm run compile
