@@ -12,15 +12,13 @@ export default class extends Command {
 		});
 	}
 
-	public async run(msg: Message) {
-		// @ts-ignore	
-		if(msg.author.id === msg.mentions.users.first().id) {return;}
-		msg.channel.send(
-			new MessageEmbed()
-				.setColor(0x00ff00)
-				.setTitle('Pat!')
-				.setDescription(`${msg.author} has pat ${msg.mentions.users.first()} softly on the head!`)
-				.setThumbnail(
+	public async run(msg: Message): Promise<Message> {
+		return msg.channel.send(
+			new MessageEmbed().
+				setColor(0x00ff00).
+				setTitle('Pat!').
+				setDescription(`${msg.author} has pat ${msg.mentions.users.first()} softly on the head!`).
+				setThumbnail(
 					'https://d.facdn.net/art/itsmekurisu/1550247117/1550247117.itsmekurisu_corrina.png',
 				),
 		);

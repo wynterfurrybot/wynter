@@ -1,0 +1,43 @@
+name: Code Quality
+
+on:
+  push:
+    branches:
+      - master
+      - beta
+      - refractor/typescript
+  pull_request:
+    types:
+      - opened
+      - reopened
+
+jobs:
+  ESLint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v2
+      - name: Use Node.js 14
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: "14"
+      - name: Install Dependencies
+        run: npm install
+      - name: Run ESLint
+        run: yarn lint
+
+  Typescript:
+    name: Typescript
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Project
+        uses: actions/checkout@v2
+      - name: Use Node.js 14
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: "14"
+      - name: Install Dependencies
+        run: npm install
+      - name: Run TSC
+        run: yarn compile

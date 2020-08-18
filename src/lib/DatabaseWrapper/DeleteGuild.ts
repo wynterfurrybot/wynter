@@ -9,9 +9,8 @@ export default async (id: string): Promise<DeleteResult | undefined> => {
 		where: { id },
 	});
 
-	if (guild === undefined) {
+	if (guild === undefined) 
 		return undefined;
-	}
-
-	return guildRepo.delete(guild);
+	
+	return guildRepo['delete'](guild);
 };

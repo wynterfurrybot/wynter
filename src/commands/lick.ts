@@ -11,17 +11,15 @@ export default class extends Command {
 		});
 	}
 
-	public async run(msg: Message) {
-		// @ts-ignore	
-		if(msg.author.id === msg.mentions.users.first().id) {return;}
-		msg.channel.send(
-			new MessageEmbed()
-				.setColor(0x00ff00)
-				.setTitle('Slurp!')
-				.setDescription(
+	public async run(msg: Message): Promise<Message> {
+		return msg.channel.send(
+			new MessageEmbed().
+				setColor(0x00ff00).
+				setTitle('Slurp!').
+				setDescription(
 					`${msg.author} has licked ${msg.mentions.users.first()}, giving them a bath!`,
-				)
-				.setThumbnail(
+				).
+				setThumbnail(
 					'https://i.pinimg.com/originals/d3/83/57/d383575a560d2cdc413d5945ea608286.png',
 				),
 		);

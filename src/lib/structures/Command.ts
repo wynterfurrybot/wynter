@@ -9,6 +9,7 @@ export default abstract class Command {
 	public useIn: CommandUseIn;
 	public cooldown: number;
 	public aliases: string[];
+
 	public constructor(options?: CommandOptions) {
 		this.name = options!.name ?? __filename;
 		this.usage = options!.usage ?? '';
@@ -17,7 +18,7 @@ export default abstract class Command {
 		this.aliases = options!.aliases ?? [];
 	}
 
-	public abstract run(msg: Message, args: string[]): Promise<Message | void | null>;
+	public abstract run(msg: Message, args: string[]): Promise<Message>;
 }
 
 export interface CommandOptions {

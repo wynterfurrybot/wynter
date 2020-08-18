@@ -11,7 +11,7 @@ export default class extends Command {
 		});
 	}
 
-	public async run(msg: Message) {
+	public async run(msg: Message): Promise<Message> {
 		const items = [
 			'Chocolate Reindeer',
 			'Chocolate Snowflake',
@@ -22,12 +22,12 @@ export default class extends Command {
 
 		const today = new Date(Date.now());
 
-		if (today.getMonth() == 12 && today.getDay() <= 25) {
+		if (today.getMonth() === 12 && today.getDay() <= 25) {
 			const days = 25 - today.getDay();
 			await msg.author.send(`There are ${days} day(s) left until christmas!`);
-			await msg.author.send(`You got a ${items[Math.random() * (items.length - 1 - 0) + 0]}`);
+			return await msg.author.send(`You got a ${items[Math.random() * (items.length - 1 - 0) + 0]}`);
 		} else {
-			await msg.author.send('It is not december yet - or is past christmas!');
+			return await msg.author.send('It is not december yet - or is past christmas!');
 		}
 	}
 }

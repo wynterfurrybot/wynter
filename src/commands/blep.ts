@@ -11,15 +11,13 @@ export default class extends Command {
 		});
 	}
 
-	public async run(msg: Message) {
-		// @ts-ignore	
-		if(msg.author.id === msg.mentions.users.first().id) {return;}
-		msg.channel.send(
-			new MessageEmbed()
-				.setColor(0x00ff00)
-				.setTitle('Blep!')
-				.setDescription(`${msg.author} has done a blep!`)
-				.setThumbnail('https://i.redd.it/o49rv5hjacm21.png'),
+	public async run(msg: Message): Promise<Message> {
+		return msg.channel.send(
+			new MessageEmbed().
+				setColor(0x00ff00).
+				setTitle('Blep!').
+				setDescription(`${msg.author} has done a blep!`).
+				setThumbnail('https://i.redd.it/o49rv5hjacm21.png'),
 		);
 	}
 }

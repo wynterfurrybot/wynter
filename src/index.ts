@@ -24,7 +24,8 @@ const commandFiles = readdirSync('./dist/src/commands').filter((file: string) =>
 const regex = RegExp(/[^a-zA-Z\d\s:]/g);
 
 for (const file of commandFiles) {
-	const cmdFile = require(`./commands/${file}`).default;
+	// eslint-disable-next-line @typescript-eslint/no-var-requires
+	const cmdFile = require(`./commands/${file}`)['default'];
 
 	const command: Command = new cmdFile();
 
@@ -33,7 +34,7 @@ for (const file of commandFiles) {
 
 client.on('ready', async () => {
 	console.log(`Logged in as ${client.user!.tag}!`);
-	client.user!.setActivity(`Eating Pi | !help`);
+	client.user!.setActivity('Eating Pi | !help');
 
 	client.guilds!.cache.forEach((g) => {
 		g.fetchInvites().then((guildInvites) => {
@@ -83,7 +84,7 @@ client.on('guildMemberRemove', (member) => {
 client.on('guildMemberAdd', (member) => {
 	if (member.guild.id === '736969969404870688') {
 		member.send(
-			"Welcome to the elite server of european furries! \n\nJust so you know, we operate a strict no robot policy here! \n\nTo verify you're not one, please go to https://verify.furrycentr.al/ef/ and log in with discord.",
+			'Welcome to the elite server of european furries! \n\nJust so you know, we operate a strict no robot policy here! \n\nTo verify you\'re not one, please go to https://verify.furrycentr.al/ef/ and log in with discord.',
 		);
 	}
 
@@ -116,13 +117,13 @@ client.on('guildMemberAdd', (member) => {
 
 				if (member.guild.id === '736969969404870688') {
 					client.channels.fetch('736981136164782171').then((channel) => {
-						const embed = new MessageEmbed()
+						const embed = new MessageEmbed().
 							// Set the title of the field
-							.setTitle('New Joiner')
+							setTitle('New Joiner').
 							// Set the color of the embed
-							.setColor(0xff0000)
+							setColor(0xff0000).
 							// Set the main content of the embed
-							.setDescription(
+							setDescription(
 								`${member.user!.username} Joined using invite code ${invite!.code} made by <@${
 									invite!.inviter!.id
 								}> (${inviter!.username})`,
@@ -132,13 +133,13 @@ client.on('guildMemberAdd', (member) => {
 					});
 				} else if (member.guild.id === '667466143585402900') {
 					client.channels.fetch('713624679671136306').then((channel) => {
-						const embed = new MessageEmbed()
+						const embed = new MessageEmbed().
 							// Set the title of the field
-							.setTitle('New Joiner')
+							setTitle('New Joiner').
 							// Set the color of the embed
-							.setColor(0xff0000)
+							setColor(0xff0000).
 							// Set the main content of the embed
-							.setDescription(
+							setDescription(
 								`${member.user!.username} Joined using invite code ${invite!.code} made by <@${
 									invite!.inviter!.id
 								}> (${inviter!.username})`,
@@ -148,13 +149,13 @@ client.on('guildMemberAdd', (member) => {
 					});
 				} else if (member.guild.id === '462041783438934036') {
 					client.channels.fetch('539917043886063636').then((channel) => {
-						const embed = new MessageEmbed()
+						const embed = new MessageEmbed().
 							// Set the title of the field
-							.setTitle('New Joiner')
+							setTitle('New Joiner').
 							// Set the color of the embed
-							.setColor(0xff0000)
+							setColor(0xff0000).
 							// Set the main content of the embed
-							.setDescription(
+							setDescription(
 								`${member.user!.username} Joined using invite code ${invite!.code} made by <@${
 									invite!.inviter!.id
 								}> (${inviter!.username})`,
@@ -166,13 +167,13 @@ client.on('guildMemberAdd', (member) => {
 			} catch {
 				if (member.guild.id === '667466143585402900') {
 					client.channels.fetch('713624679671136306').then((channel) => {
-						const embed = new MessageEmbed()
+						const embed = new MessageEmbed().
 							// Set the title of the field
-							.setTitle('New Joiner')
+							setTitle('New Joiner').
 							// Set the color of the embed
-							.setColor(0xff0000)
+							setColor(0xff0000).
 							// Set the main content of the embed
-							.setDescription(
+							setDescription(
 								`I can't quite figure out how ${
 									member.user!.username
 								} joined the server. \n\nMaybe they used a temporary invite?`,
@@ -182,13 +183,13 @@ client.on('guildMemberAdd', (member) => {
 					});
 				} else if (member.guild.id === '736969969404870688') {
 					client.channels.fetch('736981136164782171').then((channel) => {
-						const embed = new MessageEmbed()
+						const embed = new MessageEmbed().
 							// Set the title of the field
-							.setTitle('New Joiner')
+							setTitle('New Joiner').
 							// Set the color of the embed
-							.setColor(0xff0000)
+							setColor(0xff0000).
 							// Set the main content of the embed
-							.setDescription(
+							setDescription(
 								`I can't quite figure out how ${
 									member.user!.username
 								} joined the server. \n\nMaybe they used a temporary invite?`,
@@ -198,13 +199,13 @@ client.on('guildMemberAdd', (member) => {
 					});
 				} else if (member.guild.id === '462041783438934036') {
 					client.channels.fetch('539917043886063636').then((channel) => {
-						const embed = new MessageEmbed()
+						const embed = new MessageEmbed().
 							// Set the title of the field
-							.setTitle('New Joiner')
+							setTitle('New Joiner').
 							// Set the color of the embed
-							.setColor(0xff0000)
+							setColor(0xff0000).
 							// Set the main content of the embed
-							.setDescription(
+							setDescription(
 								`I can't quite figure out how ${
 									member.user!.username
 								} joined the server. \n\nMaybe they used a temporary invite?`,
@@ -256,14 +257,14 @@ client.on('guildMemberAdd', (member) => {
 		}
 	}
 
-	if (member.guild.id != '462041783438934036') return;
+	if (member.guild.id !== '462041783438934036') return;
 	member.send(
-		"Welcome to The Floof Hotel! \n\nJust so you know, we operate a strict no robot policy here! \n\nTo verify you're not one, please go to https://verify.furrycentr.al/ and log in with discord.",
+		'Welcome to The Floof Hotel! \n\nJust so you know, we operate a strict no robot policy here! \n\nTo verify you\'re not one, please go to https://verify.furrycentr.al/ and log in with discord.',
 	);
 });
 
 client.on('guildMemberUpdate', (oldMem, newMem) => {
-	if (regex.test(newMem.user!.username) && oldMem.user!.username != newMem.user!.username) {
+	if (regex.test(newMem.user!.username) && oldMem.user!.username !== newMem.user!.username) {
 		console.log('Username matched filter');
 		try {
 			console.log('Attempted change');
@@ -300,7 +301,7 @@ client.on('guildMemberUpdate', (oldMem, newMem) => {
 		}
 	}
 
-	if (regex.test(newMem.nickname!) && oldMem.nickname != newMem.nickname) {
+	if (regex.test(newMem.nickname!) && oldMem.nickname !== newMem.nickname) {
 		console.log('Username matched filter');
 		try {
 			console.log('Attempted change');
@@ -345,9 +346,9 @@ client.on('guildMemberUpdate', (oldMem, newMem) => {
 			role.id === '725462565852938301' ||
 			role.id === '667472170926080011' ||
 			role.id === '736971909362614362'
-		) {
+		) 
 			hasMember = true;
-		}
+		
 	});
 
 	newMem.roles.cache.forEach((role) => {
@@ -393,23 +394,22 @@ client.on('messageUpdate', (msg, newMsg) => {
 	) {
 		// On receive message, (Given string `msg`) from channel #awoo
 		if (!/^(\*|_)*awo+f?(!|\*|_)*( ?(:3|<3|owo|uwu))?( ?❤️)?(\*|_)*$/iu.test(newMsg.content!)) {
-			newMsg.delete();
+			newMsg['delete']();
 			newMsg.author!.send(`I see you.. No ${msg.content} only awoo!`);
 		}
 	}
 
-	if (newMsg.author!.bot) {
+	if (newMsg.author!.bot) 
 		return;
-	}
-
+	
 	if (newMsg.attachments) {
-		var a = newMsg.attachments;
+		const a = newMsg.attachments;
 		a.forEach(function (b) {
 			newMsg.content = newMsg.content + ' -- ' + b.url;
 		});
 	}
 	try {
-		var channel = newMsg.guild!.channels.cache.find((channel) => channel.name === 'message_logs');
+		const channel = newMsg.guild!.channels.cache.find((channel) => channel.name === 'message_logs');
 		(channel as TextChannel).send({
 			embed: {
 				color: 3447003,
@@ -425,7 +425,9 @@ client.on('messageUpdate', (msg, newMsg) => {
 
 client.on('message', async (msg) => {
 	const prefix = '!';
-	const cooldownBypass = ['512608629992456192', '370535760757260289'];
+	const cooldownBypass = [
+		'512608629992456192', '370535760757260289',
+	];
 
 	let staff = false;
 
@@ -457,47 +459,45 @@ client.on('message', async (msg) => {
 	const blacklist = guild!.blacklistedWords;
 	const bchan = guild!.bypassChannels;
 	blacklist.forEach((word) => {
-		if (bchan.includes(msg.channel!.id)) {
+		if (bchan.includes(msg.channel!.id)) 
 			return;
-		}
-		if (word == 'none') {
+		
+		if (word === 'none') 
 			return;
-		} else if (msg.content.toLowerCase().includes(word)) {
-			msg.delete();
-		}
+		else if (msg.content.toLowerCase().includes(word)) 
+			msg['delete']();
+		
 	});
 
-
-
-	if (msg.content.toLowerCase() === 'f') {
+	if (msg.content.toLowerCase() === 'f') 
 		msg.channel.send(`${msg.author} has paid respects`);
-	}
+	
 
-	if (msg.content.toLowerCase() === 'x') {
+	if (msg.content.toLowerCase() === 'x') 
 		msg.channel.send(`${msg.author} very much has doubts about this`);
-	}
+	
 
-	if (msg.content.toLowerCase() === 'make me a sandwich') {
+	if (msg.content.toLowerCase() === 'make me a sandwich') 
 		msg.channel.send(`${msg.author} I can't, I have no condiments`);
-	}
+	
 
-	if (msg.content.toLowerCase() === 'what is the meaning of life?') {
+	if (msg.content.toLowerCase() === 'what is the meaning of life?') 
 		msg.channel.send(`${msg.author} 42`);
-	}
+	
 
-	if (msg.channel.id === '462044347794456605' && msg.author.id === '155149108183695360') {
+	if (msg.channel.id === '462044347794456605' && msg.author.id === '155149108183695360') 
 		msg.channel.send('<@&462043912169586699> Please check the latest dyno case log.');
-	}
+	
 
 	if (msg.author.bot === true) return;
 
 	if (msg.channel.id === '629075452723462154') {
 		// Repost advertisement!
-		msg.delete();
+		msg['delete']();
 
-		client.channels
-			.fetch('629073904882810910')
-			.then((channel) =>
+		client.channels.
+			fetch('629073904882810910').
+			then((channel) =>
 				(channel as TextChannel).send(`OP: <@${msg.author.id}>\n\n${msg.content}`),
 			);
 
@@ -513,21 +513,21 @@ client.on('message', async (msg) => {
 	) {
 		// On receive message, (Given string `msg`) from channel #awoo
 		if (!/^(\*|_)*awo+f?(!|\*|_)*( ?(:3|<3|owo|uwu))?( ?❤️)?(\*|_)*$/iu.test(msg.content)) {
-			msg.delete();
+			msg['delete']();
 			msg.author.send(`No ${msg.content}, only awoo!`);
 		}
 	}
 
 	if (msg.guild!.id === '725201209358549012') {
 		msg.member!.roles.cache.forEach((val) => {
-			if (val.id === '739727880799518741') {
+			if (val.id === '739727880799518741') 
 				staff = true;
-			}
+			
 		});
 
 		if (msg.content.includes('discord.gg') && !staff) {
 			await msg.reply(
-				"please do not promote your server here! \n\nIf you're looking to partner, please check <#729753696199508088>",
+				'please do not promote your server here! \n\nIf you\'re looking to partner, please check <#729753696199508088>',
 			);
 		}
 	}
@@ -546,9 +546,9 @@ client.on('message', async (msg) => {
 	if (!command) return;
 
 	if (!cooldownBypass.includes(msg.author.id)) {
-		if (!client.commandCooldowns.has(command!.name)) {
+		if (!client.commandCooldowns.has(command!.name)) 
 			client.commandCooldowns!.set(command!.name, new Collection());
-		}
+		
 
 		const now = Date.now();
 		const timestamps = client.commandCooldowns.get(command!.name);
@@ -568,7 +568,7 @@ client.on('message', async (msg) => {
 		}
 
 		timestamps!.set(msg.author.id, now);
-		setTimeout(() => timestamps!.delete(msg.author.id), cooldownAmount);
+		setTimeout(() => timestamps!['delete'](msg.author.id), cooldownAmount);
 	}
 
 	try {
@@ -589,20 +589,20 @@ client.on('message', async (msg) => {
 });
 
 client.on('messageDelete', (messageDelete) => {
-	if (messageDelete.author!.bot) {
+	if (messageDelete.author!.bot) 
 		return;
-	}
+	
 
 	if (messageDelete.attachments) {
-		var a = messageDelete.attachments;
+		const a = messageDelete.attachments;
 		a.forEach(function (b) {
 			messageDelete.content = messageDelete.content + ' -- ' + b.url;
 		});
 	}
 
 	try {
-		// send to local message channel
-		var channel = messageDelete.guild!.channels.cache.find(
+		// Send to local message channel
+		const channel = messageDelete.guild!.channels.cache.find(
 			(channel) => channel.name === 'message_logs',
 		);
 
@@ -623,7 +623,7 @@ client.on('messageDelete', (messageDelete) => {
 
 client.on('channelCreate', (channel) => {
 	try {
-		var c = (channel as TextChannel).guild.channels.cache.find((c) => c.name === 'channel_logging');
+		const c = (channel as TextChannel).guild.channels.cache.find((c) => c.name === 'channel_logging');
 		(c as TextChannel).send({
 			embed: {
 				color: 3447003,
@@ -637,7 +637,7 @@ client.on('channelCreate', (channel) => {
 
 client.on('channelDelete', (channel) => {
 	try {
-		var c = (channel as TextChannel).guild.channels.cache.find((c) => c.name === 'channel_logging');
+		const c = (channel as TextChannel).guild.channels.cache.find((c) => c.name === 'channel_logging');
 		(c as TextChannel).send({
 			embed: {
 				color: 16726088,
@@ -651,7 +651,7 @@ client.on('channelDelete', (channel) => {
 
 client.on('guildMemberAdd', (member) => {
 	try {
-		var channel = member.guild.channels.cache.find((channel) => channel.name === 'user_logs');
+		const channel = member.guild.channels.cache.find((channel) => channel.name === 'user_logs');
 		(channel as TextChannel).send({
 			embed: {
 				color: 3447003,
@@ -665,7 +665,7 @@ client.on('guildMemberAdd', (member) => {
 
 client.on('guildMemberRemove', (member) => {
 	try {
-		var channel = member.guild.channels.cache.find((channel) => channel.name === 'user_logs');
+		const channel = member.guild.channels.cache.find((channel) => channel.name === 'user_logs');
 		(channel as TextChannel).send({
 			embed: {
 				color: 16726088,
@@ -679,7 +679,7 @@ client.on('guildMemberRemove', (member) => {
 
 client.on('guildBanAdd', (guild, member) => {
 	try {
-		var channel = guild.channels.cache.find((channel) => channel.name === 'case_logs');
+		const channel = guild.channels.cache.find((channel) => channel.name === 'case_logs');
 		(channel as TextChannel).send({
 			embed: {
 				color: 16726088,
@@ -693,7 +693,8 @@ client.on('guildBanAdd', (guild, member) => {
 
 client.on('guildBanRemove', (guild, member) => {
 	try {
-		var channel = guild.channels.cache.find((channel) => channel.name === 'user_logs');
+		let channel = guild.channels.cache.find((channel) => channel.name === 'user_logs');
+
 		(channel as TextChannel).send({
 			embed: {
 				color: 16726088,
@@ -701,7 +702,8 @@ client.on('guildBanRemove', (guild, member) => {
 			},
 		});
 
-		var channel = guild.channels.cache.find((channel) => channel.name === 'case_logs');
+		channel = guild.channels.cache.find((channel) => channel.name === 'case_logs');
+
 		(channel as TextChannel).send({
 			embed: {
 				color: 16726088,
