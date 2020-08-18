@@ -11,24 +11,24 @@ export default class extends Command {
 		});
 	}
 
-	public async run(msg: Message) {
-		if (msg.mentions.users.array() === undefined || msg.mentions.users.array().length == 0) {
-			msg.channel.send(
-				new MessageEmbed()
-					.setColor(0x00ff00)
-					.setTitle('A light growl was heard!')
-					.setDescription(`${msg.author} has let out a light growl!`)
-					.setThumbnail(
+	public async run(msg: Message): Promise<Message> {
+		if (msg.mentions.users.array() === undefined || msg.mentions.users.array().length === 0) {
+			return msg.channel.send(
+				new MessageEmbed().
+					setColor(0x00ff00).
+					setTitle('A light growl was heard!').
+					setDescription(`${msg.author} has let out a light growl!`).
+					setThumbnail(
 						'https://pm1.narvii.com/6219/8faceb03db01e5c8e64b87dc8fa6d3e18a08011e_hq.jpg',
 					),
 			);
 		} else {
-			msg.channel.send(
-				new MessageEmbed()
-					.setColor(0x00ff00)
-					.setTitle('A light growl was heard!')
-					.setDescription(`${msg.author} growls at ${msg.mentions.users.first()}!`)
-					.setThumbnail(
+			return msg.channel.send(
+				new MessageEmbed().
+					setColor(0x00ff00).
+					setTitle('A light growl was heard!').
+					setDescription(`${msg.author} growls at ${msg.mentions.users.first()}!`).
+					setThumbnail(
 						'https://pm1.narvii.com/6219/8faceb03db01e5c8e64b87dc8fa6d3e18a08011e_hq.jpgg',
 					),
 			);

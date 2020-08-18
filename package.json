@@ -5,7 +5,9 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"compile": "tsc",
-		"run": "node dist/src"
+		"run": "node dist/src",
+		"lint": "eslint src/**/*.ts",
+		"lint:fix": "yarn lint --fix"
 	},
 	"repository": {
 		"type": "git",

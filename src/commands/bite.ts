@@ -11,13 +11,13 @@ export default class extends Command {
 		});
 	}
 
-	public async run(msg: Message) {
-		msg.channel.send(
-			new MessageEmbed()
-				.setColor(0x00ff00)
-				.setTitle('Bite!')
-				.setDescription(`${msg.author} has nibbled at ${msg.mentions.users.first()}'s ear!'`)
-				.setThumbnail(
+	public async run(msg: Message): Promise<Message> {
+		return msg.channel.send(
+			new MessageEmbed().
+				setColor(0x00ff00).
+				setTitle('Bite!').
+				setDescription(`${msg.author} has nibbled at ${msg.mentions.users.first()}'s ear!'`).
+				setThumbnail(
 					'https://i.pinimg.com/originals/d3/83/57/d383575a560d2cdc413d5945ea608286.png',
 				),
 		);

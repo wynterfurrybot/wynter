@@ -25,7 +25,7 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Run ESLint
-        run: npx eslint src/**/*.ts
+        run: yarn lint
 
   Typescript:
     name: Typescript
@@ -40,4 +40,4 @@ jobs:
       - name: Install Dependencies
         run: npm install
       - name: Run TSC
-        run: npm run compile
+        run: yarn compile

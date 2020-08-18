@@ -11,15 +11,15 @@ export default class extends Command {
 		});
 	}
 
-	public async run(msg: Message) {
-		msg.channel.send(
-			new MessageEmbed()
-				.setColor(0x00ff00)
-				.setTitle('Boop!')
-				.setDescription(
+	public async run(msg: Message): Promise<Message> {
+		return msg.channel.send(
+			new MessageEmbed().
+				setColor(0x00ff00).
+				setTitle('Boop!').
+				setDescription(
 					`${msg.author} has booped ${msg.mentions.users.first()} right on their snoot!`,
-				)
-				.setThumbnail(
+				).
+				setThumbnail(
 					'https://i.pinimg.com/originals/4c/02/bd/4c02bdb8056ef9bb3883f38eb59d4b8e.jpg',
 				),
 		);

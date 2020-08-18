@@ -16,6 +16,7 @@
 	},
 	"plugins": ["@typescript-eslint"],
 	"rules": {
+		// Behavior Rules
 		"for-direction": "error",
 		"getter-return": ["error", {
 			"allowImplicit": true
@@ -83,6 +84,7 @@
 			"requireStringLiterals": true
 		}],
 
+		// Best Practices
 		"accessor-pairs": ["error", {
 			"enforceForClassMembers": true,
 			"getWithoutSet": true,
@@ -97,11 +99,9 @@
 			"exceptMethods": [] 
 		}],
 		"complexity": ["error", {
-			"max": 5
+			"max": 200
 		}],
-		"consistent-return": ["error", { 
-			"treatUndefinedAsUnspecified": true 
-		}],
+		"consistent-return": "off",
 		"curly": ["error", "multi-or-nest", "consistent"],
 		"default-case": ["error", { 
 			"commentPattern": "^skip\\sdefault" 
@@ -114,12 +114,14 @@
 			"allowKeywords": false 
 		}],
 		"eqeqeq": ["error", "smart"],
-		"// TODO: Add the rest of the https://eslint.org/docs/rules/#best-practices rules": "off",
+		// TODO: Add the rest of the https://eslint.org/docs/rules/#best-practices rules
 
+		// Strict
 		"strict": ["error", "global"],
 
-		"// TODO: Add https://eslint.org/docs/rules/#variables rules": "off",
+		// TODO: Add https://eslint.org/docs/rules/#variables rules
 
+		// Style Rules
 		"array-bracket-newline": ["error", { 
 			"multiline": true, 
 			"minItems": 2 
@@ -180,9 +182,12 @@
 
 		"semi": ["error", "always"],
 
-		"// TODO: Add https://eslint.org/docs/rules/#ecmascript-6 rules": "off",
+		// TODO: Add https://eslint.org/docs/rules/#ecmascript-6 rules
 
-		"// TODO: Fill in Typescript Rules": "off"
+		// TODO: Fill in Typescript Rules
+
+		// Misc Rules
+		"@typescript-eslint/no-non-null-assertion": "off"
 	},
 	"reportUnusedDisableDirectives": true
 }
