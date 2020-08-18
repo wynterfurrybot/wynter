@@ -15,26 +15,26 @@ export default class extends Command {
 	public async run(msg: Message): Promise<Message> {
 		if ((msg.channel as TextChannel).nsfw === false) {
 			return msg.channel.send(
-				new MessageEmbed().
-					setColor(0x00ff00).
-					setTitle('Not A NSFW Channel').
-					setDescription('The channel you just ran the command in is not NSFW!').
-					setThumbnail('https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png'),
+				new MessageEmbed()
+					.setColor(0x00ff00)
+					.setTitle('Not A NSFW Channel')
+					.setDescription('The channel you just ran the command in is not NSFW!')
+					.setThumbnail('https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png'),
 			);
 		}
-// @ts-ignore	
-		if(msg.author.id === msg.mentions.users.first().id) {return;}
+
+		if(msg.author.id === msg.mentions.users.first()!.id) return msg;
 
 		return msg.channel.send(
-			new MessageEmbed().
-				setColor(0x00ff00).
-				setTitle('GIVE ME YOUR CUBS!').
-				setDescription(
+			new MessageEmbed()
+				.setColor(0x00ff00)
+				.setTitle('GIVE ME YOUR CUBS!')
+				.setDescription(
 					`${
 						msg.author
 					} has impregnated ${msg.mentions.users.first()}, giving them a healthy litter!`,
-				).
-				setThumbnail(
+				)
+				.setThumbnail(
 					'https://us.rule34.xxx//images/364/3db9b8b409f5100aafc62f6352d31db1c60f3c64.png',
 				),
 		);

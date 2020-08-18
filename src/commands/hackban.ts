@@ -11,60 +11,55 @@ export default class extends Command {
 		});
 	}
 
-	public async run(msg: Message, args: string[]) {
-    // @ts-ignore
-    if(!msg.member.hasPermission('BAN_MEMBERS'))
-    {
-      msg.channel.send(
+	public async run(msg: Message, args: string[]): Promise<Message> {
+		if(!msg.member!.hasPermission('BAN_MEMBERS')) {
+			return msg.channel.send(
 				new MessageEmbed()
 					.setColor(0x00ff00)
-					.setTitle('No permissions') // @ts-ignore
-					.setDescription(`You do not have permissions to ban people on ${msg.guild.name}`)
+					.setTitle('No permissions')
+					.setDescription(`You do not have permissions to ban people on ${msg.guild!.name}`)
 					.setThumbnail('https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png'),
 			);
-      return;
-    }
+		}
 
-    var bannedmems = 0;
+		let bannedmems = 0;
 
-    args.forEach(arg => {
-      bannedmems = bannedmems +1;
-      try{ // @ts-ignore
-        msg.guild.members.ban(arg);
-      }
-      catch{
-        bannedmems = bannedmems -1;
-      }
+		args.forEach(arg => {
+			bannedmems++;
+			try{
+				msg.guild!.members.ban(arg);
+			} catch{
+				bannedmems--;
+			}
 
-    });
+		});
 
+		const channel = msg.guild!.channels.cache.find((channel) => channel.name === 'case_logs');
 
+		const embed = new MessageEmbed()
+		// Set the title of the field
+			.setTitle('Ban')
+		// Set the color of the embed
+			.setColor(0xff0000)
+		// Set the main content of the embed
+			.setDescription(
+				`${msg.author} has hackbanned ${bannedmems} users`,
+			);
 
-    var channel = msg.guild!.channels.cache.find((channel) => channel.name === 'case_logs');
+		(channel as TextChannel).send(embed);
 
-      const embed = new MessageEmbed()
-        // Set the title of the field
-        .setTitle('Ban')
-        // Set the color of the embed
-        .setColor(0xff0000)
-        // Set the main content of the embed
-        .setDescription(// @ts-ignore
-          `${msg.author} has hackbanned ${bannedmems} users`,
-        );
+		msg.channel.send(
+			new MessageEmbed()
+				.setColor(0x00ff00)
+				.setTitle('Member hackbanned')
+				.setDescription(
+					`Successfully hackbanned ${bannedmems} users`,
+				)
+				.setThumbnail(
+					'https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg',
+				),
+		);
 
-      (channel as TextChannel).send(embed);
-
-      msg.channel.send(
-        new MessageEmbed()
-          .setColor(0x00ff00)
-          .setTitle('Member hackbanned')
-          .setDescription(
-            `Successfully hackbanned ${bannedmems} users`,
-          )
-          .setThumbnail(
-            'https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg',
-          ),
-      );
-    msg.delete();
+		return msg['delete']();
 	}
 }

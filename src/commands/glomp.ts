@@ -14,11 +14,11 @@ export default class extends Command {
 
 	public async run(msg: Message): Promise<Message> {
 		return msg.channel.send(
-			new MessageEmbed().
-				setColor(0x00ff00).
-				setTitle('Glomp!').
-				setDescription(`${msg.author} has flopped on top of ${msg.mentions.users.first()}!'`).
-				setThumbnail('https://d.facdn.net/art/zaezar/1502813432/1502813432.zaezar_glomp.png'),
+			new MessageEmbed()
+				.setColor(0x00ff00)
+				.setTitle('Glomp!')
+				.setDescription(`${msg.author} has flopped on top of ${msg.mentions.users.first()}!'`)
+				.setThumbnail('https://d.facdn.net/art/zaezar/1502813432/1502813432.zaezar_glomp.png'),
 		);
 	}
 }

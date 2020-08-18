@@ -11,14 +11,14 @@ export default class extends Command {
 		});
 	}
 
-	public async run(msg: Message) {
-    msg.channel.send(
-      new MessageEmbed()
-        .setColor(0x00ff00)
-        .setTitle('Wynter v1.0')
-        .setDescription(
-          `Made by Darkmane Arweinydd | Ported to ts by Relms & Darkmane Arweinydd \n\nBeta Testers: Alex Malebogh, May, Hunter`,
-        ),
-    );
+	public async run(msg: Message): Promise<Message> {
+		return msg.channel.send(
+			new MessageEmbed()
+				.setColor(0x00ff00)
+				.setTitle('Wynter v1.0')
+				.setDescription(
+					'Made by Darkmane Arweinydd | Ported to ts by Relms & Darkmane Arweinydd \n\nBeta Testers: Alex Malebogh, May, Hunter',
+				),
+		);
 	}
 }

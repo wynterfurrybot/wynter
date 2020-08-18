@@ -117,13 +117,13 @@ client.on('guildMemberAdd', (member) => {
 
 				if (member.guild.id === '736969969404870688') {
 					client.channels.fetch('736981136164782171').then((channel) => {
-						const embed = new MessageEmbed().
+						const embed = new MessageEmbed()
 							// Set the title of the field
-							setTitle('New Joiner').
+							.setTitle('New Joiner')
 							// Set the color of the embed
-							setColor(0xff0000).
+							.setColor(0xff0000)
 							// Set the main content of the embed
-							setDescription(
+							.setDescription(
 								`${member.user!.username} Joined using invite code ${invite!.code} made by <@${
 									invite!.inviter!.id
 								}> (${inviter!.username})`,
@@ -133,13 +133,13 @@ client.on('guildMemberAdd', (member) => {
 					});
 				} else if (member.guild.id === '667466143585402900') {
 					client.channels.fetch('713624679671136306').then((channel) => {
-						const embed = new MessageEmbed().
+						const embed = new MessageEmbed()
 							// Set the title of the field
-							setTitle('New Joiner').
+							.setTitle('New Joiner')
 							// Set the color of the embed
-							setColor(0xff0000).
+							.setColor(0xff0000)
 							// Set the main content of the embed
-							setDescription(
+							.setDescription(
 								`${member.user!.username} Joined using invite code ${invite!.code} made by <@${
 									invite!.inviter!.id
 								}> (${inviter!.username})`,
@@ -149,13 +149,13 @@ client.on('guildMemberAdd', (member) => {
 					});
 				} else if (member.guild.id === '462041783438934036') {
 					client.channels.fetch('539917043886063636').then((channel) => {
-						const embed = new MessageEmbed().
+						const embed = new MessageEmbed()
 							// Set the title of the field
-							setTitle('New Joiner').
+							.setTitle('New Joiner')
 							// Set the color of the embed
-							setColor(0xff0000).
+							.setColor(0xff0000)
 							// Set the main content of the embed
-							setDescription(
+							.setDescription(
 								`${member.user!.username} Joined using invite code ${invite!.code} made by <@${
 									invite!.inviter!.id
 								}> (${inviter!.username})`,
@@ -167,13 +167,13 @@ client.on('guildMemberAdd', (member) => {
 			} catch {
 				if (member.guild.id === '667466143585402900') {
 					client.channels.fetch('713624679671136306').then((channel) => {
-						const embed = new MessageEmbed().
+						const embed = new MessageEmbed()
 							// Set the title of the field
-							setTitle('New Joiner').
+							.setTitle('New Joiner')
 							// Set the color of the embed
-							setColor(0xff0000).
+							.setColor(0xff0000)
 							// Set the main content of the embed
-							setDescription(
+							.setDescription(
 								`I can't quite figure out how ${
 									member.user!.username
 								} joined the server. \n\nMaybe they used a temporary invite?`,
@@ -183,13 +183,13 @@ client.on('guildMemberAdd', (member) => {
 					});
 				} else if (member.guild.id === '736969969404870688') {
 					client.channels.fetch('736981136164782171').then((channel) => {
-						const embed = new MessageEmbed().
+						const embed = new MessageEmbed()
 							// Set the title of the field
-							setTitle('New Joiner').
+							.setTitle('New Joiner')
 							// Set the color of the embed
-							setColor(0xff0000).
+							.setColor(0xff0000)
 							// Set the main content of the embed
-							setDescription(
+							.setDescription(
 								`I can't quite figure out how ${
 									member.user!.username
 								} joined the server. \n\nMaybe they used a temporary invite?`,
@@ -199,13 +199,13 @@ client.on('guildMemberAdd', (member) => {
 					});
 				} else if (member.guild.id === '462041783438934036') {
 					client.channels.fetch('539917043886063636').then((channel) => {
-						const embed = new MessageEmbed().
+						const embed = new MessageEmbed()
 							// Set the title of the field
-							setTitle('New Joiner').
+							.setTitle('New Joiner')
 							// Set the color of the embed
-							setColor(0xff0000).
+							.setColor(0xff0000)
 							// Set the main content of the embed
-							setDescription(
+							.setDescription(
 								`I can't quite figure out how ${
 									member.user!.username
 								} joined the server. \n\nMaybe they used a temporary invite?`,
@@ -434,7 +434,7 @@ client.on('message', async (msg) => {
 	if (msg.content === '-rebuild'){
 		if(msg.author.id === '512608629992456192'){
 			const guilds = client.guilds.cache;
-			var guildsin = 0;
+			let guildsin = 0;
 			guilds.forEach(guild => {
 				guildsin = guildsin + 1;
 				const guildDB = new Guilds();
@@ -445,12 +445,11 @@ client.on('message', async (msg) => {
 				guildDB.blacklistedWords = ['none'];
 				guildDB.bypassChannels = ['none'];
 				addGuild(guildDB);
-			})
+			});
 
-			msg.channel.send(`${msg.author}, I have added ${guildsin} guilds to the database.`)
-		}
-		else{
-			msg.channel.send(`${msg.author}, you have no permission to rebuild guilds`)
+			msg.channel.send(`${msg.author}, I have added ${guildsin} guilds to the database.`);
+		} else{
+			msg.channel.send(`${msg.author}, you have no permission to rebuild guilds`);
 		}
 	}
 
@@ -495,9 +494,9 @@ client.on('message', async (msg) => {
 		// Repost advertisement!
 		msg['delete']();
 
-		client.channels.
-			fetch('629073904882810910').
-			then((channel) =>
+		client.channels
+			.fetch('629073904882810910')
+			.then((channel) =>
 				(channel as TextChannel).send(`OP: <@${msg.author.id}>\n\n${msg.content}`),
 			);
 

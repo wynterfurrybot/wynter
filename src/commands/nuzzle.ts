@@ -13,11 +13,11 @@ export default class extends Command {
 
 	public async run(msg: Message): Promise<Message> {
 		return msg.channel.send(
-			new MessageEmbed().
-				setColor(0x00ff00).
-				setTitle('Nuzzle!').
-				setDescription(`${msg.author} has nuzzled ${msg.mentions.users.first()}!`).
-				setThumbnail(
+			new MessageEmbed()
+				.setColor(0x00ff00)
+				.setTitle('Nuzzle!')
+				.setDescription(`${msg.author} has nuzzled ${msg.mentions.users.first()}!`)
+				.setThumbnail(
 					'https://pm1.narvii.com/6427/42cdd0b2870e26482cd6907bce2edca12a82286c_hq.jpg',
 				),
 		);

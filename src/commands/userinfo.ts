@@ -11,24 +11,23 @@ export default class extends Command {
 		});
 	}
 
-	public async run(msg: Message) {
-		if (msg.mentions.users.array() === undefined || msg.mentions.users.array().length == 0) {//@ts-ignore
-      var user = msg.guild.members.fetch(msg.author.id);
-			msg.channel.send(
+	public async run(msg: Message): Promise<Message> {
+		if (msg.mentions.users.array() === undefined || msg.mentions.users.array().length === 0) {
+			return msg.channel.send(
 				new MessageEmbed()
 					.setColor(0x00ff00)
-					.setTitle('User Info!') //@ts-ignore
-					.setDescription(`Please mention a user`) //@ts-ignore,
+					.setTitle('User Info!')
+					.setDescription('Please mention a user'),
 			);
 		} else {
-			// @ts-ignore
-      var user = msg.mentions.members.first();
-      msg.channel.send(
+			const user = msg.mentions.members!.first();
+
+			return msg.channel.send(
 				new MessageEmbed()
 					.setColor(0x00ff00)
-					.setTitle('User Info!') //@ts-ignore
-					.setDescription(`${user} \n\nUsername: ${user.user.username} \nUser Created:${user.user.createdAt} \nJoined the server: ${user.joinedAt}`)//@ts-ignore
-					.setThumbnail(msg.author.avatarURL()),
+					.setTitle('User Info!')
+					.setDescription(`${user} \n\nUsername: ${user!.user.username} \nUser Created:${user!.user.createdAt} \nJoined the server: ${user!.joinedAt}`)
+					.setThumbnail(msg.author.avatarURL()!),
 			);
 		}
 	}
