@@ -17,7 +17,7 @@ export default class extends Command {
 			msg.channel.send(
 				new MessageEmbed()
 					.setColor(0x00ff00)
-					.setTitle('Hug!')
+					.setTitle('Snuggle!')
 					.setDescription(`${msg.author} has snuggled themselves, what a loner!`)
 					.setThumbnail(
 						'https://pm1.narvii.com/6362/398e5e2edeed52fc23d9e85cbbbbe6e5b3951635_hq.jpg',

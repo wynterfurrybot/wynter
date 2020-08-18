@@ -18,17 +18,17 @@ export default class extends Command {
 					.setColor(0x00ff00)
 					.setTitle('Flop!')
 					.setDescription(`${msg.author} has flopped on the ground!`)
-					.setThumbnail('https://i.imgur.com/mZo6DnU.png'),
+					.setThumbnail('https://i.redd.it/snul7u43bsm11.jpg'),
 			);
 		} else {
-			// @ts-ignore	
+			// @ts-ignore
 			if(msg.author.id === msg.mentions.users.first().id) {return;}
 			msg.channel.send(
 				new MessageEmbed()
 					.setColor(0x00ff00)
 					.setTitle('Flop!')
 					.setDescription(`${msg.author} has flopped on ${msg.mentions.users.first()}!`)
-					.setThumbnail('https://i.imgur.com/mZo6DnU.png'),
+					.setThumbnail('https://i.redd.it/snul7u43bsm11.jpg'),
 			);
 		}
 	}
