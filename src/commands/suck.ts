@@ -22,6 +22,8 @@ export default class extends Command {
 					.setThumbnail('https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png'),
 			);
 		}
+		// @ts-ignore	
+		if(msg.author.id === msg.mentions.users.first().id) {return;}
 		msg.channel.send(
 			new MessageEmbed()
 				.setColor(0x00ff00)

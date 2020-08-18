@@ -21,6 +21,8 @@ export default class extends Command {
 					.setThumbnail('https://i.imgur.com/mZo6DnU.png'),
 			);
 		} else {
+			// @ts-ignore	
+			if(msg.author.id === msg.mentions.users.first().id) {return;}
 			msg.channel.send(
 				new MessageEmbed()
 					.setColor(0x00ff00)
