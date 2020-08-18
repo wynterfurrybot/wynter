@@ -1,0 +1,9 @@
+{
+	"token": "",
+	"db": {
+		"username": "",
+		"password": "",
+		"host": "",
+		"port": 1234
+	}
+}

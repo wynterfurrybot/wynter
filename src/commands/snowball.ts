@@ -1,16 +1,16 @@
-import { MessageEmbed } from 'discord.js';
-import { Message } from 'discord.js';
+import { MessageEmbed, Message } from 'discord.js';
 
 import Command from '../lib/structures/Command';
 
 export default class extends Command {
-	constructor() {
+	public constructor() {
 		super({
 			name: 'snowball',
 			cooldown: 5,
 			usage: '<member>',
 		});
 	}
+
 	public async run(msg: Message) {
 		msg.channel.send(
 			new MessageEmbed()

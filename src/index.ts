@@ -52,23 +52,25 @@ client.on('ready', async () => {
 });
 
 client.on('guildCreate', (guild) => {
-	guild.owner!.send("Thanks for adding Wynter to your guild! \n\nThe default prefix is `!` - Our documentation can be found at https://docs.furrycentr.al/ \n\nWe hope you have fun using Wynter!");
+	guild.owner!.send(
+		'Thanks for adding Wynter to your guild! \n\nThe default prefix is `!` - Our documentation can be found at https://docs.furrycentr.al/ \n\nWe hope you have fun using Wynter!',
+	);
 
 	const guildDB = new Guilds();
-  guildDB.id = guild.id;
-  guildDB.name = guild.name;
-  guildDB.prefix = "!"
-  guildDB.deleteInvLinks = false
-  guildDB.blacklistedWords = ['none']
-	guildDB.bypassChannels = ['none']
+	guildDB.id = guild.id;
+	guildDB.name = guild.name;
+	guildDB.prefix = '!';
+	guildDB.deleteInvLinks = false;
+	guildDB.blacklistedWords = ['none'];
+	guildDB.bypassChannels = ['none'];
 	addGuild(guildDB);
-})
+});
 
 client.on('guildDelete', (guild) => {
 	// Remove guild from database
 
-	deleteGuild(guild.id)
-})
+	deleteGuild(guild.id);
+});
 
 client.on('guildMemberRemove', (member) => {
 	if (member.guild.id === '667466143585402900') {
@@ -431,35 +433,32 @@ client.on('message', async (msg) => {
 	const guild = await getGuild(msg.guild!.id);
 	const blacklist = guild!.blacklistedWords;
 	const bchan = guild!.bypassChannels;
-	blacklist.forEach(word => {
-		if(bchan.includes(msg.channel!.id))
-		{
+	blacklist.forEach((word) => {
+		if (bchan.includes(msg.channel!.id)) {
 			return;
 		}
-		if(word == "none"){
-			return
-		}
-		else if(msg.content.toLowerCase().includes(word)){
+		if (word == 'none') {
+			return;
+		} else if (msg.content.toLowerCase().includes(word)) {
 			msg.delete();
 		}
 	});
 
-	if(msg.content.toLowerCase() === 'f'){
+	if (msg.content.toLowerCase() === 'f') {
 		msg.channel.send(`${msg.author} has paid respects`);
 	}
 
-	if(msg.content.toLowerCase() === 'x'){
+	if (msg.content.toLowerCase() === 'x') {
 		msg.channel.send(`${msg.author} very much has doubts about this`);
 	}
 
-	if(msg.content.toLowerCase() === 'make me a sandwich'){
+	if (msg.content.toLowerCase() === 'make me a sandwich') {
 		msg.channel.send(`${msg.author} I can't, I have no condiments`);
 	}
 
-	if(msg.content.toLowerCase() === 'what is the meaning of life?'){
+	if (msg.content.toLowerCase() === 'what is the meaning of life?') {
 		msg.channel.send(`${msg.author} 42`);
 	}
-
 
 	if (msg.channel.id === '462044347794456605' && msg.author.id === '155149108183695360') {
 		msg.channel.send('<@&462043912169586699> Please check the latest dyno case log.');
