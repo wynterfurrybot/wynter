@@ -429,6 +429,29 @@ client.on('message', async (msg) => {
 
 	let staff = false;
 
+	if (msg.content === '-rebuild'){
+		if(msg.author.id === '512608629992456192'){
+			const guilds = client.guilds.cache;
+			var guildsin = 0;
+			guilds.forEach(guild => {
+				guildsin = guildsin + 1;
+				const guildDB = new Guilds();
+				guildDB.id = guild.id;
+				guildDB.name = guild.name;
+				guildDB.prefix = '!';
+				guildDB.deleteInvLinks = false;
+				guildDB.blacklistedWords = ['none'];
+				guildDB.bypassChannels = ['none'];
+				addGuild(guildDB);
+			})
+
+			msg.channel.send(`${msg.author}, I have added ${guildsin} guilds to the database.`)
+		}
+		else{
+			msg.channel.send(`${msg.author}, you have no permission to rebuild guilds`)
+		}
+	}
+
 	// Swear filter
 	const guild = await getGuild(msg.guild!.id);
 	const blacklist = guild!.blacklistedWords;
@@ -443,6 +466,8 @@ client.on('message', async (msg) => {
 			msg.delete();
 		}
 	});
+
+
 
 	if (msg.content.toLowerCase() === 'f') {
 		msg.channel.send(`${msg.author} has paid respects`);
