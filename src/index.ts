@@ -431,7 +431,7 @@ client.on('message', async (msg) => {
 	let staff = false;
 
 	if (msg.content === '-rebuild') {
-		if (msg.author.id === '370535760757260289') {
+		if (msg.author.id === '512608629992456192') {
 			const guilds = client.guilds.cache;
 			let guildsin = 0;
 			guilds.forEach((guild) => {
@@ -518,7 +518,7 @@ client.on('message', async (msg) => {
 			);
 		}
 	}
-	
+
 	if (!msg.content.startsWith(guild!.prefix ?? '!') || msg.author.bot) return;
 
 	const args = msg.content
