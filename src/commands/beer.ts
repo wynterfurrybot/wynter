@@ -5,7 +5,7 @@ import Command from '../lib/structures/Command';
 export default class extends Command {
 	public constructor() {
 		super({
-			name: 'whiskey',
+			name: 'beer',
 			cooldown: 5,
 			usage: '[member]',
 		});
