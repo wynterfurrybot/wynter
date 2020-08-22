@@ -25,7 +25,9 @@ export default class extends Command {
 		if (today.getMonth() === 12 && today.getDay() <= 25) {
 			const days = 25 - today.getDay();
 			await msg.author.send(`There are ${days} day(s) left until christmas!`);
-			return await msg.author.send(`You got a ${items[Math.random() * (items.length - 1 - 0) + 0]}`);
+			return await msg.author.send(
+				`You got a ${items[Math.random() * (items.length - 1 - 0) + 0]}`,
+			);
 		} else {
 			return await msg.author.send('It is not december yet - or is past christmas!');
 		}

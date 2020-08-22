@@ -12,7 +12,7 @@ export default class extends Command {
 	}
 
 	public async run(msg: Message): Promise<Message> {
-		if(!msg.member!.hasPermission('KICK_MEMBERS')) {
+		if (!msg.member!.hasPermission('KICK_MEMBERS')) {
 			return msg.channel.send(
 				new MessageEmbed()
 					.setColor(0x00ff00)
@@ -23,7 +23,7 @@ export default class extends Command {
 		}
 		const member = msg.mentions.members!.first();
 
-		if(!member!.kickable){
+		if (!member!.kickable) {
 			return msg.channel.send(
 				new MessageEmbed()
 					.setColor(0x00ff00)
@@ -37,15 +37,18 @@ export default class extends Command {
 			);
 		}
 
-		await member!.send(new MessageEmbed()
-			.setColor(0x00ff00)
-			.setTitle('KICK:')
-			.setDescription(
-				`You have been kicked on ${msg.guild!.name}. The reasoning can be found below: \n\n${msg.content}`,
-			)
-			.setThumbnail(
-				'https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg',
-			),
+		await member!.send(
+			new MessageEmbed()
+				.setColor(0x00ff00)
+				.setTitle('KICK:')
+				.setDescription(
+					`You have been kicked on ${msg.guild!.name}. The reasoning can be found below: \n\n${
+						msg.content
+					}`,
+				)
+				.setThumbnail(
+					'https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg',
+				),
 		);
 
 		member!.kick();
@@ -53,13 +56,17 @@ export default class extends Command {
 		const channel = msg.guild!.channels.cache.find((channel) => channel.name === 'case_logs');
 
 		const embed = new MessageEmbed()
-		// Set the title of the field
+			// Set the title of the field
 			.setTitle('Kick')
-		// Set the color of the embed
+			// Set the color of the embed
 			.setColor(0xff0000)
-		// Set the main content of the embed
+			// Set the main content of the embed
 			.setDescription(
-				`${msg.author} has kicked ${msg.mentions.users.first()} (${msg.mentions.users.first()!.username}#${msg.mentions.users.first()!.discriminator}) for the following reason: \n\n${msg.content}`,
+				`${msg.author} has kicked ${msg.mentions.users.first()} (${
+					msg.mentions.users.first()!.username
+				}#${msg.mentions.users.first()!.discriminator}) for the following reason: \n\n${
+					msg.content
+				}`,
 			);
 
 		(channel as TextChannel).send(embed);
@@ -68,14 +75,12 @@ export default class extends Command {
 			new MessageEmbed()
 				.setColor(0x00ff00)
 				.setTitle('Member Kicked')
-				.setDescription(
-					'Successfully kicked a user',
-				)
+				.setDescription('Successfully kicked a user')
 				.setThumbnail(
 					'https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg',
 				),
 		);
 
-		return msg['delete']();
+		return msg.delete();
 	}
 }

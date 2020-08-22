@@ -26,7 +26,11 @@ export default class extends Command {
 				new MessageEmbed()
 					.setColor(0x00ff00)
 					.setTitle('User Info!')
-					.setDescription(`${user} \n\nUsername: ${user!.user.username} \nUser Created:${user!.user.createdAt} \nJoined the server: ${user!.joinedAt}`)
+					.setDescription(
+						`${user} \n\nUsername: ${user!.user.username} \nUser Created:${
+							user!.user.createdAt
+						} \nJoined the server: ${user!.joinedAt}`,
+					)
 					.setThumbnail(msg.author.avatarURL()!),
 			);
 		}

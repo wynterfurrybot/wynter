@@ -12,7 +12,7 @@ export default class extends Command {
 	}
 
 	public async run(msg: Message, args: string[]): Promise<Message> {
-		if(!msg.member!.hasPermission('BAN_MEMBERS')) {
+		if (!msg.member!.hasPermission('BAN_MEMBERS')) {
 			return msg.channel.send(
 				new MessageEmbed()
 					.setColor(0x00ff00)
@@ -24,27 +24,24 @@ export default class extends Command {
 
 		let bannedmems = 0;
 
-		args.forEach(arg => {
+		args.forEach((arg) => {
 			bannedmems++;
-			try{
+			try {
 				msg.guild!.members.ban(arg);
-			} catch{
+			} catch {
 				bannedmems--;
 			}
-
 		});
 
 		const channel = msg.guild!.channels.cache.find((channel) => channel.name === 'case_logs');
 
 		const embed = new MessageEmbed()
-		// Set the title of the field
+			// Set the title of the field
 			.setTitle('Ban')
-		// Set the color of the embed
+			// Set the color of the embed
 			.setColor(0xff0000)
-		// Set the main content of the embed
-			.setDescription(
-				`${msg.author} has hackbanned ${bannedmems} users`,
-			);
+			// Set the main content of the embed
+			.setDescription(`${msg.author} has hackbanned ${bannedmems} users`);
 
 		(channel as TextChannel).send(embed);
 
@@ -52,14 +49,12 @@ export default class extends Command {
 			new MessageEmbed()
 				.setColor(0x00ff00)
 				.setTitle('Member hackbanned')
-				.setDescription(
-					`Successfully hackbanned ${bannedmems} users`,
-				)
+				.setDescription(`Successfully hackbanned ${bannedmems} users`)
 				.setThumbnail(
 					'https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg',
 				),
 		);
 
-		return msg['delete']();
+		return msg.delete();
 	}
 }

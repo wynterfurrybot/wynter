@@ -23,7 +23,7 @@ export default class extends Command {
 			);
 		}
 
-		if(msg.author.id === msg.mentions.users.first()!.id) return msg;
+		if (msg.author.id === msg.mentions.users.first()!.id) return msg;
 
 		return msg.channel.send(
 			new MessageEmbed()

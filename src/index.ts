@@ -52,25 +52,27 @@ client.on('ready', async () => {
 	});
 });
 
-client.on('guildCreate', (guild) => {
+client.on('guildCreate', async (guild) => {
 	guild.owner!.send(
 		'Thanks for adding Wynter to your guild! \n\nThe default prefix is `!` - Our documentation can be found at https://docs.furrycentr.al/ \n\nWe hope you have fun using Wynter!',
 	);
 
 	const guildDB = new Guilds();
+
 	guildDB.id = guild.id;
 	guildDB.name = guild.name;
 	guildDB.prefix = '!';
 	guildDB.deleteInvLinks = false;
 	guildDB.blacklistedWords = ['none'];
 	guildDB.bypassChannels = ['none'];
-	addGuild(guildDB);
+
+	await addGuild(guildDB);
 });
 
-client.on('guildDelete', (guild) => {
+client.on('guildDelete', async (guild) => {
 	// Remove guild from database
 
-	deleteGuild(guild.id);
+	await deleteGuild(guild.id);
 });
 
 client.on('guildMemberRemove', (member) => {
@@ -84,7 +86,8 @@ client.on('guildMemberRemove', (member) => {
 client.on('guildMemberAdd', (member) => {
 	if (member.guild.id === '736969969404870688') {
 		member.send(
-			'Welcome to the elite server of european furries! \n\nJust so you know, we operate a strict no robot policy here! \n\nTo verify you\'re not one, please go to https://verify.furrycentr.al/ef/ and log in with discord.',
+			// eslint-disable-next-line quotes
+			"Welcome to the elite server of european furries! \n\nJust so you know, we operate a strict no robot policy here! \n\nTo verify you're not one, please go to https://verify.furrycentr.al/ef/ and log in with discord.",
 		);
 	}
 
@@ -259,7 +262,8 @@ client.on('guildMemberAdd', (member) => {
 
 	if (member.guild.id !== '462041783438934036') return;
 	member.send(
-		'Welcome to The Floof Hotel! \n\nJust so you know, we operate a strict no robot policy here! \n\nTo verify you\'re not one, please go to https://verify.furrycentr.al/ and log in with discord.',
+		// eslint-disable-next-line quotes
+		"Welcome to The Floof Hotel! \n\nJust so you know, we operate a strict no robot policy here! \n\nTo verify you're not one, please go to https://verify.furrycentr.al/ and log in with discord.",
 	);
 });
 
@@ -346,9 +350,8 @@ client.on('guildMemberUpdate', (oldMem, newMem) => {
 			role.id === '725462565852938301' ||
 			role.id === '667472170926080011' ||
 			role.id === '736971909362614362'
-		) 
+		)
 			hasMember = true;
-		
 	});
 
 	newMem.roles.cache.forEach((role) => {
@@ -399,9 +402,8 @@ client.on('messageUpdate', (msg, newMsg) => {
 		}
 	}
 
-	if (newMsg.author!.bot) 
-		return;
-	
+	if (newMsg.author!.bot) return;
+
 	if (newMsg.attachments) {
 		const a = newMsg.attachments;
 		a.forEach(function (b) {
@@ -424,19 +426,16 @@ client.on('messageUpdate', (msg, newMsg) => {
 });
 
 client.on('message', async (msg) => {
-	const prefix = '!';
-	const cooldownBypass = [
-		'512608629992456192', '370535760757260289',
-	];
+	const cooldownBypass = ['512608629992456192', '370535760757260289'];
 
 	let staff = false;
 
-	if (msg.content === '-rebuild'){
-		if(msg.author.id === '512608629992456192'){
+	if (msg.content === '-rebuild') {
+		if (msg.author.id === '370535760757260289') {
 			const guilds = client.guilds.cache;
 			let guildsin = 0;
-			guilds.forEach(guild => {
-				guildsin = guildsin + 1;
+			guilds.forEach((guild) => {
+				guildsin++;
 				const guildDB = new Guilds();
 				guildDB.id = guild.id;
 				guildDB.name = guild.name;
@@ -448,7 +447,7 @@ client.on('message', async (msg) => {
 			});
 
 			msg.channel.send(`${msg.author}, I have added ${guildsin} guilds to the database.`);
-		} else{
+		} else {
 			msg.channel.send(`${msg.author}, you have no permission to rebuild guilds`);
 		}
 	}
@@ -458,35 +457,25 @@ client.on('message', async (msg) => {
 	const blacklist = guild!.blacklistedWords;
 	const bchan = guild!.bypassChannels;
 	blacklist.forEach((word) => {
-		if (bchan.includes(msg.channel!.id)) 
-			return;
-		
-		if (word === 'none') 
-			return;
-		else if (msg.content.toLowerCase().includes(word)) 
-			msg['delete']();
-		
+		if (!bchan.includes(msg.channel!.id)) {
+			if (word === 'none') return;
+			else if (msg.content.toLowerCase().includes(word)) msg['delete']();
+		}
 	});
 
-	if (msg.content.toLowerCase() === 'f') 
-		msg.channel.send(`${msg.author} has paid respects`);
-	
+	if (msg.content.toLowerCase() === 'f') msg.channel.send(`${msg.author} has paid respects`);
 
-	if (msg.content.toLowerCase() === 'x') 
+	if (msg.content.toLowerCase() === 'x')
 		msg.channel.send(`${msg.author} very much has doubts about this`);
-	
 
-	if (msg.content.toLowerCase() === 'make me a sandwich') 
+	if (msg.content.toLowerCase() === 'make me a sandwich')
 		msg.channel.send(`${msg.author} I can't, I have no condiments`);
-	
 
-	if (msg.content.toLowerCase() === 'what is the meaning of life?') 
+	if (msg.content.toLowerCase() === 'what is the meaning of life?')
 		msg.channel.send(`${msg.author} 42`);
-	
 
-	if (msg.channel.id === '462044347794456605' && msg.author.id === '155149108183695360') 
+	if (msg.channel.id === '462044347794456605' && msg.author.id === '155149108183695360')
 		msg.channel.send('<@&462043912169586699> Please check the latest dyno case log.');
-	
 
 	if (msg.author.bot === true) return;
 
@@ -519,35 +508,35 @@ client.on('message', async (msg) => {
 
 	if (msg.guild!.id === '725201209358549012') {
 		msg.member!.roles.cache.forEach((val) => {
-			if (val.id === '739727880799518741') 
-				staff = true;
-			
+			if (val.id === '739727880799518741') staff = true;
 		});
 
 		if (msg.content.includes('discord.gg') && !staff) {
 			await msg.reply(
-				'please do not promote your server here! \n\nIf you\'re looking to partner, please check <#729753696199508088>',
+				// eslint-disable-next-line quotes
+				"please do not promote your server here! \n\nIf you're looking to partner, please check <#729753696199508088>",
 			);
 		}
 	}
+	
+	if (!msg.content.startsWith(guild!.prefix ?? '!') || msg.author.bot) return;
 
-	if (!msg.content.startsWith(prefix) || msg.author.bot) return;
+	const args = msg.content
+		.slice(guild!.prefix.length ?? '!')
+		.trim()
+		.split(/ +/);
 
-	const args = msg.content.slice(prefix.length).trim().split(/ +/);
 	const commandName = args.shift()!.toLowerCase();
 
-	if (!client.commands.has(commandName)) return;
-
 	const command =
-		client.commands.get(commandName) ||
+		client.commands.get(commandName) ??
 		client.commands.find((cmd) => cmd.aliases && cmd.aliases.includes(commandName));
 
 	if (!command) return;
 
 	if (!cooldownBypass.includes(msg.author.id)) {
-		if (!client.commandCooldowns.has(command!.name)) 
+		if (!client.commandCooldowns.has(command!.name))
 			client.commandCooldowns!.set(command!.name, new Collection());
-		
 
 		const now = Date.now();
 		const timestamps = client.commandCooldowns.get(command!.name);
@@ -567,7 +556,7 @@ client.on('message', async (msg) => {
 		}
 
 		timestamps!.set(msg.author.id, now);
-		setTimeout(() => timestamps!['delete'](msg.author.id), cooldownAmount);
+		setTimeout(() => timestamps!.delete(msg.author.id), cooldownAmount);
 	}
 
 	try {
@@ -588,9 +577,7 @@ client.on('message', async (msg) => {
 });
 
 client.on('messageDelete', (messageDelete) => {
-	if (messageDelete.author!.bot) 
-		return;
-	
+	if (messageDelete.author!.bot) return;
 
 	if (messageDelete.attachments) {
 		const a = messageDelete.attachments;
@@ -622,7 +609,9 @@ client.on('messageDelete', (messageDelete) => {
 
 client.on('channelCreate', (channel) => {
 	try {
-		const c = (channel as TextChannel).guild.channels.cache.find((c) => c.name === 'channel_logging');
+		const c = (channel as TextChannel).guild.channels.cache.find(
+			(c) => c.name === 'channel_logging',
+		);
 		(c as TextChannel).send({
 			embed: {
 				color: 3447003,
@@ -636,7 +625,9 @@ client.on('channelCreate', (channel) => {
 
 client.on('channelDelete', (channel) => {
 	try {
-		const c = (channel as TextChannel).guild.channels.cache.find((c) => c.name === 'channel_logging');
+		const c = (channel as TextChannel).guild.channels.cache.find(
+			(c) => c.name === 'channel_logging',
+		);
 		(c as TextChannel).send({
 			embed: {
 				color: 16726088,

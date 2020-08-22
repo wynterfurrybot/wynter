@@ -5,7 +5,7 @@ import Command from '../lib/structures/Command';
 export default class extends Command {
 	public constructor() {
 		super({
-			name: 'serverinfo',
+			name: 'menu',
 			cooldown: 5,
 			usage: '',
 		});
@@ -15,13 +15,10 @@ export default class extends Command {
 		return msg.channel.send(
 			new MessageEmbed()
 				.setColor(0x00ff00)
-				.setTitle('Server Info!')
+				.setTitle('Menu')
 				.setDescription(
-					`${msg.guild!.name} \n\nOwner: ${msg.guild!.owner} \n\nCreated at: ${
-						msg.guild!.createdAt
-					} \nRegion: ${msg.guild!.region} \nMembers: ${msg.guild!.memberCount}`,
-				)
-				.setThumbnail(msg.guild!.iconURL()!),
+					'**__Food__** \nCookie, Pineapple, Sandwich, Steak, Pizza, Muffin \n\n**__Alcohol__** \nWhiskey, Vodka, Martini, Beer, Rum, Pina Colada \n\n**__Non-alcoholic drinks__** \nCoke, Tea, Coffee',
+				),
 		);
 	}
 }

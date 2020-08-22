@@ -21,7 +21,7 @@ export default class extends Command {
 					.setThumbnail('https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png'),
 			);
 		}
-		
+
 		return msg.channel.send(
 			new MessageEmbed()
 				.setColor(0x00ff00)

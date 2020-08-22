@@ -14,7 +14,7 @@ export default class extends Command {
 	}
 
 	public async run(msg: Message, args: string[]): Promise<Message> {
-		if(!msg.member!.hasPermission('ADMINISTRATOR')) {
+		if (!msg.member!.hasPermission('ADMINISTRATOR')) {
 			return msg.channel.send(
 				new MessageEmbed()
 					.setColor(0x00ff00)
@@ -24,7 +24,7 @@ export default class extends Command {
 			);
 		}
 
-		if(args.includes('on')){
+		if (args.includes('on')) {
 			const guildDB = new Guilds();
 			guildDB.blacklistedWords = [
 				'fuck',
@@ -72,9 +72,11 @@ export default class extends Command {
 					.setColor(0x00ff00)
 					.setTitle('Fuck!')
 					.setDescription('Swearfilter has been enabled')
-					.setThumbnail('https://p.kindpng.com/picc/s/81-816452_censor-bars-messages-sticker-0-censor-bar-transparent.png'),
+					.setThumbnail(
+						'https://p.kindpng.com/picc/s/81-816452_censor-bars-messages-sticker-0-censor-bar-transparent.png',
+					),
 			);
-		} else if(args.includes('off')){
+		} else if (args.includes('off')) {
 			const guildDB = new Guilds();
 			guildDB.blacklistedWords = ['none'];
 			updateGuild(msg.guild!.id, guildDB);
@@ -83,7 +85,9 @@ export default class extends Command {
 					.setColor(0x00ff00)
 					.setTitle('You may now.. kiss my ass!')
 					.setDescription('Swearfilter has been disabled')
-					.setThumbnail('https://p.kindpng.com/picc/s/81-816452_censor-bars-messages-sticker-0-censor-bar-transparent.png'),
+					.setThumbnail(
+						'https://p.kindpng.com/picc/s/81-816452_censor-bars-messages-sticker-0-censor-bar-transparent.png',
+					),
 			);
 		}
 

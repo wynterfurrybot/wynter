@@ -7,9 +7,7 @@ export default async (id: string, schema: Partial<Guilds>): Promise<Guilds | und
 		where: { id },
 	});
 
-	if (guild === undefined) 
-		return undefined;
-	
+	if (guild === undefined) return undefined;
 
 	guild.id = schema.id ?? guild.id;
 	guild.name = schema.name ?? guild.name;

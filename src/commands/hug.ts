@@ -6,9 +6,7 @@ export default class extends Command {
 	public constructor() {
 		super({
 			name: 'hug',
-			aliases: [
-				'cuddle', 'hugs',
-			],
+			aliases: ['cuddle', 'hugs'],
 			cooldown: 5,
 			usage: '<member>',
 		});
