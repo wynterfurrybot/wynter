@@ -44,7 +44,6 @@ export default class extends Command {
 				'wanker',
 				'faggot',
 				'fag',
-				'hore',
 				'whore',
 				'dickhead',
 				'nibba',
