@@ -13,6 +13,8 @@ Fully open sourced, made with help from Relms
 
 Docs: https://docs.furrycentr.al/
 
+How to self host Wynter: https://docs.furrycentr.al/self-host-wynter
+
 # Branches:
 
 Beta - for development use only, these updates may not be finished, or ever come to the master branch.
