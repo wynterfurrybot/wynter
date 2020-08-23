@@ -1,7 +1,7 @@
-# dante v4.0
-Dante 4.0, made out of python and JS
+# Wynter v1
+Wynter, made out of typescript
 
-Rewrite of dante-beta
+Rewrite of dantev4
 
 Made on a CC-BY license.
 
@@ -9,7 +9,7 @@ Uses the following libaries:
 
 Discord.py, discord.js@master, discord.js@stable
 
-Fully open sourced, made with help from Alex Malebogh
+Fully open sourced, made with help from Relms
 
 # Branches:
 
