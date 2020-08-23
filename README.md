@@ -11,7 +11,11 @@ Discord.py, discord.js@master, discord.js@stable
 
 Fully open sourced, made with help from Relms
 
+Docs: https://docs.furrycentr.al/
+
 # Branches:
 
 Beta - for development use only, these updates may not be finished, or ever come to the master branch.
+
 Master - for stable releases.
+
