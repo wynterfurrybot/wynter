@@ -16,9 +16,7 @@ export default class extends Command {
 			new MessageEmbed()
 				.setColor(0x00ff00)
 				.setTitle('Pong')
-				.setDescription(
-					`Response got in ${Math.round(this.client.ws.ping)} ms`,
-				),
+				.setDescription(`Response got in ${Math.round(this.client.ws.ping)} ms`),
 		);
 	}
 }
