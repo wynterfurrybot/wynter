@@ -7,7 +7,7 @@
 		"compile": "tsc",
 		"run": "node dist/src",
 		"lint": "eslint src/**/*.ts",
-		"lint:fix": "yarn lint --fix"
+		"lint:fix": "npm run lint --fix"
 	},
 	"repository": {
 		"type": "git",
