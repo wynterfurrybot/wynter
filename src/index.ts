@@ -434,7 +434,7 @@ client.on('message', async (msg) => {
 	let staff = false;
 
 	if (msg.content === '-rebuild') {
-		if (msg.author.id === '370535760757260289') {
+		if (msg.author.id === '512608629992456192') {
 			const guilds = client.guilds.cache;
 			let guildsin = 0;
 			guilds.forEach((guild) => {
