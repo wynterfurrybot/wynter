@@ -43,8 +43,11 @@ client.on('ready', async () => {
 	});
 
 	await createConnection({
-		type: 'postgres',
+		type: 'mssql',
 		...db,
+		options: {
+			enableArithAbort: true,
+		},
 		database: 'wynter',
 		entities: [Guilds],
 		logging: true,
@@ -431,7 +434,7 @@ client.on('message', async (msg) => {
 	let staff = false;
 
 	if (msg.content === '-rebuild') {
-		if (msg.author.id === '512608629992456192') {
+		if (msg.author.id === '370535760757260289') {
 			const guilds = client.guilds.cache;
 			let guildsin = 0;
 			guilds.forEach((guild) => {
@@ -454,8 +457,8 @@ client.on('message', async (msg) => {
 
 	// Swear filter
 	const guild = await getGuild(msg.guild!.id);
-	const blacklist = guild!.blacklistedWords;
-	const bchan = guild!.bypassChannels;
+	const blacklist = ((guild!.blacklistedWords as unknown) as string).split(',');
+	const bchan = ((guild!.bypassChannels as unknown) as string).split(',');
 	blacklist.forEach((word) => {
 		if (!bchan.includes(msg.channel!.id)) {
 			if (word === 'none') return;

@@ -6,7 +6,7 @@ import { Entity, PrimaryColumn, Column } from 'typeorm';
 })
 export class Guilds {
 	@PrimaryColumn('varchar', {
-		length: 255,
+		length: 20,
 		unique: true,
 		name: 'id',
 		comment: 'Guild ID',
@@ -17,7 +17,7 @@ export class Guilds {
 	@Column('varchar', {
 		name: 'name',
 		comment: 'The Guild Name',
-		nullable: false,
+		nullable: true,
 	})
 	name!: string;
 
@@ -25,32 +25,30 @@ export class Guilds {
 		name: 'prefix',
 		comment: 'The Prefix',
 		default: '!',
-		nullable: false,
+		nullable: true,
 	})
 	prefix!: string;
 
-	@Column('bool', {
+	@Column('bit', {
 		name: 'deleteinvlinks',
 		comment: 'Delete inv links or not',
-		nullable: false,
-		default: false,
+		nullable: true,
+		default: 0,
 	})
 	deleteInvLinks!: boolean;
 
 	@Column('varchar', {
-		array: true,
 		name: 'blacklistedwords',
 		default: '{}',
-		nullable: false,
+		nullable: true,
 		comment: 'Blacklisted words',
 	})
 	blacklistedWords!: string[];
 
 	@Column('varchar', {
-		array: true,
 		name: 'bypasschannels',
 		default: '{}',
-		nullable: false,
+		nullable: true,
 		comment: 'Channels that bypass swear filter',
 	})
 	bypassChannels!: string[];
