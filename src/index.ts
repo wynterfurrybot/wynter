@@ -376,9 +376,11 @@ client.on('guildMemberUpdate', (oldMem, newMem) => {
 			client.channels.fetch('629056060803645453').then((channel) => {
 				(channel as TextChannel).send('<a:wel:742119488366837780><a:come:742119500068946084>');
 				(channel as TextChannel).send(
-					`<@${newMem.id}>, Welcome, welcome! We hope you enjoy your stay at The Floof Hotel!  *hands room card* \n\nYour room number is ' +
-							Math.floor(Math.random() * 5670) +
-							'\n\nOn the desk is a free :cookie:, should you need us at any point, feel free to ping a member of staff! Should you have any feedback about anything, feel free to visit <#681616342733815825>! \n\nFeel free to tell us about you and your fursona in <#552957610899275776> \n\n<@&463088144292511764> Please welcome the above user!`,
+					`<@${
+						newMem.id
+					}>, Welcome, welcome! We hope you enjoy your stay at The Floof Hotel!  *hands room card* \n\nYour room number is ${Math.floor(
+						Math.random() * 5670,
+					)} \n\nOn the desk is a free :cookie:, should you need us at any point, feel free to ping a member of staff! Should you have any feedback about anything, feel free to visit <#681616342733815825>! \n\nFeel free to tell us about you and your fursona in <#552957610899275776> \n\n<@&463088144292511764> Please welcome the above user!`,
 				);
 			});
 		} else if (role.id === '667472170926080011' && hasMember === false) {
