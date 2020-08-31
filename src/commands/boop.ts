@@ -1,6 +1,7 @@
 import { MessageEmbed, Message } from 'discord.js';
 
 import Command from '../lib/structures/Command';
+import axios from 'axios';
 
 export default class extends Command {
 	public constructor() {
@@ -12,16 +13,38 @@ export default class extends Command {
 	}
 
 	public async run(msg: Message): Promise<Message> {
-		return msg.channel.send(
-			new MessageEmbed()
-				.setColor(0x00ff00)
-				.setTitle('Boop!')
-				.setDescription(
-					`${msg.author} has booped ${msg.mentions.users.first()} right on their snoot!`,
-				)
-				.setThumbnail(
-					'https://i.pinimg.com/originals/4c/02/bd/4c02bdb8056ef9bb3883f38eb59d4b8e.jpg',
-				),
-		);
+		axios
+			.get('https://api.furrycentr.al/sfw/boop')
+			.then(function (response) {
+				console.log(response.data.result.imgUrl);
+				return msg.channel.send(
+					`**${msg.member!.displayName}** has booped **${
+						msg.mentions.members!.first()!.displayName
+					}** right on their snoot!`,
+					new MessageEmbed()
+						.setColor(0x00ff00)
+						.setDescription(`[Direct Image](${response.data.result.imgUrl})`)
+						.setImage(response.data.result.imgUrl),
+				);
+			})
+			.catch(function (error) {
+				console.log(error);
+				return msg.channel.send(
+					`**${msg.member!.displayName}** has booped **${
+						msg.mentions.members!.first()!.displayName
+					}** right on their snoot!`,
+					new MessageEmbed()
+						.setColor(0x00ff00)
+						.setDescription(
+							'[Direct Image](https://i.pinimg.com/originals/4c/02/bd/4c02bdb8056ef9bb3883f38eb59d4b8e.jpg)',
+						)
+						.setFooter('Wynter API is down | Showing static image.')
+						.setImage(
+							'https://i.pinimg.com/originals/4c/02/bd/4c02bdb8056ef9bb3883f38eb59d4b8e.jpg',
+						),
+				);
+			});
+
+		return msg;
 	}
 }
