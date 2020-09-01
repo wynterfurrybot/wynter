@@ -12,6 +12,7 @@ export default class extends Command {
 	}
 
 	public async run(msg: Message): Promise<Message> {
+		if (msg.author.id === msg.mentions.users.first()!.id) return msg;
 		return msg.channel.send(
 			new MessageEmbed()
 				.setColor(0x00ff00)
