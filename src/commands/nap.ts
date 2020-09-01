@@ -21,6 +21,7 @@ export default class extends Command {
 					.setThumbnail('https://i.redd.it/snul7u43bsm11.jpg'),
 			);
 		} else {
+			if (msg.author.id === msg.mentions.users.first()!.id) return msg;
 			return msg.channel.send(
 				new MessageEmbed()
 					.setColor(0x00ff00)
