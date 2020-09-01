@@ -17,32 +17,58 @@ export default class extends Command {
 			.get('https://api.furrycentr.al/sfw/lick')
 			.then(function (response) {
 				console.log(response.data.result.imgUrl);
-				return msg.channel.send(
-					`**${msg.member!.displayName}** has licked **${
-						msg.mentions.members!.first()!.displayName
-					}**, giving them a bath!`,
-					new MessageEmbed()
-						.setColor(0x00ff00)
-						.setDescription(`[Direct Image](${response.data.result.imgUrl})`)
-						.setImage(response.data.result.imgUrl),
-				);
+				if (msg.mentions.users.first()!.id === msg.author!.id) {
+					return msg.channel.send(
+						`**${msg.member!.displayName}** has groomed themselves!`,
+						new MessageEmbed()
+							.setColor(0x00ff00)
+							.setDescription(`[Direct Image](${response.data.result.imgUrl})`)
+							.setImage(response.data.result.imgUrl),
+					);
+				} else {
+					return msg.channel.send(
+						`**${msg.member!.displayName}** has licked **${
+							msg.mentions.members!.first()!.displayName
+						}**, giving them a bath!`,
+						new MessageEmbed()
+							.setColor(0x00ff00)
+							.setDescription(`[Direct Image](${response.data.result.imgUrl})`)
+							.setImage(response.data.result.imgUrl),
+					);
+				}
 			})
+
 			.catch(function (error) {
 				console.log(error);
-				return msg.channel.send(
-					`**${msg.member!.displayName}** has licked **${
-						msg.mentions.members!.first()!.displayName
-					}**, giving them a bath!`,
-					new MessageEmbed()
-						.setColor(0x00ff00)
-						.setDescription(
-							'[Direct Image](https://static1.e926.net/data/sample/cc/91/cc9149350a917425d1438335bc3821ff.jpg)',
-						)
-						.setFooter('Wynter API is down | Showing static image.')
-						.setImage(
-							'https://static1.e926.net/data/sample/cc/91/cc9149350a917425d1438335bc3821ff.jpg',
-						),
-				);
+				if (msg.mentions.users.first()!.id === msg.author!.id) {
+					return msg.channel.send(
+						`**${msg.member!.displayName}** has groomed themselves!`,
+						new MessageEmbed()
+							.setColor(0x00ff00)
+							.setDescription(
+								'[Direct Image](https://static1.e926.net/data/sample/cc/91/cc9149350a917425d1438335bc3821ff.jpg)',
+							)
+							.setFooter('Wynter API is down | Showing static image.')
+							.setImage(
+								'https://static1.e926.net/data/sample/cc/91/cc9149350a917425d1438335bc3821ff.jpg',
+							),
+					);
+				} else {
+					return msg.channel.send(
+						`**${msg.member!.displayName}** has licked **${
+							msg.mentions.members!.first()!.displayName
+						}**, giving them a bath!`,
+						new MessageEmbed()
+							.setColor(0x00ff00)
+							.setDescription(
+								'[Direct Image](https://static1.e926.net/data/sample/cc/91/cc9149350a917425d1438335bc3821ff.jpg)',
+							)
+							.setFooter('Wynter API is down | Showing static image.')
+							.setImage(
+								'https://static1.e926.net/data/sample/cc/91/cc9149350a917425d1438335bc3821ff.jpg',
+							),
+					);
+				}
 			});
 
 		return msg;
