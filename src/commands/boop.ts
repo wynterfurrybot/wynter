@@ -17,6 +17,7 @@ export default class extends Command {
 			.get('https://api.furrycentr.al/sfw/boop')
 			.then(function (response) {
 				console.log(response.data.result.imgUrl);
+				if (msg.author.id === msg.mentions.users.first()!.id) return msg;
 				return msg.channel.send(
 					`**${msg.member!.displayName}** has booped **${
 						msg.mentions.members!.first()!.displayName
@@ -29,6 +30,7 @@ export default class extends Command {
 			})
 			.catch(function (error) {
 				console.log(error);
+				if (msg.author.id === msg.mentions.users.first()!.id) return msg;
 				return msg.channel.send(
 					`**${msg.member!.displayName}** has booped **${
 						msg.mentions.members!.first()!.displayName
