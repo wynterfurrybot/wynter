@@ -7,7 +7,7 @@ Made on a CC-BY license.
 
 Uses the following libaries: 
 
-Discord.py, discord.js@master, discord.js@stable
+discord.js@master
 
 Fully open sourced, made with help from Relms
 
