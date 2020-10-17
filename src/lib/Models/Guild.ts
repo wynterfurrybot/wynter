@@ -37,6 +37,14 @@ export class Guilds {
 	})
 	deleteInvLinks!: boolean;
 
+	@Column('bit', {
+		name: 'enablefandx',
+		comment: 'Enable F and X commands or not',
+		nullable: true,
+		default: 0,
+	})
+	enableFAndXs!: boolean;
+
 	@Column('varchar', {
 		name: 'blacklistedwords',
 		default: '{}',

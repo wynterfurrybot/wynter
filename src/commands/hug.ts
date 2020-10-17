@@ -19,7 +19,7 @@ export default class extends Command {
 				console.log(response.data.result.imgUrl);
 				if (msg.mentions.users.first()!.id === msg.author!.id) {
 					return msg.channel.send(
-						`**${msg.author.username}** has hugged themselves, what a loner!`,
+						`**${msg.member!.displayName}** has hugged themselves, what a loner!`,
 						new MessageEmbed()
 							.setColor(0x00ff00)
 							.setDescription(`[Direct Image](${response.data.result.imgUrl})`)
@@ -27,8 +27,8 @@ export default class extends Command {
 					);
 				} else {
 					return msg.channel.send(
-						`**${msg.author.username}** has given **${
-							msg.mentions.users.first()!.username
+						`**${msg.member!.displayName}** has given **${
+							msg.mentions.members!.first()!.displayName
 						}** a hug!`,
 						new MessageEmbed()
 							.setColor(0x00ff00)
@@ -41,7 +41,7 @@ export default class extends Command {
 				console.log(error);
 				if (msg.mentions.users.first()!.id === msg.author!.id) {
 					return msg.channel.send(
-						`**${msg.author.username}** has hugged themselves, what a loner!`,
+						`**${msg.member!.displayName}** has hugged themselves, what a loner!`,
 						new MessageEmbed()
 							.setColor(0x00ff00)
 							.setDescription(
@@ -54,8 +54,8 @@ export default class extends Command {
 					);
 				} else {
 					return msg.channel.send(
-						`**${msg.author.username}** has given **${
-							msg.mentions.users.first()!.username
+						`**${msg.member!.displayName}** has given **${
+							msg.mentions.members!.first()!.displayName
 						}** a hug!`,
 						new MessageEmbed()
 							.setColor(0x00ff00)

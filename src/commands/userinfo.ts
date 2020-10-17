@@ -31,7 +31,7 @@ export default class extends Command {
 							user!.user.createdAt
 						} \nJoined the server: ${user!.joinedAt}`,
 					)
-					.setThumbnail(msg.author.avatarURL()!),
+					.setThumbnail(user!.user.avatarURL()!),
 			);
 		}
 	}

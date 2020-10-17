@@ -23,6 +23,13 @@ const commandFiles = readdirSync('./dist/src/commands').filter((file: string) =>
 );
 const regex = RegExp(/[^a-zA-Z\d\s:]/g);
 
+/*Function getGuildsFromUser(user: UserResolvable, client: DanteClient) {
+	return client.guilds.cache.filter((guild) => {
+		console.log('getGuildFromUser: ' + guild.name + ', ' + guild.member(user));
+		return guild.member(user) !== null;
+	});
+}*/
+
 for (const file of commandFiles) {
 	// eslint-disable-next-line @typescript-eslint/no-var-requires
 	const cmdFile = require(`./commands/${file}`)['default'];
@@ -66,6 +73,7 @@ client.on('guildCreate', async (guild) => {
 	guildDB.name = guild.name;
 	guildDB.prefix = '!';
 	guildDB.deleteInvLinks = false;
+	guildDB.enableFAndXs = false;
 	guildDB.blacklistedWords = ['none'];
 	guildDB.bypassChannels = ['none'];
 
@@ -86,12 +94,98 @@ client.on('guildMemberRemove', (member) => {
 	}
 });
 
+/* THIS SHIT IS HORRIBLY BROKEN RIGHT NOW, FOR THE LOVE OF GOD DO NOT USE IT. YOU WILL GET A HEADACHE AND PROBABLY BE ADMITTED
+TO A MENTAL HEALTH WARD DUE TO INSANITY.
+
+Client.on('userUpdate', (oldmember, newmember) => {
+	try {
+		const guilds = getGuildsFromUser(oldmember, client);
+		x.log(guilds);
+
+		guilds.forEach((g: { id: any }) => {
+			x.database.query('SELECT * FROM guilds WHERE guild_id = ?', [g.id], function (
+				err: { toString: () => { (): any; new (): any; red: any } },
+				result: { userlogs: any }[],
+				fields: any,
+			) {
+				if (err)
+					x.log('ERROR: '.gray + ' Could not select from database '.red + err.toString().red);
+
+				if (x.logging) x.log(' User Updated: '.cyan + oldmember.displayName);
+
+				const embed = new Discord.MessageEmbed()
+					.setTitle('Member Updated Details')
+					.setAuthor('Dantè', 'https://i.imgur.com/FUUg9dM.png')
+					/*
+					 * Alternatively, use "#00AE86", [0, 174, 134] or an integer number.
+					 
+					.setColor('#00FFFF')
+					.setFooter(
+						'User updated profile | ' +
+							newmember.username +
+							'#' +
+							newmember.discriminator +
+							' | Dantè Debugging Beta',
+					)
+					.setTimestamp();
+
+				if (oldmember.username != newmember.username) {
+					embed.setDescription(
+						'Username changed: \nDetails: \n\nOld name: ' +
+							oldmember.username +
+							'\nNew name: ' +
+							newmember.username,
+					);
+					try {
+						x.client.channels
+							.fetch(result[0].userlogs)
+							.then(function (channel: { send: (arg0: { embed: any }) => void }) {
+								channel.send({ embed });
+							});
+					} catch (err) {
+						return;
+					}
+				}
+
+				if (oldmember.avatarURL != newmember.avatarURL) {
+					embed.setDescription('User updated their profile picture');
+					embed.setThumbnail(oldmember.avatarURL);
+					embed.setImage(newmember.avatarURL);
+					try {
+						if (newmember.bot) return;
+						x.client.channels
+							.fetch(result[0].userlogs)
+							.then(function (channel: { send: (arg0: { embed: any }) => void }) {
+								channel.send({ embed });
+							});
+					} catch (err) {
+						x.log(err);
+						return;
+					}
+				}
+			});
+		});
+	} catch (err) {
+		x.log('ERROR: ' + err);
+	}
+});*/
+
 client.on('guildMemberAdd', (member) => {
 	if (member.guild.id === '736969969404870688') {
 		member.send(
 			// eslint-disable-next-line quotes
 			"Welcome to the elite server of european furries! \n\nJust so you know, we operate a strict no robot policy here! \n\nTo verify you're not one, please go to https://verify.furrycentr.al/ef/ and log in with discord.",
 		);
+	}
+
+	if (member.guild.id === '754816860133916822') {
+		client.channels.fetch('754817827789078658').then((channel) => {
+			(channel as TextChannel).send(
+				'Welcome <@' +
+					member.id +
+					'> to Fluff Paradise! Please type `-register` in chat to get started!',
+			);
+		});
 	}
 
 	if (member.guild.id === '667466143585402900') {
@@ -109,7 +203,8 @@ client.on('guildMemberAdd', (member) => {
 	if (
 		member.guild.id === '462041783438934036' ||
 		member.guild.id === '667466143585402900' ||
-		member.guild.id === '736969969404870688'
+		member.guild.id === '736969969404870688' ||
+		member.guild.id === '725201209358549012'
 	) {
 		member.guild.fetchInvites().then((guildInvites) => {
 			try {
@@ -123,6 +218,22 @@ client.on('guildMemberAdd', (member) => {
 
 				if (member.guild.id === '736969969404870688') {
 					client.channels.fetch('736981136164782171').then((channel) => {
+						const embed = new MessageEmbed()
+							// Set the title of the field
+							.setTitle('New Joiner')
+							// Set the color of the embed
+							.setColor(0xff0000)
+							// Set the main content of the embed
+							.setDescription(
+								`${member.user!.username} Joined using invite code ${invite!.code} made by <@${
+									invite!.inviter!.id
+								}> (${inviter!.username})`,
+							);
+
+						(channel as TextChannel).send(embed);
+					});
+				} else if (member.guild.id === '725201209358549012') {
+					client.channels.fetch('763831343956099082').then((channel) => {
 						const embed = new MessageEmbed()
 							// Set the title of the field
 							.setTitle('New Joiner')
@@ -169,10 +280,42 @@ client.on('guildMemberAdd', (member) => {
 
 						(channel as TextChannel).send(embed);
 					});
+				} else if (member.guild.id === '754816860133916822') {
+					client.channels.fetch('755115857222566028').then((channel) => {
+						const embed = new MessageEmbed()
+							// Set the title of the field
+							.setTitle('New Joiner')
+							// Set the color of the embed
+							.setColor(0xff0000)
+							// Set the main content of the embed
+							.setDescription(
+								`${member.user!.username} Joined using invite code ${invite!.code} made by <@${
+									invite!.inviter!.id
+								}> (${inviter!.username})`,
+							);
+
+						(channel as TextChannel).send(embed);
+					});
 				}
 			} catch {
 				if (member.guild.id === '667466143585402900') {
 					client.channels.fetch('713624679671136306').then((channel) => {
+						const embed = new MessageEmbed()
+							// Set the title of the field
+							.setTitle('New Joiner')
+							// Set the color of the embed
+							.setColor(0xff0000)
+							// Set the main content of the embed
+							.setDescription(
+								`I can't quite figure out how ${
+									member.user!.username
+								} joined the server. \n\nMaybe they used a temporary invite?`,
+							);
+
+						(channel as TextChannel).send(embed);
+					});
+				} else if (member.guild.id === '725201209358549012') {
+					client.channels.fetch('763831343956099082').then((channel) => {
 						const embed = new MessageEmbed()
 							// Set the title of the field
 							.setTitle('New Joiner')
@@ -205,6 +348,22 @@ client.on('guildMemberAdd', (member) => {
 					});
 				} else if (member.guild.id === '462041783438934036') {
 					client.channels.fetch('539917043886063636').then((channel) => {
+						const embed = new MessageEmbed()
+							// Set the title of the field
+							.setTitle('New Joiner')
+							// Set the color of the embed
+							.setColor(0xff0000)
+							// Set the main content of the embed
+							.setDescription(
+								`I can't quite figure out how ${
+									member.user!.username
+								} joined the server. \n\nMaybe they used a temporary invite?`,
+							);
+
+						(channel as TextChannel).send(embed);
+					});
+				} else if (member.guild.id === '754816860133916822') {
+					client.channels.fetch('755115857222566028').then((channel) => {
 						const embed = new MessageEmbed()
 							// Set the title of the field
 							.setTitle('New Joiner')
@@ -352,7 +511,8 @@ client.on('guildMemberUpdate', (oldMem, newMem) => {
 			role.id === '462042250612965386' ||
 			role.id === '725462565852938301' ||
 			role.id === '667472170926080011' ||
-			role.id === '736971909362614362'
+			role.id === '736971909362614362' ||
+			role.id === '754820807896596520'
 		)
 			hasMember = true;
 	});
@@ -365,11 +525,18 @@ client.on('guildMemberUpdate', (oldMem, newMem) => {
 					`Welcome <@${newMem.id}> to the most elite group of european furs!\n\nI hope you enjoy your stay here, and here's a free cookie to welcome you! :cookie:`,
 				);
 			});
-		} else if (role.id === '725462565852938301' && hasMember === false) {
-			client.channels.fetch('725476791858495508').then((channel) => {
+		} else if (role.id === '754820807896596520' && hasMember === false) {
+			client.channels.fetch('754816860133916825').then((channel) => {
 				(channel as TextChannel).send('<a:wel:742119488366837780><a:come:742119500068946084>');
 				(channel as TextChannel).send(
-					`Welcome <@${newMem.id}> to the coolest club around! Club Floof! \n\nFeel free to go ahead and grab some roles in <#742103877582848173>!\n\nI hope you enjoy your stay here, and here's a free cookie to welcome you! :cookie: \n\n<@&736666911189893170> Please welcome the above user!`,
+					`Welcome <@${newMem.id}>  to Paradise! We hope you will enjoy your stay. \n\nNon-alcoholic cocktails are on the house and provided on the table is a free cookie, just for you! \n\nHave fun! \n\nPS: I'd reccomend getting some roles in <#756597666011676742> if you haven't already! \n<@&755152376700076032>`,
+				);
+			});
+		} else if (role.id === '725462565852938301' && hasMember === false) {
+			client.channels.fetch('763159605479079956').then((channel) => {
+				(channel as TextChannel).send('<a:wel:742119488366837780><a:come:742119500068946084>');
+				(channel as TextChannel).send(
+					`Welcome <@${newMem.id}> to the coolest club around! Club Floof! \n\nFeel free to go ahead and grab some roles in <#763548893195534377>!\n\nI hope you enjoy your stay here, and here's a free cookie to welcome you! :cookie: \n\n<@&736666911189893170> Please welcome the above user!`,
 				);
 			});
 		} else if (role.id === '462042250612965386' && hasMember === false) {
@@ -404,6 +571,21 @@ client.on('messageUpdate', (msg, newMsg) => {
 		if (!/^(\*|_)*awo+f?(!|\*|_)*( ?(:3|<3|owo|uwu))?( ?❤️)?(\*|_)*$/iu.test(newMsg.content!)) {
 			newMsg['delete']();
 			newMsg.author!.send(`I see you.. No ${msg.content} only awoo!`);
+		}
+	}
+	let staff = false;
+	if (msg.guild!.id === '725201209358549012') {
+		msg.member!.roles.cache.forEach((val) => {
+			if (val.id === '739727880799518741') staff = true;
+		});
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		//@ts-ignore
+		if (newMsg.content.includes('http') && !staff && !newMsg.content?.includes('tenor.com')) {
+			newMsg.delete();
+			newMsg.channel.send(
+				// eslint-disable-next-line quotes
+				"please do not post links here! \n\nIf you're looking to partner, please check <#763159239605747712>",
+			);
 		}
 	}
 
@@ -446,6 +628,7 @@ client.on('message', async (msg) => {
 				guildDB.name = guild.name;
 				guildDB.prefix = '!';
 				guildDB.deleteInvLinks = false;
+				guildDB.enableFAndXs = false;
 				guildDB.blacklistedWords = ['none'];
 				guildDB.bypassChannels = ['none'];
 				addGuild(guildDB);
@@ -467,12 +650,12 @@ client.on('message', async (msg) => {
 			else if (msg.content.toLowerCase().includes(word)) msg['delete']();
 		}
 	});
+	if (guild?.enableFAndXs) {
+		if (msg.content.toLowerCase() === 'f') msg.channel.send(`${msg.author} has paid respects`);
 
-	if (msg.content.toLowerCase() === 'f') msg.channel.send(`${msg.author} has paid respects`);
-
-	if (msg.content.toLowerCase() === 'x')
-		msg.channel.send(`${msg.author} very much has doubts about this`);
-
+		if (msg.content.toLowerCase() === 'x')
+			msg.channel.send(`${msg.author} very much has doubts about this`);
+	}
 	if (msg.content.toLowerCase() === 'make me a sandwich')
 		msg.channel.send(`${msg.author} I can't, I have no condiments`);
 
@@ -516,10 +699,11 @@ client.on('message', async (msg) => {
 			if (val.id === '739727880799518741') staff = true;
 		});
 
-		if (msg.content.includes('discord.gg') && !staff) {
+		if (msg.content.includes('http') && !staff && !msg.content?.includes('tenor.com')) {
+			msg.delete();
 			await msg.reply(
 				// eslint-disable-next-line quotes
-				"please do not promote your server here! \n\nIf you're looking to partner, please check <#729753696199508088>",
+				"please do not post links here! \n\nIf you're looking to partner, please check <#763159239605747712>",
 			);
 		}
 	}

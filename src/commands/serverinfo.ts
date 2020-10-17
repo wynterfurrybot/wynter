@@ -12,6 +12,21 @@ export default class extends Command {
 	}
 
 	public async run(msg: Message): Promise<Message> {
+		const guild = msg.guild;
+		let users = 0;
+		let bots = 0;
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		//@ts-ignore
+		const mem = guild.members.cache.array();
+		mem.forEach(async function (u) {
+			if (u.user.bot) {
+				// Add to bot count
+				bots = bots + 1;
+			} else {
+				users = users + 1;
+			}
+		});
+
 		return msg.channel.send(
 			new MessageEmbed()
 				.setColor(0x00ff00)
@@ -19,7 +34,7 @@ export default class extends Command {
 				.setDescription(
 					`${msg.guild!.name} \n\nOwner: ${msg.guild!.owner} \n\nCreated at: ${
 						msg.guild!.createdAt
-					} \nRegion: ${msg.guild!.region} \nMembers: ${msg.guild!.memberCount}`,
+					} \nRegion: ${msg.guild!.region} \nMembers: ${users} \nBots: ${bots}`,
 				)
 				.setThumbnail(msg.guild!.iconURL()!),
 		);
