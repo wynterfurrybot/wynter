@@ -10,11 +10,13 @@ import { DanteClient } from './lib/DanteClient';
 
 import Command, { CommandUseIn } from './lib/structures/Command';
 
-import { Guilds } from './lib/Models/guild';
+import { Guilds } from './lib/Models/Guilds';
+import { BlacklistedWords } from './lib/Models/BlacklistedWords';
 
 import deleteGuild from './lib/DatabaseWrapper/DeleteGuild';
 import addGuild from './lib/DatabaseWrapper/AddGuild';
 import getGuild from './lib/DatabaseWrapper/FindGuild';
+import { BypassChannels } from './lib/Models/BypassChannels';
 
 const client = new DanteClient();
 const invites: Record<string, Collection<string, Invite>> = {};
@@ -56,7 +58,8 @@ client.on('ready', async () => {
 			enableArithAbort: true,
 		},
 		database: 'wynter',
-		entities: [Guilds],
+		// eslint-disable-next-line array-element-newline
+		entities: [Guilds, BlacklistedWords, BypassChannels],
 		logging: true,
 		synchronize: true,
 	});
@@ -74,8 +77,6 @@ client.on('guildCreate', async (guild) => {
 	guildDB.prefix = '!';
 	guildDB.deleteInvLinks = false;
 	guildDB.enableFAndXs = false;
-	guildDB.blacklistedWords = ['none'];
-	guildDB.bypassChannels = ['none'];
 
 	await addGuild(guildDB);
 });
@@ -532,13 +533,6 @@ client.on('guildMemberUpdate', (oldMem, newMem) => {
 					`Welcome <@${newMem.id}>  to Paradise! We hope you will enjoy your stay. \n\nNon-alcoholic cocktails are on the house and provided on the table is a free cookie, just for you! \n\nHave fun! \n\nPS: I'd reccomend getting some roles in <#756597666011676742> if you haven't already! \n<@&755152376700076032>`,
 				);
 			});
-		} else if (role.id === '725462565852938301' && hasMember === false) {
-			client.channels.fetch('763159605479079956').then((channel) => {
-				(channel as TextChannel).send('<a:wel:742119488366837780><a:come:742119500068946084>');
-				(channel as TextChannel).send(
-					`Welcome <@${newMem.id}> to the coolest club around! Club Floof! \n\nFeel free to go ahead and grab some roles in <#763548893195534377>!\n\nI hope you enjoy your stay here, and here's a free cookie to welcome you! :cookie: \n\n<@&736666911189893170> Please welcome the above user!`,
-				);
-			});
 		} else if (role.id === '462042250612965386' && hasMember === false) {
 			client.channels.fetch('629056060803645453').then((channel) => {
 				(channel as TextChannel).send('<a:wel:742119488366837780><a:come:742119500068946084>');
@@ -623,14 +617,15 @@ client.on('message', async (msg) => {
 			let guildsin = 0;
 			guilds.forEach((guild) => {
 				guildsin++;
+
 				const guildDB = new Guilds();
+
 				guildDB.id = guild.id;
 				guildDB.name = guild.name;
 				guildDB.prefix = '!';
 				guildDB.deleteInvLinks = false;
 				guildDB.enableFAndXs = false;
-				guildDB.blacklistedWords = ['none'];
-				guildDB.bypassChannels = ['none'];
+
 				addGuild(guildDB);
 			});
 
@@ -640,22 +635,39 @@ client.on('message', async (msg) => {
 		}
 	}
 
+	if (msg.content.startsWith('-report')) {
+		client.channels.fetch('767155058344460298').then((channel) => {
+			(channel as TextChannel).send(
+				'@here',
+				new MessageEmbed()
+					.setColor(0x00ff00)
+					.setTitle(`Bug report from ${msg.author.username} | ${msg.author.id}`)
+					.setDescription(msg.content)
+					.setFooter(`Server ID: ${msg.guild?.id} | ${msg.guild?.name}`),
+			);
+		});
+	}
+
 	// Swear filter
 	const guild = await getGuild(msg.guild!.id);
-	const blacklist = ((guild!.blacklistedWords as unknown) as string).split(',');
-	const bchan = ((guild!.bypassChannels as unknown) as string).split(',');
-	blacklist.forEach((word) => {
-		if (!bchan.includes(msg.channel!.id)) {
-			if (word === 'none') return;
-			else if (msg.content.toLowerCase().includes(word)) msg['delete']();
-		}
-	});
+
+	if (guild!.blacklistedWords && guild!.blacklistedWords.length !== 0) {
+		guild!.blacklistedWords.forEach((word) => {
+			if (
+				!guild!.bypassChannels ||
+				!guild!.bypassChannels.find((chan) => chan.channelid === msg.channel.id)
+			)
+				if (msg.content.toLowerCase().includes(word.word)) msg.delete();
+		});
+	}
+
 	if (guild?.enableFAndXs) {
 		if (msg.content.toLowerCase() === 'f') msg.channel.send(`${msg.author} has paid respects`);
 
 		if (msg.content.toLowerCase() === 'x')
 			msg.channel.send(`${msg.author} very much has doubts about this`);
 	}
+
 	if (msg.content.toLowerCase() === 'make me a sandwich')
 		msg.channel.send(`${msg.author} I can't, I have no condiments`);
 
@@ -669,7 +681,7 @@ client.on('message', async (msg) => {
 
 	if (msg.channel.id === '629075452723462154') {
 		// Repost advertisement!
-		msg['delete']();
+		msg.delete();
 
 		client.channels
 			.fetch('629073904882810910')

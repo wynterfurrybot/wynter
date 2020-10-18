@@ -8,6 +8,7 @@ export default class extends Command {
 			name: 'userinfo',
 			cooldown: 5,
 			usage: '<user>',
+			aliases: ['profile'],
 		});
 	}
 

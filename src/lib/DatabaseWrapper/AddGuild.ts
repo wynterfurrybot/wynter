@@ -1,6 +1,6 @@
 import { getRepository } from 'typeorm';
 
-import { Guilds } from '../Models/guild';
+import { Guilds } from '../Models/Guilds';
 
 export default async (schema: Guilds): Promise<Guilds> => {
 	const guildRepo = getRepository(Guilds);
@@ -12,6 +12,8 @@ export default async (schema: Guilds): Promise<Guilds> => {
 	newGuild.id = schema.id;
 	newGuild.name = schema.name;
 	newGuild.prefix = schema.prefix;
+	newGuild.bypassChannels = schema.bypassChannels;
+	newGuild.enableFAndXs = schema.enableFAndXs;
 
 	return guildRepo.save(newGuild);
 };

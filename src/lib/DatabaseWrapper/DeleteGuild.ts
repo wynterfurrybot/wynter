@@ -1,6 +1,6 @@
 import { DeleteResult, getRepository } from 'typeorm';
 
-import { Guilds } from '../Models/guild';
+import { Guilds } from '../Models/Guilds';
 
 export default async (id: string): Promise<DeleteResult | undefined> => {
 	const guildRepo = getRepository(Guilds);

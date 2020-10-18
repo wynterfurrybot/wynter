@@ -1,6 +1,6 @@
 import { getRepository } from 'typeorm';
 
-import { Guilds } from '../Models/guild';
+import { Guilds } from '../Models/Guilds';
 
 export default async (id: string, schema: Partial<Guilds>): Promise<Guilds | undefined> => {
 	const guild = await getRepository(Guilds).findOne({
@@ -14,6 +14,8 @@ export default async (id: string, schema: Partial<Guilds>): Promise<Guilds | und
 	guild.prefix = schema.prefix ?? guild.prefix;
 	guild.blacklistedWords = schema.blacklistedWords ?? guild.blacklistedWords;
 	guild.deleteInvLinks = schema.deleteInvLinks ?? guild.deleteInvLinks;
+	guild.bypassChannels = schema.bypassChannels ?? guild.bypassChannels;
+	guild.enableFAndXs = schema.enableFAndXs ?? guild.enableFAndXs;
 
 	const updatedGuild = await getRepository(Guilds).save(guild);
 

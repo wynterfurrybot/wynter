@@ -6,7 +6,7 @@ export default class extends Command {
 	public constructor() {
 		super({
 			name: 'hackban',
-			cooldown: 5,
+			cooldown: 60,
 			usage: '<user>',
 		});
 	}
@@ -21,6 +21,9 @@ export default class extends Command {
 					.setThumbnail('https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png'),
 			);
 		}
+
+		if (args.length > 50)
+			return msg.channel.send('Please hackban less then 50 people at a time please!');
 
 		let bannedmems = 0;
 

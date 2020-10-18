@@ -11,7 +11,7 @@ export default class extends Command {
 		});
 	}
 
-	public async run(msg: Message): Promise<Message> {
+	public async run(msg: Message, args: string[]): Promise<Message> {
 		if (!msg.member!.hasPermission('KICK_MEMBERS')) {
 			return msg.channel.send(
 				new MessageEmbed()
@@ -21,7 +21,7 @@ export default class extends Command {
 					.setThumbnail('https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png'),
 			);
 		}
-		const member = msg.mentions.members!.first();
+		const member = msg.mentions.members!.first() ?? (await msg.guild!.members.fetch(args[0]));
 
 		if (!member!.kickable) {
 			return msg.channel.send(
@@ -37,19 +37,23 @@ export default class extends Command {
 			);
 		}
 
-		await member!.send(
-			new MessageEmbed()
-				.setColor(0x00ff00)
-				.setTitle('KICK:')
-				.setDescription(
-					`You have been kicked on ${msg.guild!.name}. The reasoning can be found below: \n\n${
-						msg.content
-					}`,
-				)
-				.setThumbnail(
-					'https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg',
-				),
-		);
+		try {
+			await member!.send(
+				new MessageEmbed()
+					.setColor(0x00ff00)
+					.setTitle('KICK:')
+					.setDescription(
+						`You have been kicked on ${msg.guild!.name}. The reasoning can be found below: \n\n${
+							msg.content
+						}`,
+					)
+					.setThumbnail(
+						'https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg',
+					),
+			);
+		} catch (err) {
+			// NOT EMPTY
+		}
 
 		member!.kick();
 
@@ -62,11 +66,7 @@ export default class extends Command {
 			.setColor(0xff0000)
 			// Set the main content of the embed
 			.setDescription(
-				`${msg.author} has kicked ${msg.mentions.users.first()} (${
-					msg.mentions.users.first()!.username
-				}#${msg.mentions.users.first()!.discriminator}) for the following reason: \n\n${
-					msg.content
-				}`,
+				`${msg.author} has kicked ${member} (${member.user.username}#${member.user.discriminator}) for the following reason: \n\n${msg.content}`,
 			);
 
 		(channel as TextChannel).send(embed);

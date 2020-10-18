@@ -1,8 +1,10 @@
 import { MessageEmbed, Message } from 'discord.js';
-import { Guilds } from '../lib/Models/guild';
+import { Guilds } from '../lib/Models/Guilds';
 
-import Command from '../lib/structures/Command';
+import Command, { CommandUseIn } from '../lib/structures/Command';
 import updateGuild from '../lib/DatabaseWrapper/UpdateGuild';
+import { BlacklistedWords } from '../lib/Models/BlacklistedWords';
+import FindGuild from '../lib/DatabaseWrapper/FindGuild';
 
 export default class extends Command {
 	public constructor() {
@@ -10,6 +12,7 @@ export default class extends Command {
 			name: 'swearfilter',
 			cooldown: 5,
 			usage: '<toggle>',
+			useIn: CommandUseIn.guild,
 		});
 	}
 
@@ -24,48 +27,67 @@ export default class extends Command {
 			);
 		}
 
+		const blacklistedWords = [
+			'fuck',
+			'shit',
+			'cunt',
+			'bastard',
+			'bitch',
+			'prick',
+			'nigga',
+			'nigger',
+			'nignog',
+			'n1gga',
+			'n1gger',
+			'nugger',
+			'slut',
+			'twat',
+			'wanker',
+			'faggot',
+			'fag',
+			'whore',
+			'dickhead',
+			'nibba',
+			'f-u-c-k',
+			'f-uck',
+			's-hit',
+			'frick',
+			'sh1t',
+			'b1tch',
+			'ni:b::b:a',
+			'fück',
+			'dick',
+			'fruck',
+			'niggggggaaaaaa',
+			'cock',
+			'cocksucker',
+			'pussy',
+			'nibber',
+			'niqqer',
+		];
+
 		if (args.includes('on')) {
-			const guildDB = new Guilds();
-			guildDB.blacklistedWords = [
-				'fuck',
-				'shit',
-				'cunt',
-				'bastard',
-				'bitch',
-				'prick',
-				'nigga',
-				'nigger',
-				'nignog',
-				'n1gga',
-				'n1gger',
-				'nugger',
-				'slut',
-				'twat',
-				'wanker',
-				'faggot',
-				'fag',
-				'whore',
-				'dickhead',
-				'nibba',
-				'f-u-c-k',
-				'f-uck',
-				's-hit',
-				'frick',
-				'sh1t',
-				'b1tch',
-				'ni:b::b:a',
-				'fück',
-				'dick',
-				'fruck',
-				'niggggggaaaaaa',
-				'cock',
-				'cocksucker',
-				'pussy',
-				'nibber',
-				'niqqer',
-			];
+			const guildDB = (await FindGuild(msg.guild!.id)) as Guilds;
+
+			blacklistedWords.forEach((words) => {
+				if (!guildDB.blacklistedWords || guildDB.blacklistedWords.length === 0) {
+					const blacklistedWords = new BlacklistedWords();
+
+					blacklistedWords.guild = guildDB;
+					blacklistedWords.word = words;
+
+					guildDB.blacklistedWords = [blacklistedWords];
+				} else {
+					const blacklistedWords = new BlacklistedWords();
+
+					blacklistedWords.guild = guildDB;
+					blacklistedWords.word = words;
+					guildDB.blacklistedWords.push(blacklistedWords);
+				}
+			});
 
 			updateGuild(msg.guild!.id, guildDB);
+
 			return msg.channel.send(
 				new MessageEmbed()
 					.setColor(0x00ff00)
@@ -76,9 +98,14 @@ export default class extends Command {
 					),
 			);
 		} else if (args.includes('off')) {
-			const guildDB = new Guilds();
-			guildDB.blacklistedWords = ['none'];
-			updateGuild(msg.guild!.id, guildDB);
+			const guildDB = (await FindGuild(msg.guild!.id)) as Guilds;
+
+			if (guildDB.blacklistedWords && guildDB.blacklistedWords.length !== 0) {
+				guildDB.blacklistedWords = [];
+
+				updateGuild(msg.guild!.id, guildDB);
+			}
+
 			return msg.channel.send(
 				new MessageEmbed()
 					.setColor(0x00ff00)

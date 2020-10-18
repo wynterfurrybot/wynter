@@ -9,6 +9,7 @@ export default class extends Command {
 			name: 'clear',
 			cooldown: 5,
 			usage: '<num>',
+			aliases: ['clean', 'purge'],
 		});
 	}
 
@@ -26,30 +27,47 @@ export default class extends Command {
 		let deleteCount = parseInt(args[0]);
 		deleteCount++;
 
-		if (deleteCount > 100) deleteCount = 100;
-
-		if (!deleteCount || deleteCount < 3 || deleteCount > 100) {
+		if (!deleteCount || deleteCount < 2 || deleteCount > 99) {
 			return msg.reply(
-				'Please provide a number between 2 and 100 for the number of messages to delete',
+				'Please provide a number between 2 and 99 for the number of messages to delete',
 			);
 		}
 
-		const fetched = await msg.channel.messages.fetch({
-			limit: deleteCount,
-		});
+		try {
+			const pinnedMessages: Message[] = [];
 
-		(msg.channel as TextChannel)
-			.bulkDelete(fetched)
-			.catch((error: Error) => msg.reply(`Couldn't delete messages because of: ${error}`));
+			const fetchedMessages = await msg.channel.messages.fetch({
+				limit: deleteCount,
+			});
 
-		return msg.channel.send(
-			new MessageEmbed()
-				.setColor(0x00ff00)
-				.setTitle('Messages Deleted')
-				.setDescription(`Successfully deleted ${deleteCount} messages`)
-				.setThumbnail(
-					'https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg',
-				),
-		);
+			// Ensure message is not pinned
+			fetchedMessages.forEach((msg) => {
+				if (msg.pinned) {
+					pinnedMessages.push(msg);
+					deleteCount--;
+				}
+			});
+
+			// Iterate through pinned messages and remove it from the fetched messages
+			if (pinnedMessages.length !== 0) {
+				pinnedMessages.forEach((val) => {
+					fetchedMessages.delete(val.id);
+				});
+			}
+
+			await (msg.channel as TextChannel).bulkDelete(fetchedMessages);
+
+			return msg.channel.send(
+				new MessageEmbed()
+					.setColor(0x00ff00)
+					.setTitle('Messages Deleted')
+					.setDescription(`Successfully deleted ${deleteCount} messages`)
+					.setThumbnail(
+						'https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg',
+					),
+			);
+		} catch (err) {
+			return msg.reply(`Couldn't delete messages because of: ${err}`);
+		}
 	}
 }

@@ -1,4 +1,6 @@
-import { Entity, PrimaryColumn, Column } from 'typeorm';
+import { Entity, PrimaryColumn, Column, OneToMany } from 'typeorm';
+import { BlacklistedWords } from './BlacklistedWords';
+import { BypassChannels } from './BypassChannels';
 
 @Entity({
 	synchronize: true,
@@ -45,19 +47,25 @@ export class Guilds {
 	})
 	enableFAndXs!: boolean;
 
-	@Column('varchar', {
-		name: 'blacklistedwords',
-		default: '{}',
+	@OneToMany(() => BlacklistedWords, (BlacklistedWords) => BlacklistedWords.guild, {
 		nullable: true,
-		comment: 'Blacklisted words',
+		cascade: true,
+		eager: true,
 	})
-	blacklistedWords!: string[];
+	blacklistedWords!: BlacklistedWords[];
 
-	@Column('varchar', {
-		name: 'bypasschannels',
-		default: '{}',
+	@OneToMany(() => BypassChannels, (BypassChannels) => BypassChannels.guild, {
+		nullable: true,
+		cascade: true,
+		eager: true,
+	})
+	bypassChannels!: BypassChannels[];
+
+	@Column('text', {
+		name: 'mutedUserRoles',
+		default: '[]',
 		nullable: true,
 		comment: 'Channels that bypass swear filter',
 	})
-	bypassChannels!: string[];
+	mutedUserRoles!: Map<string, string[]>[];
 }
