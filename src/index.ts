@@ -636,17 +636,20 @@ client.on('message', async (msg) => {
 	}
 
 	if (msg.content.startsWith('-report')) {
-		client.channels.fetch('767155058344460298').then((channel) => {
-			(channel as TextChannel).send(
-				'@here',
-				new MessageEmbed()
-					.setColor(0x00ff00)
-					.setTitle(`Bug report from ${msg.author.username} | ${msg.author.id}`)
-					.setDescription(msg.content)
-					.setFooter(`Server ID: ${msg.guild?.id} | ${msg.guild?.name}`),
-			);
-		});
-	}
+        client.channels.fetch('767155058344460298').then((channel) => {
+            (channel as TextChannel).send(
+                '@here',
+                new MessageEmbed()
+                    .setColor(0x00ff00)
+                    .setTitle(`Bug report from ${msg.author.username} | ${msg.author.id}`)
+                    .setDescription(msg.content)
+                    .setFooter(
+                        `Server ID: ${msg.guild?.id} | ${msg.guild?.name} | Sent from channel: ${msg.channel.id}`,
+                    ),
+            );
+        });
+        msg.channel.send('report sent!');
+    }
 
 	// Swear filter
 	const guild = await getGuild(msg.guild!.id);
