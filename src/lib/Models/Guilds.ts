@@ -60,12 +60,4 @@ export class Guilds {
 		eager: true,
 	})
 	bypassChannels!: BypassChannels[];
-
-	@Column('text', {
-		name: 'mutedUserRoles',
-		default: '[]',
-		nullable: true,
-		comment: 'Channels that bypass swear filter',
-	})
-	mutedUserRoles!: Map<string, string[]>[];
 }

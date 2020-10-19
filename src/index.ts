@@ -636,20 +636,20 @@ client.on('message', async (msg) => {
 	}
 
 	if (msg.content.startsWith('-report')) {
-        client.channels.fetch('767155058344460298').then((channel) => {
-            (channel as TextChannel).send(
-                '@here',
-                new MessageEmbed()
-                    .setColor(0x00ff00)
-                    .setTitle(`Bug report from ${msg.author.username} | ${msg.author.id}`)
-                    .setDescription(msg.content)
-                    .setFooter(
-                        `Server ID: ${msg.guild?.id} | ${msg.guild?.name} | Sent from channel: ${msg.channel.id}`,
-                    ),
-            );
-        });
-        msg.channel.send('report sent!');
-    }
+		client.channels.fetch('767155058344460298').then((channel) => {
+			(channel as TextChannel).send(
+				'@here',
+				new MessageEmbed()
+					.setColor(0x00ff00)
+					.setTitle(`Bug report from ${msg.author.username} | ${msg.author.id}`)
+					.setDescription(msg.content)
+					.setFooter(
+						`Server ID: ${msg.guild?.id} | ${msg.guild?.name} | Sent from channel: ${msg.channel.id}`,
+					),
+			);
+		});
+		msg.channel.send('report sent!');
+	}
 
 	// Swear filter
 	const guild = await getGuild(msg.guild!.id);
@@ -723,7 +723,8 @@ client.on('message', async (msg) => {
 		}
 	}
 
-	if (!msg.content.startsWith(guild!.prefix ?? '!') || msg.author.bot) return;
+	if (!msg.content.toLowerCase().startsWith(guild!.prefix.toLowerCase() ?? '!') || msg.author.bot)
+		return;
 
 	const args = msg.content
 		.slice(guild!.prefix.length ?? '!')

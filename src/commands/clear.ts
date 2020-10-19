@@ -24,12 +24,13 @@ export default class extends Command {
 			);
 		}
 
-		let deleteCount = parseInt(args[0]);
-		deleteCount++;
+		await msg.delete();
 
-		if (!deleteCount || deleteCount < 2 || deleteCount > 99) {
+		let deleteCount = parseInt(args[0]);
+
+		if (!deleteCount || deleteCount < 1 || deleteCount >= 100) {
 			return msg.reply(
-				'Please provide a number between 2 and 99 for the number of messages to delete',
+				'Please provide a number between 2 and 100 for the number of messages to delete',
 			);
 		}
 
@@ -55,17 +56,23 @@ export default class extends Command {
 				});
 			}
 
-			await (msg.channel as TextChannel).bulkDelete(fetchedMessages);
+			const deletedMsgs = await (msg.channel as TextChannel).bulkDelete(fetchedMessages);
 
-			return msg.channel.send(
+			const deleteSuccessMsg = await msg.channel.send(
 				new MessageEmbed()
 					.setColor(0x00ff00)
 					.setTitle('Messages Deleted')
-					.setDescription(`Successfully deleted ${deleteCount} messages`)
+					.setDescription(`Successfully deleted ${deletedMsgs.size} messages`)
 					.setThumbnail(
 						'https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg',
 					),
 			);
+
+			setTimeout(async () => {
+				await deleteSuccessMsg.delete();
+			}, 5000);
+
+			return msg;
 		} catch (err) {
 			return msg.reply(`Couldn't delete messages because of: ${err}`);
 		}

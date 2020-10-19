@@ -8,6 +8,7 @@ export default class extends Command {
 			name: 'pfp',
 			cooldown: 5,
 			usage: '<user>',
+			aliases: ['avatar'],
 		});
 	}
 
