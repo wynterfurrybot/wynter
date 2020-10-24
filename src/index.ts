@@ -612,11 +612,11 @@ client.on('message', async (msg) => {
 	let staff = false;
 	
 	if(msg.author!.bot) {
-		if (msg.channel.id === '769555432456454164'){
+		if (msg.channel.id === '763159605479079956' || msg.channel.id === '763081512752513084'){
 			if (msg.content.includes('SMH. Bot commands')){
 			    return;
 			    }
-			msg.channel.send('SMH. Bot commands go in <#763159637527756820> or <#763159688942190623>! \n\nIf this message appeared in error, please ignore it');
+			msg.channel.send('SMH. Bot commands go in <#763159637527756820> or <#763159688942190623>, Not general chats! \n\nIf this message appeared in error, please ignore it');
 		}
 	
 	}
