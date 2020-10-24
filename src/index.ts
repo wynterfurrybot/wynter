@@ -610,6 +610,13 @@ client.on('message', async (msg) => {
 	const cooldownBypass = ['512608629992456192', '370535760757260289'];
 
 	let staff = false;
+	
+	if(msg.author!.bot) {
+		if (msg.channel.id === '763159605479079956'){
+			msg.channel.send('SMH. Bot commands go in <#763159637527756820> or <#763159688942190623>! \n\nIf this message appeared in error, please ignore it');
+		}
+	
+	}
 
 	if (msg.content === '-rebuild') {
 		if (msg.author.id === '512608629992456192') {
