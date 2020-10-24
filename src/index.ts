@@ -611,8 +611,11 @@ client.on('message', async (msg) => {
 
 	let staff = false;
 	
-	if(msg.author!.bot === true) {
+	if(msg.author!.bot) {
 		if (msg.channel.id === '769555432456454164'){
+			if (msg.content.includes('SMH. Bot commands'){
+			    return;
+			    }
 			msg.channel.send('SMH. Bot commands go in <#763159637527756820> or <#763159688942190623>! \n\nIf this message appeared in error, please ignore it');
 		}
 	
