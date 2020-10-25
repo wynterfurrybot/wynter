@@ -628,8 +628,7 @@ client.on('message', async (msg) => {
 			if (msg.author.id === '339254240012664832' || msg.author.id === '739912775555350580') return;
 			if (
 				msg.content.includes('SMH. Bot commands') ||
-				msg.content.includes('vote') ||
-				msg.author.bot
+				msg.content.includes('vote')
 			)
 				return;
 
