@@ -1,4 +1,4 @@
-import { MessageEmbed, Message } from 'discord.js';
+import { Message, MessageEmbed } from 'discord.js';
 
 import Command from '../lib/structures/Command';
 import axios from 'axios';
@@ -25,7 +25,6 @@ export default class extends Command {
 						.setImage(response.data.result.imgUrl),
 				);
 			})
-
 			.catch(function (error) {
 				console.log(error);
 				return msg.channel.send(

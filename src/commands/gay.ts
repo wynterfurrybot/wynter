@@ -1,4 +1,4 @@
-import { MessageEmbed, Message, TextChannel } from 'discord.js';
+import { Message, MessageEmbed, TextChannel } from 'discord.js';
 
 import Command from '../lib/structures/Command';
 import axios from 'axios';
@@ -13,7 +13,7 @@ export default class extends Command {
 	}
 
 	public async run(msg: Message): Promise<Message> {
-		if ((msg.channel as TextChannel).nsfw === false) {
+		if (!(msg.channel as TextChannel).nsfw) {
 			return msg.channel.send(
 				new MessageEmbed()
 					.setColor(0x00ff00)
@@ -34,7 +34,6 @@ export default class extends Command {
 						.setImage(response.data.result.imgUrl),
 				);
 			})
-
 			.catch(function (error) {
 				console.log(error);
 				return msg.channel.send(

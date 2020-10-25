@@ -1,10 +1,10 @@
 import 'reflect-metadata';
 
-import { Invite, MessageEmbed, Collection, TextChannel } from 'discord.js';
+import { Collection, Invite, MessageEmbed, TextChannel } from 'discord.js';
 import { readdirSync } from 'fs';
 import { createConnection } from 'typeorm';
 
-import { token, db } from '../config.json';
+import { db, token } from '../config.json';
 
 import { DanteClient } from './lib/DanteClient';
 
@@ -16,6 +16,7 @@ import { BlacklistedWords } from './lib/Models/BlacklistedWords';
 import deleteGuild from './lib/DatabaseWrapper/DeleteGuild';
 import addGuild from './lib/DatabaseWrapper/AddGuild';
 import getGuild from './lib/DatabaseWrapper/FindGuild';
+import FindGuild from './lib/DatabaseWrapper/FindGuild';
 import { BypassChannels } from './lib/Models/BypassChannels';
 
 const client = new DanteClient();
@@ -65,15 +66,18 @@ client.on('ready', async () => {
 	});
 
 	client.guilds.cache.forEach(async (guild) => {
-		const guildDB = new Guilds();
+		const findGuild = await FindGuild(guild.id);
+		if (!findGuild) {
+			const guildDB = new Guilds();
 
-		guildDB.id = guild.id;
-		guildDB.name = guild.name;
-		guildDB.prefix = '!';
-		guildDB.deleteInvLinks = false;
-		guildDB.enableFAndXs = false;
+			guildDB.id = guild.id;
+			guildDB.name = guild.name;
+			guildDB.prefix = '!';
+			guildDB.deleteInvLinks = false;
+			guildDB.enableFAndXs = false;
 
-		await addGuild(guildDB);
+			await addGuild(guildDB);
+		}
 	});
 });
 
@@ -131,7 +135,7 @@ Client.on('userUpdate', (oldmember, newmember) => {
 					.setAuthor('Dantè', 'https://i.imgur.com/FUUg9dM.png')
 					/*
 					 * Alternatively, use "#00AE86", [0, 174, 134] or an integer number.
-					 
+
 					.setColor('#00FFFF')
 					.setFooter(
 						'User updated profile | ' +
@@ -626,11 +630,7 @@ client.on('message', async (msg) => {
 	if (msg.author!.bot) {
 		if (msg.channel.id === '763159605479079956' || msg.channel.id === '763081512752513084') {
 			if (msg.author.id === '339254240012664832' || msg.author.id === '739912775555350580') return;
-			if (
-				msg.content.includes('SMH. Bot commands') ||
-				msg.content.includes('vote')
-			)
-				return;
+			if (msg.content.includes('SMH. Bot commands') || msg.content.includes('vote')) return;
 
 			msg.channel.send(
 				'SMH. Bot commands go in <#763159637527756820> or <#763159688942190623>, Not general chats! \n\nIf this message appeared in error, please ignore it',

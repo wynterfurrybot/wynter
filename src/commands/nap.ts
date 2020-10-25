@@ -1,4 +1,4 @@
-import { MessageEmbed, Message } from 'discord.js';
+import { Message, MessageEmbed } from 'discord.js';
 
 import Command from '../lib/structures/Command';
 
@@ -7,7 +7,7 @@ export default class extends Command {
 		super({
 			name: 'nap',
 			cooldown: 5,
-			usage: '',
+			usage: '[member]',
 		});
 	}
 
