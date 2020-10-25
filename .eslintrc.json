@@ -7,9 +7,7 @@
 	},
 	"extends": [
 		"eslint:recommended",
-		"plugin:@typescript-eslint/recommended",
-		"plugin:prettier/recommended",
-		"prettier/@typescript-eslint"
+		"plugin:@typescript-eslint/recommended"
 	],
 	"parser": "@typescript-eslint/parser",
 	"parserOptions": {
@@ -19,7 +17,9 @@
 			"impliedStrict": true
 		}
 	},
-	"plugins": ["@typescript-eslint", "prettier"],
+	"plugins": [
+		"@typescript-eslint"
+	],
 	"rules": {
 		// Behavior Rules
 		"for-direction": "error",
@@ -259,9 +259,6 @@
 		// TODO: Add https://eslint.org/docs/rules/#ecmascript-6 rules
 
 		// TODO: Fill in Typescript Rules
-
-		// Prettier
-		"prettier/prettier": "error",
 
 		// Misc Rules
 		"@typescript-eslint/no-non-null-assertion": "off"
