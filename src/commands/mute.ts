@@ -1,6 +1,8 @@
 import { MessageEmbed, Message, TextChannel } from 'discord.js';
 
-import Command from '../lib/structures/Command';
+import FindGuild from '../lib/DatabaseWrapper/FindGuild';
+
+import Command, { CommandUseIn } from '../lib/structures/Command';
 
 export default class extends Command {
 	public constructor() {
@@ -8,6 +10,7 @@ export default class extends Command {
 			name: 'mute',
 			cooldown: 5,
 			usage: '<member> [reason]',
+			useIn: CommandUseIn.guild,
 		});
 	}
 
@@ -22,14 +25,18 @@ export default class extends Command {
 			);
 		}
 
-		const muteRole = msg.guild!.roles.cache.find((r) => r.name === ('Muted' || 'muted'));
+		const muteRole = await msg.guild!.roles.fetch((await FindGuild(msg.guild!.id))!.muteRole!);
 
 		if (!muteRole) {
 			return await msg.channel!.send(
 				new MessageEmbed()
 					.setColor(0x00ff00)
 					.setTitle('Error!')
-					.setDescription('Unable to find a role name `Muted`! Please make one and try again'),
+					.setDescription(
+						`Please run \`${
+							(await FindGuild(msg.guild!.id))!.prefix
+						}muterole set <roleid/@mention>\` to set the mute role and try again!`,
+					),
 			);
 		}
 
@@ -54,7 +61,7 @@ export default class extends Command {
 		}
 
 		if (msg.guild!.id === '725201209358549012') {
-			const cfRole = msg.guild!.roles.cache.find((r) => r.name === 'Verified Floof');
+			const cfRole = msg.guild!.roles.cache.find((r) => r.id === '725462565852938301');
 			member!.roles.remove(cfRole!);
 		}
 

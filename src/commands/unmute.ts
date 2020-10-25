@@ -1,5 +1,7 @@
 import { MessageEmbed, Message, TextChannel } from 'discord.js';
 
+import FindGuild from '../lib/DatabaseWrapper/FindGuild';
+
 import Command from '../lib/structures/Command';
 
 export default class extends Command {
@@ -22,14 +24,18 @@ export default class extends Command {
 			);
 		}
 
-		const muteRole = msg.guild!.roles.cache.find((r) => r.name === ('Muted' || 'muted'));
+		const muteRole = await msg.guild!.roles.fetch((await FindGuild(msg.guild!.id))!.muteRole!);
 
 		if (!muteRole) {
 			return await msg.channel!.send(
 				new MessageEmbed()
 					.setColor(0x00ff00)
 					.setTitle('Error!')
-					.setDescription('Unable to find a role name `Muted`! Please make one and try again'),
+					.setDescription(
+						`Please run \`${
+							(await FindGuild(msg.guild!.id))!.prefix
+						}muterole set <roleid/@mention>\` to set the mute role and try again!`,
+					),
 			);
 		}
 

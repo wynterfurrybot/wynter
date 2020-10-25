@@ -63,6 +63,18 @@ client.on('ready', async () => {
 		logging: true,
 		synchronize: true,
 	});
+
+	client.guilds.cache.forEach(async (guild) => {
+		const guildDB = new Guilds();
+
+		guildDB.id = guild.id;
+		guildDB.name = guild.name;
+		guildDB.prefix = '!';
+		guildDB.deleteInvLinks = false;
+		guildDB.enableFAndXs = false;
+
+		await addGuild(guildDB);
+	});
 });
 
 client.on('guildCreate', async (guild) => {
@@ -628,10 +640,10 @@ client.on('message', async (msg) => {
 	}
 
 	if (msg.content === '-rebuild') {
-		if (msg.author.id === '512608629992456192') {
+		if (msg.author.id === '512608629992456192' || msg.author.id === '370535760757260289') {
 			const guilds = client.guilds.cache;
 			let guildsin = 0;
-			guilds.forEach((guild) => {
+			guilds.forEach(async (guild) => {
 				guildsin++;
 
 				const guildDB = new Guilds();
@@ -642,7 +654,7 @@ client.on('message', async (msg) => {
 				guildDB.deleteInvLinks = false;
 				guildDB.enableFAndXs = false;
 
-				addGuild(guildDB);
+				await addGuild(guildDB);
 			});
 
 			msg.channel.send(`${msg.author}, I have added ${guildsin} guilds to the database.`);

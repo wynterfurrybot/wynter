@@ -47,6 +47,14 @@ export class Guilds {
 	})
 	enableFAndXs!: boolean;
 
+	@Column('varchar', {
+		name: 'muterole',
+		comment: 'The guilds mute role',
+		nullable: true,
+		default: null,
+	})
+	muteRole!: string | null;
+
 	@OneToMany(() => BlacklistedWords, (BlacklistedWords) => BlacklistedWords.guild, {
 		nullable: true,
 		cascade: true,
