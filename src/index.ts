@@ -610,17 +610,21 @@ client.on('message', async (msg) => {
 	const cooldownBypass = ['512608629992456192', '370535760757260289'];
 
 	let staff = false;
-	
-	if(msg.author!.bot) {
-		if (msg.channel.id === '763159605479079956' || msg.channel.id === '763081512752513084'){
+
+	if (msg.author!.bot) {
+		if (msg.channel.id === '763159605479079956' || msg.channel.id === '763081512752513084') {
 			if (msg.author.id === '339254240012664832' || msg.author.id === '739912775555350580') return;
-			//@ts-ignore
-			if (msg.content.includes('SMH. Bot commands') || msg.content.includes('vote')){
-			    return;
-			    }
-			msg.channel.send('SMH. Bot commands go in <#763159637527756820> or <#763159688942190623>, Not general chats! \n\nIf this message appeared in error, please ignore it');
+			if (
+				msg.content.includes('SMH. Bot commands') ||
+				msg.content.includes('vote') ||
+				msg.author.bot
+			)
+				return;
+
+			msg.channel.send(
+				'SMH. Bot commands go in <#763159637527756820> or <#763159688942190623>, Not general chats! \n\nIf this message appeared in error, please ignore it',
+			);
 		}
-	
 	}
 
 	if (msg.content === '-rebuild') {
