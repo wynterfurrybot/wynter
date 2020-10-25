@@ -24,7 +24,7 @@ export default class extends Command {
 		}
 		axios
 			.get('https://api.furrycentr.al/nsfw/yiff/gay')
-			.then(function (response) {
+			.then(function(response) {
 				console.log(response.data.result.imgUrl);
 				return msg.channel.send(
 					`**${msg.member!.displayName}** Oh murr~`,
@@ -34,7 +34,7 @@ export default class extends Command {
 						.setImage(response.data.result.imgUrl),
 				);
 			})
-			.catch(function (error) {
+			.catch(function(error) {
 				console.log(error);
 				return msg.channel.send(
 					`**${msg.member!.displayName}** Oh murr~`,

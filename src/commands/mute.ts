@@ -1,4 +1,4 @@
-import { MessageEmbed, Message, TextChannel } from 'discord.js';
+import { Message, MessageEmbed, TextChannel } from 'discord.js';
 
 import FindGuild from '../lib/DatabaseWrapper/FindGuild';
 

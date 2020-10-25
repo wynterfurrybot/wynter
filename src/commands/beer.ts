@@ -1,4 +1,4 @@
-import { MessageEmbed, Message } from 'discord.js';
+import { Message, MessageEmbed } from 'discord.js';
 
 import Command from '../lib/structures/Command';
 
@@ -17,7 +17,7 @@ export default class extends Command {
 				new MessageEmbed()
 					.setColor(0x00ff00)
 					// eslint-disable-next-line quotes
-					.setTitle("It's time to get drunk!")
+					.setTitle('It\'s time to get drunk!')
 					.setDescription(`${msg.author} here's your beer! \n\nDon't get too drunk!`)
 					.setThumbnail(
 						'https://static.turbosquid.com/Preview/001184/092/MC/chinese-beer-barrel-3D_600.jpg',
@@ -29,7 +29,7 @@ export default class extends Command {
 					new MessageEmbed()
 						.setColor(0x00ff00)
 						// eslint-disable-next-line quotes
-						.setTitle("It's time to get drunk!")
+						.setTitle('It\'s time to get drunk!')
 						.setDescription(`<@${msg.author.id}> has given <@${member.id}> a bottle of beer!`)
 						.setThumbnail(
 							'https://static.turbosquid.com/Preview/001184/092/MC/chinese-beer-barrel-3D_600.jpg',

@@ -1,4 +1,4 @@
-import { MessageEmbed, Message } from 'discord.js';
+import { Message, MessageEmbed } from 'discord.js';
 
 import Command from '../lib/structures/Command';
 import axios from 'axios';
@@ -15,7 +15,7 @@ export default class extends Command {
 	public async run(msg: Message): Promise<Message> {
 		axios
 			.get('https://api.furrycentr.al/sfw/kiss')
-			.then(function (response) {
+			.then(function(response) {
 				console.log(response.data.result.imgUrl);
 				if (msg.author.id === msg.mentions.users.first()!.id) return msg;
 				return msg.channel.send(
@@ -28,7 +28,7 @@ export default class extends Command {
 						.setImage(response.data.result.imgUrl),
 				);
 			})
-			.catch(function (error) {
+			.catch(function(error) {
 				console.log(error);
 				if (msg.author.id === msg.mentions.users.first()!.id) return msg;
 				return msg.channel.send(

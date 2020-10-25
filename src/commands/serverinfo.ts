@@ -1,4 +1,4 @@
-import { MessageEmbed, Message } from 'discord.js';
+import { Message, MessageEmbed } from 'discord.js';
 
 import Command from '../lib/structures/Command';
 
@@ -18,7 +18,7 @@ export default class extends Command {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		//@ts-ignore
 		const mem = guild.members.cache.array();
-		mem.forEach(async function (u) {
+		mem.forEach(async function(u) {
 			if (u.user.bot) {
 				// Add to bot count
 				bots = bots + 1;

@@ -1,4 +1,4 @@
-import { MessageEmbed, Message, TextChannel } from 'discord.js';
+import { Message, MessageEmbed, TextChannel } from 'discord.js';
 
 import Command from '../lib/structures/Command';
 

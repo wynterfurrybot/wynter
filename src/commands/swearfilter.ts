@@ -1,4 +1,4 @@
-import { MessageEmbed, Message } from 'discord.js';
+import { Message, MessageEmbed } from 'discord.js';
 import { Guilds } from '../lib/Models/Guilds';
 
 import Command, { CommandUseIn } from '../lib/structures/Command';

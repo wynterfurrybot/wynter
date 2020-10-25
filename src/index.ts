@@ -191,7 +191,7 @@ client.on('guildMemberAdd', (member) => {
 	if (member.guild.id === '736969969404870688') {
 		member.send(
 			// eslint-disable-next-line quotes
-			"Welcome to the elite server of european furries! \n\nJust so you know, we operate a strict no robot policy here! \n\nTo verify you're not one, please go to https://verify.furrycentr.al/ef/ and log in with discord.",
+			'Welcome to the elite server of european furries! \n\nJust so you know, we operate a strict no robot policy here! \n\nTo verify you\'re not one, please go to https://verify.furrycentr.al/ef/ and log in with discord.',
 		);
 	}
 
@@ -199,8 +199,8 @@ client.on('guildMemberAdd', (member) => {
 		client.channels.fetch('754817827789078658').then((channel) => {
 			(channel as TextChannel).send(
 				'Welcome <@' +
-					member.id +
-					'> to Fluff Paradise! Please type `-register` in chat to get started!',
+				member.id +
+				'> to Fluff Paradise! Please type `-register` in chat to get started!',
 			);
 		});
 	}
@@ -442,7 +442,7 @@ client.on('guildMemberAdd', (member) => {
 	if (member.guild.id !== '462041783438934036') return;
 	member.send(
 		// eslint-disable-next-line quotes
-		"Welcome to The Floof Hotel! \n\nJust so you know, we operate a strict no robot policy here! \n\nTo verify you're not one, please go to https://verify.furrycentr.al/ and log in with discord.",
+		'Welcome to The Floof Hotel! \n\nJust so you know, we operate a strict no robot policy here! \n\nTo verify you\'re not one, please go to https://verify.furrycentr.al/ and log in with discord.',
 	);
 });
 
@@ -594,7 +594,7 @@ client.on('messageUpdate', (msg, newMsg) => {
 			newMsg.delete();
 			newMsg.channel.send(
 				// eslint-disable-next-line quotes
-				"please do not post links here! \n\nIf you're looking to partner, please check <#763159239605747712>",
+				'please do not post links here! \n\nIf you\'re looking to partner, please check <#763159239605747712>',
 			);
 		}
 	}
@@ -603,7 +603,7 @@ client.on('messageUpdate', (msg, newMsg) => {
 
 	if (newMsg.attachments) {
 		const a = newMsg.attachments;
-		a.forEach(function (b) {
+		a.forEach(function(b) {
 			newMsg.content = newMsg.content + ' -- ' + b.url;
 		});
 	}
@@ -745,7 +745,7 @@ client.on('message', async (msg) => {
 			msg.delete();
 			await msg.reply(
 				// eslint-disable-next-line quotes
-				"please do not post links here! \n\nIf you're looking to partner, please check <#763159239605747712>",
+				'please do not post links here! \n\nIf you\'re looking to partner, please check <#763159239605747712>',
 			);
 		}
 	}
@@ -813,7 +813,7 @@ client.on('messageDelete', (messageDelete) => {
 
 	if (messageDelete.attachments) {
 		const a = messageDelete.attachments;
-		a.forEach(function (b) {
+		a.forEach(function(b) {
 			messageDelete.content = messageDelete.content + ' -- ' + b.url;
 		});
 	}

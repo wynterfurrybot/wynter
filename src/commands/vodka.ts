@@ -1,4 +1,4 @@
-import { MessageEmbed, Message } from 'discord.js';
+import { Message, MessageEmbed } from 'discord.js';
 
 import Command from '../lib/structures/Command';
 
@@ -17,7 +17,7 @@ export default class extends Command {
 				new MessageEmbed()
 					.setColor(0x00ff00)
 					// eslint-disable-next-line quotes
-					.setTitle("It's time to get drunk!")
+					.setTitle('It\'s time to get drunk!')
 					.setDescription(`${msg.author} has ordered some vodka to drown their sorrows.`)
 					.setThumbnail(
 						'https://www.solavia.co.uk/ekmps/shops/solavia2012/images/shot-vodka-glass-pack-of-6-35ml-163-1-p.jpg',
@@ -29,7 +29,7 @@ export default class extends Command {
 					new MessageEmbed()
 						.setColor(0x00ff00)
 						// eslint-disable-next-line quotes
-						.setTitle("It's time to get drunk!")
+						.setTitle('It\'s time to get drunk!')
 						.setDescription(`<@${msg.author.id}> has given <@${member.id}> a bottle of vodka!`)
 						.setThumbnail(
 							'https://www.solavia.co.uk/ekmps/shops/solavia2012/images/shot-vodka-glass-pack-of-6-35ml-163-1-p.jpg',

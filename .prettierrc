@@ -1,11 +1,7 @@
 {
-	"jsxSingleQuote": true,
-	"jsxBracketSameLine": true,
-	"vueIndentScriptAndStyle": true,
 	"arrowParens": "always",
 	"bracketSpacing": true,
 	"endOfLine": "lf",
-	"htmlWhitespaceSensitivity": "strict",
 	"printWidth": 100,
 	"quoteProps": "consistent",
 	"semi": true,

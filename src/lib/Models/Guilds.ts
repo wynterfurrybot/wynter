@@ -1,4 +1,4 @@
-import { Entity, PrimaryColumn, Column, OneToMany } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { BlacklistedWords } from './BlacklistedWords';
 import { BypassChannels } from './BypassChannels';
 
