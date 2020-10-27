@@ -190,7 +190,6 @@ Client.on('userUpdate', (oldmember, newmember) => {
 client.on('guildMemberAdd', (member) => {
 	if (member.guild.id === '736969969404870688') {
 		member.send(
-			// eslint-disable-next-line quotes
 			'Welcome to the elite server of european furries! \n\nJust so you know, we operate a strict no robot policy here! \n\nTo verify you\'re not one, please go to https://verify.furrycentr.al/ef/ and log in with discord.',
 		);
 	}
@@ -441,7 +440,6 @@ client.on('guildMemberAdd', (member) => {
 
 	if (member.guild.id !== '462041783438934036') return;
 	member.send(
-		// eslint-disable-next-line quotes
 		'Welcome to The Floof Hotel! \n\nJust so you know, we operate a strict no robot policy here! \n\nTo verify you\'re not one, please go to https://verify.furrycentr.al/ and log in with discord.',
 	);
 });
@@ -593,7 +591,6 @@ client.on('messageUpdate', (msg, newMsg) => {
 		if (newMsg.content.includes('http') && !staff && !newMsg.content?.includes('tenor.com')) {
 			newMsg.delete();
 			newMsg.channel.send(
-				// eslint-disable-next-line quotes
 				'please do not post links here! \n\nIf you\'re looking to partner, please check <#763159239605747712>',
 			);
 		}
@@ -684,7 +681,7 @@ client.on('message', async (msg) => {
 		if (msg.content.toLowerCase() === 'f') {
 			msg.channel.send(`${msg.author} has paid respects`);
 			return;
-		}	
+		}
 
 		if (msg.content.toLowerCase() === 'x') {
 			msg.channel.send(`${msg.author} very much has doubts about this`);
@@ -712,11 +709,11 @@ client.on('message', async (msg) => {
 	if (msg.channel.id === '462044347794456605' && msg.author.id === '155149108183695360')
 		msg.channel.send('<@&462043912169586699> Please check the latest dyno case log.');
 
-	if (msg.author.bot === true) return;
+	if (msg.author.bot) return;
 
 	if (msg.channel.id === '629075452723462154') {
 		// Repost advertisement!
-		msg.delete();
+		await msg.delete();
 
 		client.channels
 			.fetch('629073904882810910')
@@ -736,8 +733,8 @@ client.on('message', async (msg) => {
 	) {
 		// On receive message, (Given string `msg`) from channel #awoo
 		if (!/^(\*|_)*awo+f?(!|\*|_)*( ?(:3|<3|owo|uwu))?( ?❤️)?(\*|_)*$/iu.test(msg.content)) {
-			msg['delete']();
-			msg.author.send(`No ${msg.content}, only awoo!`);
+			await msg.delete();
+			await msg.author.send(`No ${msg.content}, only awoo!`);
 		}
 	}
 
@@ -747,9 +744,8 @@ client.on('message', async (msg) => {
 		});
 
 		if (msg.content.includes('http') && !staff && !msg.content?.includes('tenor.com')) {
-			msg.delete();
+			await msg.delete();
 			await msg.reply(
-				// eslint-disable-next-line quotes
 				'please do not post links here! \n\nIf you\'re looking to partner, please check <#763159239605747712>',
 			);
 		}
@@ -813,7 +809,7 @@ client.on('message', async (msg) => {
 	return;
 });
 
-client.on('messageDelete', (messageDelete) => {
+client.on('messageDelete', async (messageDelete) => {
 	if (messageDelete.author!.bot) return;
 
 	if (messageDelete.attachments) {
@@ -829,7 +825,7 @@ client.on('messageDelete', (messageDelete) => {
 			(channel) => channel.name === 'message_logs',
 		);
 
-		(channel as TextChannel).send({
+		await (channel as TextChannel).send({
 			embed: {
 				color: 16726088,
 				description: `A message sent by ${
@@ -844,12 +840,12 @@ client.on('messageDelete', (messageDelete) => {
 	}
 });
 
-client.on('channelCreate', (channel) => {
+client.on('channelCreate', async (channel) => {
 	try {
 		const c = (channel as TextChannel).guild.channels.cache.find(
 			(c) => c.name === 'channel_logging',
 		);
-		(c as TextChannel).send({
+		await (c as TextChannel).send({
 			embed: {
 				color: 3447003,
 				description: `A new channel (${(channel as TextChannel).name}) was created!`,
@@ -860,12 +856,12 @@ client.on('channelCreate', (channel) => {
 	}
 });
 
-client.on('channelDelete', (channel) => {
+client.on('channelDelete', async (channel) => {
 	try {
 		const c = (channel as TextChannel).guild.channels.cache.find(
 			(c) => c.name === 'channel_logging',
 		);
-		(c as TextChannel).send({
+		await (c as TextChannel).send({
 			embed: {
 				color: 16726088,
 				description: `Channel (${(channel as TextChannel).name}) was deleted!`,
@@ -876,10 +872,10 @@ client.on('channelDelete', (channel) => {
 	}
 });
 
-client.on('guildMemberAdd', (member) => {
+client.on('guildMemberAdd', async (member) => {
 	try {
 		const channel = member.guild.channels.cache.find((channel) => channel.name === 'user_logs');
-		(channel as TextChannel).send({
+		await (channel as TextChannel).send({
 			embed: {
 				color: 3447003,
 				description: `A new member (${member.user!.username}) has joined!`,
@@ -890,10 +886,10 @@ client.on('guildMemberAdd', (member) => {
 	}
 });
 
-client.on('guildMemberRemove', (member) => {
+client.on('guildMemberRemove', async (member) => {
 	try {
 		const channel = member.guild.channels.cache.find((channel) => channel.name === 'user_logs');
-		(channel as TextChannel).send({
+		await (channel as TextChannel).send({
 			embed: {
 				color: 16726088,
 				description: `Member <@${member.id}> (${member.user!.username}) has left!`,
@@ -904,10 +900,10 @@ client.on('guildMemberRemove', (member) => {
 	}
 });
 
-client.on('guildBanAdd', (guild, member) => {
+client.on('guildBanAdd', async (guild, member) => {
 	try {
 		const channel = guild.channels.cache.find((channel) => channel.name === 'case_logs');
-		(channel as TextChannel).send({
+		await (channel as TextChannel).send({
 			embed: {
 				color: 16726088,
 				description: `Member <@${member.id}> (${member!.username}) has been banned!`,
@@ -918,11 +914,11 @@ client.on('guildBanAdd', (guild, member) => {
 	}
 });
 
-client.on('guildBanRemove', (guild, member) => {
+client.on('guildBanRemove', async (guild, member) => {
 	try {
 		let channel = guild.channels.cache.find((channel) => channel.name === 'user_logs');
 
-		(channel as TextChannel).send({
+		await (channel as TextChannel).send({
 			embed: {
 				color: 16726088,
 				description: `Member <@${member.id}> ban revoked`,
@@ -931,7 +927,7 @@ client.on('guildBanRemove', (guild, member) => {
 
 		channel = guild.channels.cache.find((channel) => channel.name === 'case_logs');
 
-		(channel as TextChannel).send({
+		await (channel as TextChannel).send({
 			embed: {
 				color: 16726088,
 				description: `Member <@${member.id}> ban revoked`,
