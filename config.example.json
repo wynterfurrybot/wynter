@@ -5,5 +5,9 @@
 		"password": "",
 		"host": "",
 		"port": 1234
+	},
+	"twitter": {
+		"key": "",
+		"secret": ""
 	}
 }
