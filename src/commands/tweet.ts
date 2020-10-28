@@ -38,7 +38,7 @@ export default class extends Command {
                     .setColor(0x00ff00)
                     .setTitle('No Twitter Account Linked!')
                     .setDescription(
-                        'I cannot tweet when you have no account linked!',
+                        'I cannot tweet when you have no account linked! \nPlease link an account by going to https://furrycentr.al/twitter',
                     )
                     .setThumbnail('https://static01.nyt.com/images/2014/08/10/magazine/10wmt/10wmt-articleLarge-v4.jpg?quality=75&auto=webp&disable=upscale'),
             ); 
