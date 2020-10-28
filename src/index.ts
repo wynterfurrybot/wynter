@@ -12,12 +12,13 @@ import Command, { CommandUseIn } from './lib/structures/Command';
 
 import { Guilds } from './lib/Models/Guilds';
 import { BlacklistedWords } from './lib/Models/BlacklistedWords';
+import { BypassChannels } from './lib/Models/BypassChannels';
+import { Twitter } from './lib/Models/Twitter';
 
 import deleteGuild from './lib/DatabaseWrapper/DeleteGuild';
 import addGuild from './lib/DatabaseWrapper/AddGuild';
 import getGuild from './lib/DatabaseWrapper/FindGuild';
 import FindGuild from './lib/DatabaseWrapper/FindGuild';
-import { BypassChannels } from './lib/Models/BypassChannels';
 
 const client = new DanteClient();
 const invites: Record<string, Collection<string, Invite>> = {};
@@ -44,7 +45,7 @@ for (const file of commandFiles) {
 
 client.on('ready', async () => {
 	console.log(`Logged in as ${client.user!.tag}!`);
-	client.user!.setActivity('Eating Pi | !help');
+	await client.user!.setActivity('Eating Pi | !help');
 
 	client.guilds!.cache.forEach((g) => {
 		g.fetchInvites().then((guildInvites) => {
@@ -60,7 +61,7 @@ client.on('ready', async () => {
 		},
 		database: 'wynter',
 		// eslint-disable-next-line array-element-newline
-		entities: [Guilds, BlacklistedWords, BypassChannels],
+		entities: [Guilds, BlacklistedWords, BypassChannels, Twitter],
 		logging: true,
 		synchronize: true,
 	});
@@ -82,7 +83,7 @@ client.on('ready', async () => {
 });
 
 client.on('guildCreate', async (guild) => {
-	guild.owner!.send(
+	await guild.owner!.send(
 		'Thanks for adding Wynter to your guild! \n\nThe default prefix is `!` - Our documentation can be found at https://docs.furrycentr.al/ \n\nWe hope you have fun using Wynter!',
 	);
 
@@ -533,21 +534,21 @@ client.on('guildMemberUpdate', (oldMem, newMem) => {
 	});
 
 	newMem.roles.cache.forEach((role) => {
-		if (role.id === '736971909362614362' && hasMember === false) {
+		if (role.id === '736971909362614362' && !hasMember) {
 			client.channels.fetch('736979363362373642').then((channel) => {
 				(channel as TextChannel).send('<a:wel:742119488366837780><a:come:742119500068946084>');
 				(channel as TextChannel).send(
 					`Welcome <@${newMem.id}> to the most elite group of european furs!\n\nI hope you enjoy your stay here, and here's a free cookie to welcome you! :cookie:`,
 				);
 			});
-		} else if (role.id === '754820807896596520' && hasMember === false) {
+		} else if (role.id === '754820807896596520' && !hasMember) {
 			client.channels.fetch('754816860133916825').then((channel) => {
 				(channel as TextChannel).send('<a:wel:742119488366837780><a:come:742119500068946084>');
 				(channel as TextChannel).send(
 					`Welcome <@${newMem.id}>  to Paradise! We hope you will enjoy your stay. \n\nNon-alcoholic cocktails are on the house and provided on the table is a free cookie, just for you! \n\nHave fun! \n\nPS: I'd reccomend getting some roles in <#756597666011676742> if you haven't already! \n<@&755152376700076032>`,
 				);
 			});
-		} else if (role.id === '462042250612965386' && hasMember === false) {
+		} else if (role.id === '462042250612965386' && !hasMember) {
 			client.channels.fetch('629056060803645453').then((channel) => {
 				(channel as TextChannel).send('<a:wel:742119488366837780><a:come:742119500068946084>');
 				(channel as TextChannel).send(
@@ -558,7 +559,7 @@ client.on('guildMemberUpdate', (oldMem, newMem) => {
 					)} \n\nOn the desk is a free :cookie:, should you need us at any point, feel free to ping a member of staff! Should you have any feedback about anything, feel free to visit <#681616342733815825>! \n\nFeel free to tell us about you and your fursona in <#552957610899275776> \n\n<@&463088144292511764> Please welcome the above user!`,
 				);
 			});
-		} else if (role.id === '667472170926080011' && hasMember === false) {
+		} else if (role.id === '667472170926080011' && !hasMember) {
 			client.channels.fetch('667466143585402903').then((channel) => {
 				(channel as TextChannel).send('<a:wel:742119488366837780><a:come:742119500068946084>');
 				(channel as TextChannel).send(
@@ -569,7 +570,7 @@ client.on('guildMemberUpdate', (oldMem, newMem) => {
 	});
 });
 
-client.on('messageUpdate', (msg, newMsg) => {
+client.on('messageUpdate', async (msg, newMsg) => {
 	if (
 		msg.channel.id === '717430439396245577' ||
 		msg.channel.id === '721808001098448896' ||
@@ -577,8 +578,8 @@ client.on('messageUpdate', (msg, newMsg) => {
 	) {
 		// On receive message, (Given string `msg`) from channel #awoo
 		if (!/^(\*|_)*awo+f?(!|\*|_)*( ?(:3|<3|owo|uwu))?( ?❤️)?(\*|_)*$/iu.test(newMsg.content!)) {
-			newMsg['delete']();
-			newMsg.author!.send(`I see you.. No ${msg.content} only awoo!`);
+			await newMsg.delete();
+			await newMsg.author!.send(`I see you.. No ${msg.content} only awoo!`);
 		}
 	}
 	let staff = false;
@@ -589,8 +590,8 @@ client.on('messageUpdate', (msg, newMsg) => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		//@ts-ignore
 		if (newMsg.content.includes('http') && !staff && !newMsg.content?.includes('tenor.com')) {
-			newMsg.delete();
-			newMsg.channel.send(
+			await newMsg.delete();
+			await newMsg.channel.send(
 				'please do not post links here! \n\nIf you\'re looking to partner, please check <#763159239605747712>',
 			);
 		}
@@ -606,7 +607,7 @@ client.on('messageUpdate', (msg, newMsg) => {
 	}
 	try {
 		const channel = newMsg.guild!.channels.cache.find((channel) => channel.name === 'message_logs');
-		(channel as TextChannel).send({
+		await (channel as TextChannel).send({
 			embed: {
 				color: 3447003,
 				description: `A message sent by ${newMsg.author!.username} was edited!\n\nOld message:\n${
