@@ -26,7 +26,7 @@ export default class extends Command {
 				new MessageEmbed()
 					.setColor(0x00ff00)
 					.setTitle('Ship!')
-					.setDescription(`${msg.member} has shipped themselves with ${msg.mentions.users.first()}!\n\nThey got a score of${Math.floor(Math.random() * 101)}`),
+					.setDescription(`${msg.member} has shipped themselves with ${msg.mentions.users.first()}!\n\nThey got a score of ${Math.floor(Math.random() * 101)}`),
 			);
 		}
 
@@ -35,7 +35,7 @@ export default class extends Command {
 				new MessageEmbed()
 					.setColor(0x00ff00)
 					.setTitle('Ship!')
-					.setDescription(`${msg.member} has shipped ${msg.mentions.users.first()} with ${msg.mentions.users.last()}!\n\nThey got a score of${Math.floor(Math.random() * 101)}`),
+					.setDescription(`${msg.member} has shipped ${msg.mentions.users.first()} with ${msg.mentions.users.last()}!\n\nThey got a score of ${Math.floor(Math.random() * 101)}`),
 			);
 		}
 

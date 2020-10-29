@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { Message, MessageEmbed } from 'discord.js';
 
 import Command from '../lib/structures/Command';
 import findGuild from '../lib/DatabaseWrapper/FindGuild';
@@ -19,6 +19,16 @@ export default class extends Command {
 				`The current server prefix is \`${(await findGuild(msg.guild!.id))!.prefix}\``,
 			);
 		} else {
+			if (!msg.member!.hasPermission('MANAGE_GUILD')) {
+				return msg.channel.send(
+					new MessageEmbed()
+						.setColor(0x00ff00)
+						.setTitle('No permissions')
+						.setDescription(`You do not have permissions to update the prefix in ${msg.guild!.name}`)
+						.setThumbnail('https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png'),
+				);
+			}
+
 			await updateGuild(msg.guild!.id, {
 				prefix: args[0],
 			});
