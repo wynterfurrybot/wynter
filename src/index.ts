@@ -20,7 +20,11 @@ import addGuild from './lib/DatabaseWrapper/AddGuild';
 import getGuild from './lib/DatabaseWrapper/FindGuild';
 import FindGuild from './lib/DatabaseWrapper/FindGuild';
 
-const client = new DanteClient();
+const client = new DanteClient({
+	ws: {
+		intents: 32767,
+	},
+});
 const invites: Record<string, Collection<string, Invite>> = {};
 const commandFiles = readdirSync('./dist/src/commands').filter((file: string) =>
 	file.endsWith('.js'),
@@ -694,7 +698,7 @@ client.on('message', async (msg) => {
 		if (msg.channel.id === '763159605479079956' || msg.channel.id === '763081512752513084') {
 			if (msg.author.id === '339254240012664832' || msg.author.id === '739912775555350580') return;
 			if (msg.content.includes('SMH. Bot commands') || msg.content.includes('vote') || msg.content.includes('very much has doubts') || msg.content.includes('has paid respects')) return;
-
+			await msg.delete();
 			msg.channel.send(
 				'SMH. Bot commands go in <#763159637527756820> or <#763159688942190623>, Not general chats! \n\nIf this message appeared in error, please ignore it',
 			);
@@ -744,7 +748,7 @@ client.on('message', async (msg) => {
 			if (val.id === '739727880799518741') staff = true;
 		});
 
-		if (msg.content.includes('http') && !staff && !msg.content?.includes('tenor.com')) {
+		if (msg.content.includes('http') && !staff && !msg.content!.includes('tenor.com') && !msg.content!.includes('youtube.com') && msg.channel.id !== '771415447538237450') {
 			await msg.delete();
 			await msg.reply(
 				'please do not post links here! \n\nIf you\'re looking to partner, please check <#763159239605747712>',
