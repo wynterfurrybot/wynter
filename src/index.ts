@@ -749,7 +749,7 @@ client.on('message', async (msg) => {
 		});
 
 		if (msg.content.includes('http') && !staff && !msg.content!.includes('tenor.com') && !msg.content!.includes('youtube.com') && !msg.content!.includes('twitter.com') && !msg.content!.includes('instagram.com')) {
-			if(msg.channel.id !== '771415447538237450') {
+			if(msg.channel.id !== '771415447538237450' || msg.content.includes('discord.gg')) {
 				await msg.delete();
 				await msg.reply(
 					'please do not post links here! \n\nIf you\'re looking to partner, please check <#763159239605747712>',
