@@ -748,11 +748,13 @@ client.on('message', async (msg) => {
 			if (val.id === '739727880799518741') staff = true;
 		});
 
-		if (msg.content.includes('http') && !staff && !msg.content!.includes('tenor.com') && !msg.content!.includes('youtube.com') && msg.channel.id !== '771415447538237450') {
-			await msg.delete();
-			await msg.reply(
-				'please do not post links here! \n\nIf you\'re looking to partner, please check <#763159239605747712>',
-			);
+		if (msg.content.includes('http') && !staff && !msg.content!.includes('tenor.com') && !msg.content!.includes('youtube.com') && !msg.content!.includes('twitter.com') && !msg.content!.includes('instagram.com')) {
+			if(msg.channel.id !== '771415447538237450') {
+				await msg.delete();
+				await msg.reply(
+					'please do not post links here! \n\nIf you\'re looking to partner, please check <#763159239605747712>',
+				);
+			}
 		}
 	}
 
