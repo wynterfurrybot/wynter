@@ -696,7 +696,7 @@ client.on('message', async (msg) => {
 
 	if (msg.author!.bot) {
 		if (msg.channel.id === '763159605479079956' || msg.channel.id === '763081512752513084') {
-			if (msg.author.id === '339254240012664832' || msg.author.id === '772205583536881694') return;
+			if (msg.author.id === '339254240012664832' || msg.author.id === '772205583536881694' || msg.author.id === '155149108183695360') return;
 			if (msg.content.includes('SMH. Bot commands') || msg.content.includes('vote') || msg.content.includes('very much has doubts') || msg.content.includes('has paid respects')) return;
 			await msg.delete();
 			msg.channel.send(
