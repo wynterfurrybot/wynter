@@ -625,7 +625,8 @@ client.on('messageUpdate', async (msg, newMsg) => {
 });
 
 client.on('message', async (msg) => {
-	const cooldownBypass = ['512608629992456192', '370535760757260289'];
+	// premium users (Dark, Relms, smash, spacemonkey)
+	const cooldownBypass = ['512608629992456192', '370535760757260289', '458812875927060480', '720125224695103548'];
 
 	let staff = false;
 
