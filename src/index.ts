@@ -23,7 +23,7 @@ import FindGuild from './lib/DatabaseWrapper/FindGuild';
 
 const client = new DanteClient({
 	ws: {
-		intents: 32767,
+		intents: 32509,
 	},
 });
 const invites: Record<string, Collection<string, Invite>> = {};
