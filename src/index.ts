@@ -14,6 +14,7 @@ import { Guilds } from './lib/Models/Guilds';
 import { BlacklistedWords } from './lib/Models/BlacklistedWords';
 import { BypassChannels } from './lib/Models/BypassChannels';
 import { Twitter } from './lib/Models/Twitter';
+import { Punishments } from './lib/Models/Punishments';
 
 import deleteGuild from './lib/DatabaseWrapper/DeleteGuild';
 import addGuild from './lib/DatabaseWrapper/AddGuild';
@@ -58,14 +59,11 @@ client.on('ready', async () => {
 	});
 
 	await createConnection({
-		type: 'mssql',
+		type: 'mysql',
 		...db,
-		options: {
-			enableArithAbort: true,
-		},
 		database: 'wynter',
 		// eslint-disable-next-line array-element-newline
-		entities: [Guilds, BlacklistedWords, BypassChannels, Twitter],
+		entities: [Guilds, BlacklistedWords, BypassChannels, Twitter, Punishments],
 		logging: true,
 		synchronize: true,
 	});
@@ -625,8 +623,13 @@ client.on('messageUpdate', async (msg, newMsg) => {
 });
 
 client.on('message', async (msg) => {
-	// premium users (Dark, Relms, smash, spacemonkey)
-	const cooldownBypass = ['512608629992456192', '370535760757260289', '458812875927060480', '720125224695103548'];
+	// Premium users (Dark, Relms, smash, spacemonkey)
+	const cooldownBypass = [
+		'512608629992456192',
+		'370535760757260289',
+		'458812875927060480',
+		'720125224695103548',
+	];
 
 	let staff = false;
 

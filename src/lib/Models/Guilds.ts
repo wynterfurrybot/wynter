@@ -31,7 +31,7 @@ export class Guilds {
 	})
 	prefix!: string;
 
-	@Column('bit', {
+	@Column('boolean', {
 		name: 'deleteinvlinks',
 		comment: 'Delete inv links or not',
 		nullable: true,
@@ -39,7 +39,7 @@ export class Guilds {
 	})
 	deleteInvLinks!: boolean;
 
-	@Column('bit', {
+	@Column('boolean', {
 		name: 'enablefandx',
 		comment: 'Enable F and X commands or not',
 		nullable: true,
