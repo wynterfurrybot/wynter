@@ -14,18 +14,13 @@ import { Guilds } from './lib/Models/Guilds';
 import { BlacklistedWords } from './lib/Models/BlacklistedWords';
 import { BypassChannels } from './lib/Models/BypassChannels';
 import { Twitter } from './lib/Models/Twitter';
-import { Punishments } from './lib/Models/Punishments';
 
 import deleteGuild from './lib/DatabaseWrapper/DeleteGuild';
 import addGuild from './lib/DatabaseWrapper/AddGuild';
 import getGuild from './lib/DatabaseWrapper/FindGuild';
 import FindGuild from './lib/DatabaseWrapper/FindGuild';
 
-const client = new DanteClient({
-	ws: {
-		intents: 32509,
-	},
-});
+const client = new DanteClient();
 const invites: Record<string, Collection<string, Invite>> = {};
 const commandFiles = readdirSync('./dist/src/commands').filter((file: string) =>
 	file.endsWith('.js'),
@@ -59,11 +54,14 @@ client.on('ready', async () => {
 	});
 
 	await createConnection({
-		type: 'mysql',
+		type: 'mssql',
 		...db,
+		options: {
+			enableArithAbort: true,
+		},
 		database: 'wynter',
 		// eslint-disable-next-line array-element-newline
-		entities: [Guilds, BlacklistedWords, BypassChannels, Twitter, Punishments],
+		entities: [Guilds, BlacklistedWords, BypassChannels, Twitter],
 		logging: true,
 		synchronize: true,
 	});
@@ -623,13 +621,7 @@ client.on('messageUpdate', async (msg, newMsg) => {
 });
 
 client.on('message', async (msg) => {
-	// Premium users (Dark, Relms, smash, spacemonkey)
-	const cooldownBypass = [
-		'512608629992456192',
-		'370535760757260289',
-		'458812875927060480',
-		'720125224695103548',
-	];
+	const cooldownBypass = ['512608629992456192', '370535760757260289'];
 
 	let staff = false;
 
@@ -700,9 +692,9 @@ client.on('message', async (msg) => {
 
 	if (msg.author!.bot) {
 		if (msg.channel.id === '763159605479079956' || msg.channel.id === '763081512752513084') {
-			if (msg.author.id === '339254240012664832' || msg.author.id === '772205583536881694' || msg.author.id === '155149108183695360') return;
-			if (msg.content.includes('SMH. Bot commands') || msg.content.includes('do not post links here!') || msg.content.includes('vote') || msg.content.includes('very much has doubts') || msg.content.includes('has paid respects')) return;
-			await msg.delete();
+			if (msg.author.id === '339254240012664832' || msg.author.id === '739912775555350580') return;
+			if (msg.content.includes('SMH. Bot commands') || msg.content.includes('vote') || msg.content.includes('very much has doubts') || msg.content.includes('has paid respects')) return;
+
 			msg.channel.send(
 				'SMH. Bot commands go in <#763159637527756820> or <#763159688942190623>, Not general chats! \n\nIf this message appeared in error, please ignore it',
 			);
@@ -752,13 +744,11 @@ client.on('message', async (msg) => {
 			if (val.id === '739727880799518741') staff = true;
 		});
 
-		if (msg.content.includes('http') && !staff && !msg.content!.includes('tenor.com') && !msg.content!.includes('youtube.com') && !msg.content!.includes('twitter.com') && !msg.content!.includes('instagram.com')) {
-			if(msg.channel.id !== '771415447538237450' || msg.content.includes('discord.gg')) {
-				await msg.delete();
-				await msg.reply(
-					'please do not post links here! \n\nIf you\'re looking to partner, please check <#763159239605747712>',
-				);
-			}
+		if (msg.content.includes('http') && !staff && !msg.content?.includes('tenor.com')) {
+			await msg.delete();
+			await msg.reply(
+				'please do not post links here! \n\nIf you\'re looking to partner, please check <#763159239605747712>',
+			);
 		}
 	}
 
