@@ -85,9 +85,6 @@ client.on('ready', async () => {
 });
 
 client.on('guildCreate', async (guild) => {
-	await guild.owner!.send(
-		'Thanks for adding Wynter to your guild! \n\nThe default prefix is `!` - Our documentation can be found at https://docs.furrycentr.al/ \n\nWe hope you have fun using Wynter!',
-	);
 
 	const guildDB = new Guilds();
 
