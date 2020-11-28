@@ -25,6 +25,7 @@ const client = new DanteClient({
 	ws: {
 		intents: 32509,
 	},
+	fetchAllMembers: true,
 });
 const invites: Record<string, Collection<string, Invite>> = {};
 const commandFiles = readdirSync('./dist/src/commands').filter((file: string) =>
