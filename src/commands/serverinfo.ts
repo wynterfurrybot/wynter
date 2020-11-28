@@ -12,6 +12,7 @@ export default class extends Command {
 	}
 
 	public async run(msg: Message): Promise<Message> {
+		await message.guild.members.fetch();
 		const guild = msg.guild;
 		let users = 0;
 		let bots = 0;
