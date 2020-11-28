@@ -12,7 +12,9 @@ export default class extends Command {
 	}
 
 	public async run(msg: Message): Promise<Message> {
-		await msg.guild.members.fetch();
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		//@ts-ignore
+		await msg!.guild!.members!.fetch()!;
 		const guild = msg.guild;
 		let users = 0;
 		let bots = 0;
