@@ -585,7 +585,7 @@ client.on('messageUpdate', async (msg, newMsg) => {
 	let staff = false;
 	if (msg.guild!.id === '725201209358549012') {
 		msg.member!.roles.cache.forEach((val) => {
-			if (val.id === '739727880799518741') staff = true;
+			if (val.id === '783683964232663090') staff = true;
 		});
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		//@ts-ignore
