@@ -744,7 +744,7 @@ client.on('message', async (msg) => {
 
 	if (msg.guild!.id === '725201209358549012') {
 		msg.member!.roles.cache.forEach((val) => {
-			if (val.id === '739727880799518741') staff = true;
+			if (val.id === '783683964232663090') staff = true;
 		});
 
 		if (msg.content.includes('http') && !staff && !msg.content!.includes('tenor.com') && !msg.content!.includes('youtube.com') && !msg.content!.includes('twitter.com') && !msg.content!.includes('instagram.com')) {
