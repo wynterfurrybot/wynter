@@ -9,7 +9,8 @@ Uses the following libaries:
 
 discord.js@master
 
-Fully open sourced, made with help from Relms
+Fully open sourced, made with help from Relms 
+(who due to current issues re: hacking the bot -- is no longer on our team)
 
 Docs: https://docs.furrycentr.al/
 
