@@ -698,7 +698,7 @@ client.on('message', async (msg) => {
 
 	if (msg.author!.bot) {
 		if (msg.channel.id === '783684179203981332' || msg.channel.id === '783684180197507092') {
-			if (msg.author.id === '339254240012664832' || msg.author.id === '772205583536881694' || msg.author.id === '155149108183695360' || msg.author.id === '242730576195354624') return;
+			if (msg.author.id === '339254240012664832' || msg.author.id === '772205583536881694'  || msg.author.id === '155149108183695360' || msg.author.id === '242730576195354624') return;
 			if (msg.content.includes('Welcome') || msg.content.includes('do not post links here!') || msg.content.includes('vote') || msg.content.includes('very much has doubts') || msg.content.includes('has paid respects')) return;
 			await msg.delete();
 		}
@@ -746,6 +746,10 @@ client.on('message', async (msg) => {
 		msg.member!.roles.cache.forEach((val) => {
 			if (val.id === '783683964232663090') staff = true;
 		});
+		
+		if(msg.author.id === '159985870458322944'){
+			staff = true;
+		}
 
 		if (msg.content.includes('http') && !staff && !msg.content!.includes('tenor.com') && !msg.content!.includes('youtube.com') && !msg.content!.includes('twitter.com') && !msg.content!.includes('instagram.com')) {
 			if(msg.channel.id !== '771415447538237450' || msg.content.includes('discord.gg')) {
