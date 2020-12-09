@@ -747,9 +747,6 @@ client.on('message', async (msg) => {
 			if (val.id === '783683964232663090') staff = true;
 		});
 		
-		if(msg.author.id === '159985870458322944'){
-			staff = true;
-		}
 
 		if (msg.content.includes('http') && !staff && !msg.content!.includes('tenor.com') && !msg.content!.includes('youtube.com') && !msg.content!.includes('twitter.com') && !msg.content!.includes('instagram.com')) {
 			if(msg.channel.id !== '771415447538237450' || msg.content.includes('discord.gg')) {
