@@ -43,5 +43,5 @@ Master - for stable releases.
 
 # Notice:
 
-Relms (a former dev) no longer works on Wynter as of v2. Previous commits may be archived here by her.
+Relms (a former dev) no longer works on Wynter as of v2. Previous commits by her may be archived here.
 
