@@ -41,3 +41,7 @@ Beta - for development use only, these updates may not be finished, or ever come
 
 Master - for stable releases.
 
+# Notice:
+
+Relms (a former dev) no longer works on Wynter as of v2. Previous commits may be archived here by her.
+
