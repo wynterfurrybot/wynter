@@ -11,6 +11,8 @@ Fully open sourced.
 
 Docs: https://docs.furrycentr.al/
 
+Support: https://discord.gg/5eNDkdd
+
 How to self host Wynter: 
 ```
 $ git clone https://github.com/Rapptz/discord.py
