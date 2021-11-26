@@ -25,7 +25,7 @@ class NSFW(commands.Cog):
         data = json.loads(data)
         embed = discord.Embed(title = "Oh murr!", description = "I hope you enjoy this image ;)", color=0x00ff00)
         embed.set_image(url = data["result"]["imgUrl"])
-        embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+        embed.set_footer(text = 'Wynter 2.0')
         return await ctx.send(embed = embed)
 
 def setup(bot):

@@ -6,7 +6,7 @@ import random
 import os
 from dotenv import load_dotenv
 import json
-
+import asyncio
 import pymysql.cursors
 
 load_dotenv()
@@ -29,6 +29,95 @@ class Moderation(commands.Cog):
     def __init__(self,bot):
         self.bot = bot
 
+    @commands.command(name = 'register', pass_context=True, help = 'Register for Floof Paradise! (only works in guild)')
+    async def register(self, ctx):
+        if not ctx.message.guild.id == 754816860133916822:
+            return
+        await ctx.send(f":e_mail: {ctx.message.author.mention} Check your DMs!")
+        a = ctx.message.author
+        await a.send("Hi there, welcome to the Floof Paradise registration. \n\nDuring this process, please do not send any messages to servers Wynter is in, or it may see it as answers to your questions.\n\nTo start, I get your fursona name or a name you prefer to be called?")
+        def check(m):
+            return m.author.id == a.id
+        await asyncio.sleep(1)
+        msg = await self.bot.wait_for('message', check = check)
+        name = msg.content
+        await a.send(f"Hi {name} - May I next get your age?")
+        await asyncio.sleep(1)
+        msg = await self.bot.wait_for('message', check = check)
+        age = 0
+        agebracket = ""
+        try:
+            age = int(msg.content)
+        except:
+            await ctx.message.author.send("That is an invalid age. \n\nPlease try again or your registration will be aborted.")
+            await asyncio.sleep(1)
+            msg = await self.bot.wait_for('message', check = check)
+            try:
+                age = int(msg.content)
+            except:
+                return await ctx.message.author.send("That is an invalid age. \n\nYour registration has been aborted")
+        if age < 13:
+            await a.send("You are underaged. According to discord TOS, users under 13 are not allowed to use the application. Read more here \n\nhttps://discord.com/terms")
+            await ctx.message.guild.ban(a, reason = f"Underaged user ({age}), banned due to TOS violation.")
+            return
+        if age >= 18:
+            agebracket = "Adult"
+        if age < 18:
+            agebracket = "Minor"
+        await a.send(f"Thanks, to protect your age, you will be shown as a {agebracket} in the server. \n\nNext, may I know what gender you identify as and your preferred pronouns?")
+        await asyncio.sleep(1)
+        msg = await self.bot.wait_for('message', check = check)
+        gender = msg.content
+        await a.send(f"Got it, you refer to yourself as {gender} \n\nNext, would you like to be mentioned in the server for things such as important announcements? (YES/NO)")
+        await asyncio.sleep(1)
+        msg = await self.bot.wait_for('message', check = check)
+        announcementpref = msg.content
+        await a.send("Got it, next, may I ask if it's okay for users to DM you? (YES/NO/ASK)")
+        await asyncio.sleep(1)
+        msg = await self.bot.wait_for('message', check = check)
+        dmpref = msg.content
+        await a.send("Next, tell me about your fursona. \n\nWhat species are they? What's their favourite activites? What gender are they? Do they like sleeping all day? Anything! \n\nNote: if you don't have a fursona, tell us info of what you imagine your fursona to be!")
+        await asyncio.sleep(1)
+        msg = await self.bot.wait_for('message', check = check)
+        fursonainfo = msg.content
+        await a.send("Finally, please tell me how you came to find the server today? \n\nIf it was from Google - please list the specific site from google in which you found our listing!")
+        await asyncio.sleep(1)
+        msg = await self.bot.wait_for('message', check = check)
+        foundus = msg.content
+
+        embed = discord.Embed(title = "Registration!", description = f"{a.mention}'s Registration" , color=0x00ff00)
+        embed.set_thumbnail(url = a.avatar_url)
+        embed.add_field(name='Preferred Name', value=f"{name}", inline=False)
+        embed.add_field(name='Age', value=f"{agebracket}", inline=False)
+        embed.add_field(name='Gender and Pronouns', value=f"{gender}", inline=False)
+        embed.add_field(name='Fursona Info', value=f"{fursonainfo}", inline=False)
+        embed.add_field(name='Okay to mention?', value=f"{announcementpref}", inline=False)
+        embed.add_field(name='Okay to DM?', value=f"{dmpref}", inline=False)
+        embed.add_field(name='How this user found the server', value=f"{foundus}", inline=False)
+        embed.set_footer(text = f'{a.id}')
+        channel = discord.utils.get(ctx.message.guild.text_channels, name= 'approval')
+        await channel.send("<@&754817901428604929>")
+        msg = await channel.send(embed=embed)
+        await msg.add_reaction('✅')
+        await msg.add_reaction('❎')
+        await a.send("Thank you! Your registration has been sent to a staff member for review. \n\nThey'll accept you as soon as possible!")
+
+
+    @commands.command(name = 'lock', pass_context=True, help = 'Locks a channel')
+    @commands.has_guild_permissions(kick_members = True)
+    async def lock(self, ctx):
+        member = discord.utils.get(ctx.message.guild.roles, id= 809507920488300634)
+        await ctx.message.channel.set_permissions(member, read_messages=True,
+                                                      send_messages=False)
+        await ctx.send(":lock: Locked.")
+    
+    @commands.command(name = 'unlock', pass_context=True, help = 'Locks a channel')
+    @commands.has_guild_permissions(kick_members = True)
+    async def unlock(self, ctx):
+        member = discord.utils.get(ctx.message.guild.roles, id= 809507920488300634)
+        await ctx.message.channel.set_permissions(member, read_messages=True,
+                                                      send_messages=True)
+        await ctx.send(":unlock: Unlocked.")
 
     @commands.command(name = 'kick', pass_context=True, help = 'Kicks a user')
     @commands.has_guild_permissions(kick_members = True)
@@ -37,7 +126,7 @@ class Moderation(commands.Cog):
         if user.id == ctx.message.author.id:
             embed = discord.Embed(title = "Lolwut!", description = "Are you sure you want to punish yourself?" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
-            embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+            embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(embed=embed)
         reason = ""
         for txt in data:
@@ -56,7 +145,7 @@ class Moderation(commands.Cog):
             print(f"{err} when adding a punishment for {user.display_name} to the database")
         embed = discord.Embed(title = "Kicked!", description = f"You have been kicked from {ctx.message.guild.name}! \n\nReason given:\n{reason}" , color=0x00ff00)
         embed.set_thumbnail(url = "https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg")
-        embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+        embed.set_footer(text = 'Wynter 2.0')
         try:
             await user.send(embed=embed)
         except Exception as e:
@@ -64,7 +153,7 @@ class Moderation(commands.Cog):
         await user.kick()
         embed = discord.Embed(title = "Kicked!", description = f"{ctx.message.author.display_name} has kicked {user.display_name}! \n\nReason given:\n{reason}" , color=0x00ff00)
         embed.set_thumbnail(url = "https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg")
-        embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+        embed.set_footer(text = 'Wynter 2.0')
         channel = discord.utils.get(ctx.message.guild.text_channels, name='case_logs')
         await channel.send(embed=embed)
         
@@ -76,7 +165,7 @@ class Moderation(commands.Cog):
         if user.id == ctx.message.author.id:
             embed = discord.Embed(title = "Lolwut!", description = "Are you sure you want to punish yourself?" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
-            embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+            embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(embed=embed)
         reason = ""
         for txt in data:
@@ -95,45 +184,65 @@ class Moderation(commands.Cog):
             print(f"{err} when adding a punishment for {user.display_name} to the database")
         embed = discord.Embed(title = "Banned!", description = f"You have been banned from {ctx.message.guild.name}! \n\nReason given:\n{reason}" , color=0x00ff00)
         embed.set_thumbnail(url = "https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg")
-        embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+        embed.set_footer(text = 'Wynter 2.0')
         try:
-            await user.send(embed=embed)
+            await user.send(embed=embed, file = discord.File("./saygoodbye.mp4"))
         except Exception as e:
             print(e)
-        await user.ban()
+        await user.ban(reason = reason)
         embed = discord.Embed(title = "Banned!", description = f"{ctx.message.author.display_name} has banned {user.display_name}! \n\nReason given:\n{reason}" , color=0x00ff00)
         embed.set_thumbnail(url = "https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg")
-        embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+        embed.set_footer(text = 'Wynter 2.0')
         channel = discord.utils.get(ctx.message.guild.text_channels, name='case_logs')
         await channel.send(embed=embed)
-        
+    
+    @commands.command(name = 'remind', pass_context=True, help = 'Set a reminder')
+    @commands.cooldown(1,120, commands.BucketType.user)
+    async def remind(self, ctx, minutes: float, *, reminder):
+        embed = discord.Embed(title = f"{minutes} minute reminder!", description = f"I have set a reminder to remind you about {reminder} - check your DMs soon!" , color=0x00ff00)
+        minutes = minutes * 60
+        embed.set_footer(text = 'Wynter 2.0')
+        await ctx.send(embed= embed, reference = ctx.message)
+        await asyncio.sleep(minutes)
+        embed = discord.Embed(title = "Your Reminder", description = f"{reminder}" , color=0x00ff00)
+        embed.set_footer(text = 'Wynter 2.0')
+        await ctx.message.author.send(embed = embed)
     
     @commands.command(name = 'hackban', pass_context=True, help = 'Bans user(s) that aren\'t in the guild.')
     @commands.has_guild_permissions(ban_members= True)
     @commands.cooldown(1,120, commands.BucketType.user)
     async def hackban(self, ctx,*ids):
-        await ctx.message.delete()
+        try:
+            await ctx.message.delete()
+        except Exception as e:
+            await ctx.send("Failed deleting the command message. It is strongly reccomended to give the bot manage messages permission to do this.")
         if len(ids) > 50:
             embed = discord.Embed(title = "Lol no.", description = "Try mentioning less than 50 IDs. (Austin, i'm looking at you)" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
-            embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+            embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(embed=embed)
         
         bannedusers = 0
-        
-        for users in ids:
-            if users == "!hackban":
+        bannedlist = ""
+        for user in ids:
+            if user == "!hackban":
                 print("no user")
             else:
-                bannedusers = bannedusers +1
-                print(users)
-                user = await self.bot.fetch_user(int(users))
-                await ctx.message.guild.ban(user)
+                try:
+                    bannedlist = bannedlist + user + ", "
+                    bannedusers = bannedusers +1
+                    print(user)
+                    u = await self.bot.fetch_user(int(user))
+                    await ctx.message.guild.ban(u, reason = f"Hackbanned by {ctx.message.author.display_name}")
+                except Exception as e:
+                    print(f"Exception: {e}")
+                    await ctx.send("Error banning {user} - " + e)
 
+        await ctx.send(f"Banned IDS: \n\n{bannedlist}")
         channel = discord.utils.get(ctx.message.guild.text_channels, name='case_logs')
         embed = discord.Embed(title = "Hackbanned, get out of here, ya dirty trolls.", description = f"{ctx.message.author.display_name} Hackbanned {bannedusers} user(s)" , color=0x00ff00)
         embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
-        embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+        embed.set_footer(text = 'Wynter 2.0')
         await channel.send(embed=embed)
         
     
@@ -144,7 +253,7 @@ class Moderation(commands.Cog):
         if user.id == ctx.message.author.id:
             embed = discord.Embed(title = "Lolwut!", description = "Are you sure you want to punish yourself?" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
-            embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+            embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(embed=embed)
         reason = ""
         for txt in data:
@@ -163,11 +272,11 @@ class Moderation(commands.Cog):
             print(f"{err} when adding a punishment for {user.display_name} to the database")
         embed = discord.Embed(title = "Warned!", description = f"You have been warned on {ctx.message.guild.name}! \n\nReason given: \n{reason}" , color=0x00ff00)
         embed.set_thumbnail(url = "https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg")
-        embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+        embed.set_footer(text = 'Wynter 2.0')
         await user.send(embed=embed)
         embed = discord.Embed(title = "Warned!", description = f"{ctx.message.author.display_name} has warned {user.mention}! \n\nReason given: \n{reason}" , color=0x00ff00)
         embed.set_thumbnail(url = "https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg")
-        embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+        embed.set_footer(text = 'Wynter 2.0')
         channel = discord.utils.get(ctx.message.guild.text_channels, name='case_logs')
         await channel.send(embed=embed)
        
@@ -180,7 +289,7 @@ class Moderation(commands.Cog):
             amount = 100
         await ctx.message.channel.purge(limit = amount, check = lambda msg: not msg.pinned)
         embed = discord.Embed(title = "Messages Purged!", description = f"{ctx.message.author.display_name} has deleted {amount} messages from {ctx.message.channel.mention}!" , color=0x00ff00)
-        embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+        embed.set_footer(text = 'Wynter 2.0')
         channel = discord.utils.get(ctx.message.guild.text_channels, name='message_logs')
         await channel.send(embed=embed)
         channel = discord.utils.get(ctx.message.guild.text_channels, name='case_logs')
@@ -204,7 +313,7 @@ class Moderation(commands.Cog):
                     pcount = pcount +1 
                     punishments = punishments + "**" + p['type'] + "**" + ": " + p['reason'] + "\n\nGiven by: \n" + p['moderator'] + "\n\n"
             embed = discord.Embed(title = f"{user.display_name}'s punishments!", description = punishments , color=0x00ff00)
-            embed.set_footer(text = f'Wynter 2.0 | Made by Darkmane Arweinydd#0069 | {pcount} total punishments')
+            embed.set_footer(text = f'Wynter 2.0 | {pcount} total punishments')
             connection.close()
             return await ctx.send(embed=embed)
         except Exception as err:
@@ -218,7 +327,7 @@ class Moderation(commands.Cog):
         if user.id == ctx.message.author.id:
             embed = discord.Embed(title = "Lolwut!", description = "Are you sure you want to punish yourself?" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
-            embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+            embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(embed=embed)
         reason = ""
         for txt in data:
@@ -237,7 +346,7 @@ class Moderation(commands.Cog):
             print(f"{err} when adding a punishment for {user.display_name} to the database")
         embed = discord.Embed(title = "Muted!", description = f"You have been muted on {ctx.message.guild.name}! \n\nReason given: \n{reason}" , color=0x00ff00)
         embed.set_thumbnail(url = "https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg")
-        embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+        embed.set_footer(text = 'Wynter 2.0')
         try:
             await user.send(embed=embed)
         except Exception as e:
@@ -246,7 +355,7 @@ class Moderation(commands.Cog):
         await user.add_roles(muted)
         embed = discord.Embed(title = "Warned!", description = f"{ctx.message.author.display_name} has muted {user.mention}! \n\nReason given: \n{reason}" , color=0x00ff00)
         embed.set_thumbnail(url = "https://image.freepik.com/free-photo/judge-gavel-hammer-justice-law-concept_43403-625.jpg")
-        embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+        embed.set_footer(text = 'Wynter 2.0')
         channel = discord.utils.get(ctx.message.guild.text_channels, name='case_logs')
         await channel.send(embed=embed)
        
