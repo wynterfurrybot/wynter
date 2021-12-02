@@ -23,7 +23,7 @@ class Christmas(commands.Cog):
             await ctx.message.author.send("It is not december yet - or is past christmas!")
     
     @commands.command(name = 'snowball', pass_context=True, help = 'Throw a snowball at someone else')
-    @commands.cooldown(1,86400, commands.BucketType.user)
+    @commands.cooldown(1,5, commands.BucketType.user)
     async def snowball(self, ctx, *, user):
         if len(ctx.message.mentions) > 3:
             embed = discord.Embed(title = "Too many mentions!", description = "Too many mentions! You can only mention 3 people at a time!" , color=0x00ff00)

@@ -115,40 +115,117 @@ async def on_button_click(res):
     """
     
     global votes
+    previous_vote = ""
 
-    if not f"{res.message.id}yes" in votes:
-        votes[f"{res.message.id}yes"] = 0
-    if not f"{res.message.id}no" in votes:
-        votes[f"{res.message.id}no"] = 0
+    try:
+        connection = connecttodb()
+        with connection.cursor() as cursor:
+            # Read a single record
+            sql = "SELECT * FROM `polls` WHERE `messageid`=%s"
+            cursor.execute(sql, (int(res.message.id)))
+            result = cursor.fetchone()
+            result = json.dumps(result,sort_keys=True)
+            result = json.loads(result)
+            title = result['title']
+            total_yes = result['yes']
+            total_no = result['no']
+            connection.close()
+    except Exception as err:
+        print(f"error selecting from polls: {err}")
+    
+    try:
+        connection = connecttodb()
+        with connection.cursor() as cursor:
+            # Read a single record
+            sql = "SELECT * FROM `poll_votes` WHERE `userid`=%s and messageid = %s"
+            cursor.execute(sql, (res.user.id, res.message.id))
+            result = cursor.fetchone()
+            result = json.dumps(result,sort_keys=True)
+            result = json.loads(result)
+            if result is None:
+                previous_vote = "none"
+                print(f"previous vote = {previous_vote}")
+            else:
+                previous_vote = result['vote']
+                print(f"previous vote = {previous_vote}")
+            connection.close()
+    except Exception as err:
+        print(f"error selecting from poll results: {err}")
+    if res.component.label.lower() == "yes":
+        try:
+                connection = connecttodb()
+                with connection.cursor() as cursor:
+                    # Read a single record
+                    if previous_vote == "none":
+                        sql = "UPDATE polls SET `yes` = yes + 1 WHERE `messageid`=%s"
+                        cursor.execute(sql, (res.message.id))
+                        connection.commit()
+                        sql = "INSERT INTO `poll_votes` (messageid, userid, vote) VALUES (%s, %s, %s)"
+                        cursor.execute(sql, (res.message.id, res.user.id, "yes"))
+                        connection.commit()
+                        connection.close()
+                        total_yes = total_yes +1
+                    elif previous_vote == "yes":
+                        sql = "UPDATE poll_votes SET `vote` = 'yes' WHERE `userid`=%s"
+                        cursor.execute(sql, (res.user.id))
+                        connection.commit()
+                    elif previous_vote == "no":
+                        sql = "UPDATE polls SET `no` = no - 1 WHERE `messageid`=%s"
+                        cursor.execute(sql, (res.message.id))
+                        connection.commit()
+                        sql = "UPDATE polls SET `yes` = yes + 1 WHERE `messageid`=%s"
+                        cursor.execute(sql, (res.message.id))
+                        connection.commit()
+                        sql = "UPDATE poll_votes SET `vote` = 'yes' WHERE `userid`=%s"
+                        cursor.execute(sql, (res.user.id))
+                        connection.commit()
+                        total_no = total_no - 1
+                        total_yes = total_yes + 1
+        except Exception as err:
+            print(f"error updating from poll results: {err}")
+    if res.component.label.lower() == "no":
+        try:
+                connection = connecttodb()
+                with connection.cursor() as cursor:
+                    # Read a single record
+                    if previous_vote == "none":
+                        sql = "UPDATE polls SET `no` = no + 1 WHERE `messageid`=%s"
+                        cursor.execute(sql, (res.message.id))
+                        connection.commit()
+                        sql = "INSERT INTO `poll_votes` (messageid, userid, vote) VALUES (%s, %s, %s)"
+                        cursor.execute(sql, (res.message.id, res.user.id, "no"))
+                        connection.commit()
+                        connection.close()
+                        total_no = total_no +1
+                    elif previous_vote == "no":
+                        sql = "UPDATE poll_votes SET `vote` = 'no' WHERE `userid`=%s"
+                        cursor.execute(sql, (res.user.id))
+                        connection.commit()
+                    elif previous_vote == "yes":
+                        sql = "UPDATE polls SET `yes` = yes - 1 WHERE `messageid`=%s"
+                        cursor.execute(sql, (res.message.id))
+                        connection.commit()
+                        sql = "UPDATE polls SET `no` = no + 1 WHERE `messageid`=%s"
+                        cursor.execute(sql, (res.message.id))
+                        connection.commit()
+                        sql = "UPDATE poll_votes SET `vote` = 'no' WHERE `userid`=%s"
+                        cursor.execute(sql, (res.user.id))
+                        connection.commit()
+                        total_yes = total_yes - 1
+                        total_no = total_no + 1
+        except Exception as err:
+            print(f"error selecting from poll results: {err}")
 
-    if res.component.label.lower() == "yes" and f"{res.user.id}{res.message.id}" not in voted:
-         votes[f"{res.message.id}yes"] = votes[f"{res.message.id}yes"] +1
-         voted[f"{res.user.id}{res.message.id}"] = "yes"
-    elif res.component.label.lower() == "no" and f"{res.user.id}{res.message.id}" not in voted:
-        votes[f"{res.message.id}no"] = votes[f"{res.message.id}no"] +1
-        voted[f"{res.user.id}{res.message.id}"] = "no"
-    elif res.component.label.lower() == "yes" and f"{res.user.id}{res.message.id}" in voted:
-        if voted[f"{res.user.id}{res.message.id}"] == "no":
-            votes[f"{res.message.id}no"] = votes[f"{res.message.id}no"] - 1
-        elif voted[f"{res.user.id}{res.message.id}"] == "yes":
-            votes[f"{res.message.id}yes"] = votes[f"{res.message.id}yes"] - 1
-        votes[f"{res.message.id}yes"] = votes[f"{res.message.id}yes"] +1
-        voted[f"{res.user.id}{res.message.id}"] = "yes"
-    elif res.component.label.lower() == "no" and f"{res.user.id}{res.message.id}" in voted:
-        if voted[f"{res.user.id}{res.message.id}"] == "no":
-            votes[f"{res.message.id}no"] = votes[f"{res.message.id}no"] - 1
-        elif voted[f"{res.user.id}{res.message.id}"] == "yes":
-            votes[f"{res.message.id}yes"] = votes[f"{res.message.id}yes"] - 1
-        votes[f"{res.message.id}no"] = votes[f"{res.message.id}no"] +1
-        voted[f"{res.user.id}{res.message.id}"] = "no"
 
     await res.respond(
         type=7, embed=Embed(
                 color=0xF5F5F5,
-                title=res.message.embeds[0].title,
-                description=f"Results: \n\nYes: {votes[f'{res.message.id}yes']} \nNo: {votes[f'{res.message.id}no']}",
+                title=title,
+                description=f"Results: \n\nYes: {total_yes} \nNo: {total_no}",
             )
     )
+
+    
 
 @client.event
 async def on_message(msg):

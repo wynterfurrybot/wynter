@@ -2,7 +2,27 @@ import discord
 from discord.ext import commands
 import time 
 import math
+import pymysql.cursors
+from dotenv import load_dotenv
+import os
+import json
 from discord_components import DiscordComponents, Button, ButtonStyle, InteractionType
+
+load_dotenv()
+DBHOST = os.getenv('DBHOST')
+DBUSER = os.getenv('DBUSER')
+DBPW = os.getenv('DBPW')
+DB = os.getenv('DB')
+
+def connecttodb():
+    # Connect to the database
+    connection = pymysql.connect(host=DBHOST,
+                                user=DBUSER,
+                                password=DBPW,
+                                db=DB,
+                                charset='utf8mb4',
+                                cursorclass=pymysql.cursors.DictCursor)
+    return connection
 
 class Info(commands.Cog):
     def __init__(self,bot):
@@ -19,6 +39,17 @@ class Info(commands.Cog):
             ]
         ]
     )
+        try:
+            connection = connecttodb()
+            with connection.cursor() as cursor:
+                # Read a single record
+                sql = "INSERT INTO `polls` (messageid, title, yes, no) VALUES (%s, %s, %s, %s)"
+                cursor.execute(sql, (m.id, f"Ongoing Poll: {question}", 0, 0))
+                connection.commit()
+                print(f"Sucess! Added a poll with the message ID {m.id}!")
+                connection.close()
+        except Exception as err:
+            print(f"{err} when adding a poll for message ID {m.id} to the database")
     
 
             

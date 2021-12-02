@@ -15,7 +15,7 @@ class Fun(commands.Cog):
     @commands.command(name = 'hug', pass_context=True, help = 'Hug a user', aliases=['hugs', 'cuddle', 'hold'])
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
-    async def hug(self, ctx, *, hugged):
+    async def hug(self, ctx, hugged: commands.Greedy[discord.User]):
         if ctx.message.guild.id == 793961645856391169:
             embed = discord.Embed(title = "Command Disabled!", description = "The hug command has been disabled in this guild - please contact the administrators for more info." , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
@@ -26,7 +26,8 @@ class Fun(commands.Cog):
             embed = discord.Embed(title = "Too many mentions!", description = "Too many mentions! You can only mention 3 people at a time!" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
             embed.set_footer(text = 'Wynter 2.0')
-            return await ctx.send(ctx.message.author.mention, embed = embed) 
+            return await ctx.send(ctx.message.author.mention, embed = embed)
+        hugged = ", ".join([str(i.mention) for i in hugged if i])
         async with aiohttp.ClientSession() as session:
             async with session.get("https://api.furrycentr.al/sfw/hug/") as resp:
                 data = await resp.text()
@@ -93,15 +94,21 @@ class Fun(commands.Cog):
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
             embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(ctx.message.author.mention, embed = embed) 
+
+        data = ""
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://api.furrycentr.al/sfw/glomp/") as resp:
+                data = await resp.text()
+                data = json.loads(data)
        
         if ctx.message.author in ctx.message.mentions:
             embed = discord.Embed(title = "Glomp!", description = f"{self.bot.user.mention} tackles {glomped} and pulls them into a giant hug! \n\nPS: I'm here for you", color=0x00ff00)
-            embed.set_image(url = "https://i.imgur.com/St7SfOp.png")
+            embed.set_image(url = data["result"]["imgUrl"])
             embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(embed = embed)
 
         embed = discord.Embed(title = "Glomp!", description = f"{ctx.message.author.mention} tackles {glomped} and pulls them into a giant hug!", color=0x00ff00)
-        embed.set_image(url = "https://i.imgur.com/St7SfOp.png")
+        embed.set_image(url = data["result"]["imgUrl"])
         embed.set_footer(text = 'Wynter 2.0')
         return await ctx.send(embed = embed)
     
@@ -114,15 +121,21 @@ class Fun(commands.Cog):
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
             embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(ctx.message.author.mention, embed = embed) 
+        
+        data = ""
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://api.furrycentr.al/sfw/nuzzle") as resp:
+                data = await resp.text()
+                data = json.loads(data)
        
         if ctx.message.author in ctx.message.mentions:
             embed = discord.Embed(title = "Nuzzle Wuzzle OwO!", description = f"{self.bot.user.mention} snuggles against {nuzzled}, nuzzling into them gently! \n\nPS: I'm here for you", color=0x00ff00)
-            embed.set_image(url = "https://i.imgur.com/St7SfOp.png")
+            embed.set_image(url = data["result"]["imgUrl"])
             embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(embed = embed)
 
         embed = discord.Embed(title = "Nuzzle Wuzzle OwO!", description = f"{ctx.message.author.mention} snuggles against {nuzzled}, nuzzling into them gently!", color=0x00ff00)
-        embed.set_image(url = "https://i.imgur.com/St7SfOp.png")
+        embed.set_image(url = data["result"]["imgUrl"])
         embed.set_footer(text = 'Wynter 2.0')
         return await ctx.send(embed = embed)
 
@@ -264,11 +277,15 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def howcute(self, ctx, user:discord.Member):
-        embed = discord.Embed(title = "You're fucking cute!", description = f"{user.mention} is {random.randint(0,100)}% cute!", color=0x00ff00)
-        embed.set_footer(text = 'Wynter 2.0')
+        if user.id == 802354019603185695:
+            embed = discord.Embed(title = "You're fucking cute!", description = f"{user.mention} is 0% cute!", color=0x00ff00)
+            embed.set_footer(text = 'Wynter 2.0')
+        else:
+            embed = discord.Embed(title = "You're fucking cute!", description = f"{user.mention} is {random.randint(0,100)}% cute!", color=0x00ff00)
+            embed.set_footer(text = 'Wynter 2.0')
         return await ctx.send(embed = embed)
 
-    @commands.command(name = 'nibble', pass_context=True, help = 'Nibble on a user\'s ear')
+    @commands.command(name = 'nibble', pass_context=True, help = 'Nibble on a user\'s ear', aliases = ['nom'])
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def nibble(self, ctx, *, nibbled):
@@ -276,16 +293,22 @@ class Fun(commands.Cog):
             embed = discord.Embed(title = "Too many mentions!", description = "Too many mentions! You can only mention 3 people at a time!" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
             embed.set_footer(text = 'Wynter 2.0')
-            return await ctx.send(ctx.message.author.mention, embed = embed) 
+            return await ctx.send(ctx.message.author.mention, embed = embed)
+        
+        data = ""
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://api.furrycentr.al/sfw/nibble") as resp:
+                data = await resp.text()
+                data = json.loads(data)
        
         if ctx.message.author in ctx.message.mentions:
             embed = discord.Embed(title = "Om nom nom!", description = f"{self.bot.user.mention} gently begins to nibble on {nibbled}'s ear! \n\nPS: I'm here for you", color=0x00ff00)
-            embed.set_image(url = "https://i.imgur.com/R78kQgT.png")
+            embed.set_image(url = data["result"]["imgUrl"])
             embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(embed = embed)
 
         embed = discord.Embed(title = "Om nom nom!", description = f"{ctx.message.author.mention} gently begins to nibble on {nibbled}'s ear!", color=0x00ff00)
-        embed.set_image(url = "https://i.imgur.com/R78kQgT.png")
+        embed.set_image(url = data["result"]["imgUrl"])
         embed.set_footer(text = 'Wynter 2.0')
         return await ctx.send(embed = embed)
 
@@ -293,8 +316,13 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def howl(self, ctx):
+        data = ""
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://api.furrycentr.al/sfw/howl") as resp:
+                data = await resp.text()
+                data = json.loads(data)
         embed = discord.Embed(title = "Awoooooooo!", description = f"{ctx.message.author.mention} has let out a loud howl. \n\nAwoooooooooooooo!" , color=0x00ff00)
-        embed.set_thumbnail(url = "https://i.imgur.com/RKgG0V7.png")
+        embed.set_image(url = data["result"]["imgUrl"])
         embed.set_footer(text = 'Wynter 2.0')
         return await ctx.send(ctx.message.author.mention, embed = embed)
     
@@ -302,8 +330,14 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def rawr(self, ctx):
+        data = ""
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://api.furrycentr.al/sfw/roar") as resp:
+                data = await resp.text()
+                data = json.loads(data)
+        
         embed = discord.Embed(title = "ROARRRRRR!", description = f"{ctx.message.author.mention} has let out a loud roar, scaring the whole jungle!" , color=0x00ff00)
-        embed.set_thumbnail(url = "https://i.imgur.com/DdmisyT.png")
+        embed.set_image(url = data["result"]["imgUrl"])
         embed.set_footer(text = 'Wynter 2.0')
         return await ctx.send(ctx.message.author.mention, embed = embed)
     
@@ -311,8 +345,13 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def blep(self, ctx):
+        data = ""
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://api.furrycentr.al/sfw/blep") as resp:
+                data = await resp.text()
+                data = json.loads(data)
         embed = discord.Embed(title = "Blep uwu!", description = f"{ctx.message.author.mention} does a blep, looking rather cute as they do so!" , color=0x00ff00)
-        embed.set_thumbnail(url = "https://i.imgur.com/XxpnfWX.png")
+        embed.set_image(url = data["result"]["imgUrl"])
         embed.set_footer(text = 'Wynter 2.0')
         return await ctx.send(ctx.message.author.mention, embed = embed)
     
@@ -379,12 +418,12 @@ class Fun(commands.Cog):
        
         if ctx.message.author in ctx.message.mentions:
             embed = discord.Embed(title = "zzz!", description = f"{ctx.message.author.mention} has fell asleep. Sweet Dreams!", color=0x00ff00)
-            embed.set_image(url = "https://i.imgur.com/A2jMwRk.png")
+            embed.set_image(url = "https://preview.redd.it/4dqsz233mwn41.png?width=640&crop=smart&auto=webp&s=4186a2874d26aef9cae47157eb348f38cdb27ab4")
             embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(embed = embed)
 
         embed = discord.Embed(title = "zzz!", description = f"{ctx.message.author.mention} lies against {napped} and gently drifts off..", color=0x00ff00)
-        embed.set_image(url = "https://i.imgur.com/A2jMwRk.png")
+        embed.set_image(url = "https://preview.redd.it/4dqsz233mwn41.png?width=640&crop=smart&auto=webp&s=4186a2874d26aef9cae47157eb348f38cdb27ab4")
         embed.set_footer(text = 'Wynter 2.0')
         return await ctx.send(embed = embed)
     
@@ -397,15 +436,21 @@ class Fun(commands.Cog):
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
             embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(ctx.message.author.mention, embed = embed) 
+
+        data = ""
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://api.furrycentr.al/sfw/headpats/") as resp:
+                data = await resp.text()
+                data = json.loads(data)
        
         if ctx.message.author in ctx.message.mentions:
             embed = discord.Embed(title = "Pat pat pat!", description = f"{self.bot.user.mention} softly pats {petted}'s head! \n\nPS: I'm here for you", color=0x00ff00)
-            embed.set_image(url = "https://i.imgur.com/p2U1kpt.png")
+            embed.set_image(url = data["result"]["imgUrl"])
             embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(embed = embed)
 
         embed = discord.Embed(title = "Pat pat pat!", description = f"{ctx.message.author.mention} softly pats {petted}'s head!", color=0x00ff00)
-        embed.set_image(url = "https://i.imgur.com/p2U1kpt.png")
+        embed.set_image(url = data["result"]["imgUrl"])
         embed.set_footer(text = 'Wynter 2.0')
         return await ctx.send(embed = embed)
     
@@ -461,7 +506,7 @@ class Fun(commands.Cog):
             embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(ctx.message.author.mention, embed = embed)
 
-        embed = discord.Embed(title = "BAD FURRY", description = f"{ctx.message.author.mention} notices {bapped} being baed, so they bap them with a newspaper.", color=0x00ff00)
+        embed = discord.Embed(title = "BAD FURRY", description = f"{ctx.message.author.mention} notices {bapped} being bad, so they bap them with a newspaper.", color=0x00ff00)
         embed.set_image(url = "https://i.imgur.com/CsGfqgc.png")
         embed.set_footer(text = 'Wynter 2.0')
         return await ctx.send(embed = embed)
