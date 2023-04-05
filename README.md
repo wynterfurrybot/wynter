@@ -19,7 +19,7 @@ $ git clone https://github.com/Rapptz/discord.py
 $ cd discord.py
 $ python3 -m pip install -U .
 $ cd ..
-$ git clone https://github.com/DarkmaneTheRobot/wynter2.git
+$ git clone https://github.com/wynterfurrybot/wynter.git
 $ cd wynter2
 $ cd Wynter
 $ python3 -m pip install -r requirements.txt 
