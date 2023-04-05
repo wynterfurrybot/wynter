@@ -30,6 +30,11 @@ class Fursona(commands.Cog):
     @commands.command(name = 'sona', pass_context=True, help = 'Get a user\'s fursona')
     @commands.cooldown(1,5, commands.BucketType.user)
     async def sona(self, ctx, user:discord.Member):
+        try:
+            if "fsm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         connection = connecttodb()
         try:
             with connection.cursor() as cursor:
@@ -46,7 +51,7 @@ class Fursona(commands.Cog):
                 embed.add_field(name='Sexuality', value=f"{result['sexuality']}", inline=False)
                 embed.add_field(name='Additional Info', value=f"{result['addinfo']}", inline=False)
                 embed.set_thumbnail(url = result['pfplink'])
-                embed.set_footer(text = 'Wynter 2.0')
+                embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
                 await ctx.send(embed=embed, reference = ctx.message)
         except Exception as err:
             print(err)
@@ -55,44 +60,14 @@ class Fursona(commands.Cog):
                 return await ctx.send("This user does not have a fursona")
             await ctx.send(f"Error fetching fursona! \n\n{err}")
 
-    @commands.command(name = 'rem-sona', pass_context=True, help = 'Get a user\'s fursona')
-    @commands.cooldown(1,5, commands.BucketType.user)
-    async def remsona(self, ctx, user:discord.Member):
-        staff = False
-        if ctx.message.author.guild_permissions.administrator:
-            staff = True
-
-        if ctx.message.author.id == 802354019603185695:
-            staff = True
-        
-        print(f"Staff = {staff}")
-
-        if not ctx.message.author.id == user.id and staff == False:
-            return await ctx.send("You have no permission to remove this fursona, oni-san.", reference = ctx.message)
-        
-        
-        connection = connecttodb()
-        try:
-            print("connected to database")
-            with connection.cursor() as cursor:
-                # Read a single record
-                sql = "DELETE from `fursonas` WHERE `user_id`=%s"
-                cursor.execute(sql, (user.id))
-                connection.commit()
-                print("deleted user")
-                await ctx.send("User Deleted", reference = ctx.message)
-        except Exception as err:
-            print(err)
-            err = str(err)
-            if "NoneType" in err:
-                return await ctx.send("This user does not have a fursona")
-            await ctx.send(f"Task Failed Sucessfully! \n\nError deleting fursona! \n\n{err}")
-
     @commands.command(name = 'register-sona', pass_context=True, help = 'Register a fursona with Wynter')
     @commands.cooldown(1,5, commands.BucketType.user)
     async def registersona(self, ctx):
-        if ctx.message.guild.id == 796073346017001504:
-            await ctx.send("Registering fursonas has been blacklisted in this guild")
+        try:
+            if "fsm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         await ctx.send(f":e_mail: {ctx.message.author.mention} Check your DMs!")
         a = ctx.message.author
         await a.send("Let's set up your fursona! \n\nFirst, may I get their name?")
@@ -165,7 +140,7 @@ class Fursona(commands.Cog):
                 embed.add_field(name='Sexuality', value=f"{result['sexuality']}", inline=False)
                 embed.add_field(name='Additional Info', value=f"{result['addinfo']}", inline=False)
                 embed.set_thumbnail(url = result['pfplink'])
-                embed.set_footer(text = 'Wynter 2.0')
+                embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
                 await a.send("Here is your fursona!", embed=embed)
         except Exception as err:
             print(err)

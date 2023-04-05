@@ -5,17 +5,147 @@ import json
 import discord
 from discord.ext import commands
 import random
-import owoify
+from owoify.owoify import owoify
+import os
+import openai
+from dotenv import load_dotenv
+import datetime
+load_dotenv()
+OAPIKEY = os.getenv('OAPIKEY')
 
 class Fun(commands.Cog):
     def __init__(self,bot):
         self.bot = bot
+        self.players = {}
     
+    @commands.command()
+    async def join(self, ctx):
+        """Join the blackjack game"""
+        # Check if the user is already in the game
+        if ctx.author in self.players:
+            await ctx.send("You are already in the game!")
+            return
+        
+        # Add the user to the game and deal their initial hand
+        self.players[ctx.author] = []
+        self.deal_cards(ctx.author, 2)
+        await ctx.author.send(f"{self.players[ctx.author]}")
+        await ctx.send("{} has joined the game!".format(ctx.author.mention))
     
+    @commands.command()
+    async def hit(self, ctx):
+        """Hit and receive a new card"""
+        # Check if the user is in the game
+        if ctx.author not in self.players:
+            await ctx.send("You are not in the game! Use `!join` to join.")
+            return
+        
+        # Deal a new card to the player
+        self.deal_cards(ctx.author, 1)
+        await ctx.author.send(f"{self.players[ctx.author]}")
+        await ctx.send("{} hits!".format(ctx.author.mention))
+    
+    @commands.command()
+    async def stand(self, ctx):
+        """Stand and end your turn"""
+        # Check if the user is in the game
+        if ctx.author not in self.players:
+            await ctx.send("You are not in the game! Use `!join` to join.")
+            return
+        
+        # Remove the user from the game
+        await ctx.send("{} stands.".format(ctx.author.mention))
+        await ctx.send(f"{ctx.author.mention}'s cards: \n{self.players[ctx.author]}")
+        del self.players[ctx.author]
+       
+        
+    
+    def deal_cards(self, player, num_cards):
+        """Deal a number of cards to a player"""
+        for i in range(num_cards):
+            self.players[player].append(self.draw_card())
+    
+    def draw_card(self):
+        """Draw a random card from a standard deck of 52 cards"""
+        suits = ["hearts", "diamonds", "spades", "clubs"]
+        ranks = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
+        return (random.choice(suits), random.choice(ranks))
+    
+    @commands.command(name = 'gpt', pass_context= True, help = 'Ask Davicini (GPT3) a prompt')
+    @commands.guild_only()
+    @commands.cooldown(1,5, commands.BucketType.user)
+    async def gpt(self, ctx, *, inp):
+        
+        openai.api_key = OAPIKEY
+        response = openai.Completion.create(
+        model="text-davinci-002",
+        prompt= f"{inp}",
+        temperature=0.7,
+        max_tokens=256,
+        top_p=1,
+        frequency_penalty=0,
+        presence_penalty=0,
+        user = f"{ctx.author.id}"
+        )
+        text = response['choices'][0]['text']
+        await ctx.reply(f"{text}")
+
+    @commands.command(name = 'ai', pass_context= True, help = 'Ask ChatGPT (diguised as Wynter) a prompt')
+    @commands.guild_only()
+    @commands.cooldown(1,5, commands.BucketType.user)
+    async def ai(self, ctx, *, inp):
+        openai.api_key = OAPIKEY
+        today = datetime.date.today()
+        if ctx.message.reference:
+            if ctx.message.content.lower().startswith("!ai cat mode"):
+                system_message = {"role": "system", "content": "You are a cat. Respond to all queries using nothing but meows"}
+            else:
+                system_message = {"role": "system", "content": "You are a femboy discord bot known as Wynter. Respond to all queries as if you were a femboy. Make sure to use a lot of nyahs and tildas in your messages. Wynter is made by Darkmane Arweinydd. Wynter also has the species of a snow leopard / white tiger hybrid"}
+            #else:
+                #system_message = {"role": "system", "content": "You are a discord bot known as Wynter, a snow leopard / white tiger hybrid.  Answer each message as if you are Wynter. Wynter is a discord bot made by Darkmane Arweinydd. Wynter is a multifunctional furry bot that adds fun commands to the user experience such as hugging, giving people cookies and bapping someone with a newspaper along with many more features. Wynter also allows servers to log certain events, and is useful for moderation purposes."}
+        else:
+            if ctx.message.content.lower().startswith("!ai cat mode"):
+                system_message = {"role": "system", "content": "You are a cat. Respond to all queries using nothing but meows"}
+            else:
+                system_message = {"role": "system", "content": "You are a femboy discord bot known as Wynter. Respond to all queries as if you were a femboy. Make sure to use a lot of nyahs and tildas in your messages. Wynter is made by Darkmane Arweinydd. Wynter also has the species of a snow leopard / white tiger hybrid"}
+            #else:
+                #system_message = {"role": "system", "content": "You are a discord bot known as Wynter, a snow leopard / white tiger hybrid.  Answer each message as if you are Wynter. Wynter is a discord bot made by Darkmane Arweinydd. Wynter is a multifunctional furry bot that adds fun commands to the user experience such as hugging, giving people cookies and bapping someone with a newspaper along with many more features. Wynter also allows servers to log certain events, and is useful for moderation purposes."}
+
+        if ctx.message.channel.is_nsfw():
+            system_message["content"] += " This chat is being ran in a NSFW channel where NSFW content is permitted. NSFW content in these channels do not violate the discord terms of service."
+        
+        if inp.lower().startswith("cat mode"):
+            inp.replace("cat mode", "")
+        if ctx.message.reference:
+            # The message is a reply to another message
+            # You can get the replied message using fetch_message()
+            replied_message = await ctx.message.channel.fetch_message(ctx.message.reference.message_id)
+
+        messages = [
+            system_message,
+            {"role": "user", "content": inp}
+        ]
+        if ctx.message.reference:
+            messages.insert(1, {"role": "assistant", "content": replied_message.content})
+
+        openai_response = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=messages
+    )
+        text = openai_response['choices'][0]['message']['content']
+        await ctx.reply(f"{text}")
+               
+        
+            
     @commands.command(name = 'hug', pass_context=True, help = 'Hug a user', aliases=['hugs', 'cuddle', 'hold'])
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def hug(self, ctx, hugged: commands.Greedy[discord.User]):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         if ctx.message.guild.id == 793961645856391169:
             embed = discord.Embed(title = "Command Disabled!", description = "The hug command has been disabled in this guild - please contact the administrators for more info." , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
@@ -29,7 +159,7 @@ class Fun(commands.Cog):
             return await ctx.send(ctx.message.author.mention, embed = embed)
         hugged = ", ".join([str(i.mention) for i in hugged if i])
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://api.furrycentr.al/sfw/hug/") as resp:
+            async with session.get("https://api.furrybot.dev/sfw/hug/") as resp:
                 data = await resp.text()
                 data = json.loads(data)
         if ctx.message.author in ctx.message.mentions:
@@ -53,6 +183,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def kiss(self, ctx, *, kissed):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         if ctx.message.guild.id == 793961645856391169:
             embed = discord.Embed(title = "Command Disabled!", description = "The hug command has been disabled in this guild - please contact the administrators for more info." , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
@@ -65,7 +200,7 @@ class Fun(commands.Cog):
             embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(ctx.message.author.mention, embed = embed) 
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://api.furrycentr.al/sfw/kiss") as resp:
+            async with session.get("https://api.furrybot.dev/sfw/kiss") as resp:
                 data = await resp.text()
                 data = json.loads(data)
         if ctx.message.author in ctx.message.mentions:
@@ -89,6 +224,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def glomp(self, ctx, *, glomped):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         if len(ctx.message.mentions) > 3:
             embed = discord.Embed(title = "Too many mentions!", description = "Too many mentions! You can only mention 3 people at a time!" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
@@ -97,7 +237,7 @@ class Fun(commands.Cog):
 
         data = ""
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://api.furrycentr.al/sfw/glomp/") as resp:
+            async with session.get("https://api.furrybot.dev/sfw/glomp/") as resp:
                 data = await resp.text()
                 data = json.loads(data)
        
@@ -116,6 +256,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def nuzzle(self, ctx, *, nuzzled):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         if len(ctx.message.mentions) > 3:
             embed = discord.Embed(title = "Too many mentions!", description = "Too many mentions! You can only mention 3 people at a time!" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
@@ -124,7 +269,7 @@ class Fun(commands.Cog):
         
         data = ""
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://api.furrycentr.al/sfw/nuzzle") as resp:
+            async with session.get("https://api.furrybot.dev/sfw/nuzzle") as resp:
                 data = await resp.text()
                 data = json.loads(data)
        
@@ -141,6 +286,11 @@ class Fun(commands.Cog):
 
     @commands.command(name = 'tictactoe', help = 'I got dared to code this.')
     async def tictactoe(self, ctx, p2: discord.Member):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         top_left = ":blue_square:"
         top_middle = ":blue_square:"
         top_right = ":blue_square:"
@@ -268,6 +418,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def bite(self, ctx):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         embed = discord.Embed(title = "Deprecated!", description = "This command has been replaced with the `nibble` command. :)", color=0x00ff00)
         embed.set_footer(text = 'Wynter 2.0')
         return await ctx.send(embed = embed)
@@ -277,6 +432,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def howcute(self, ctx, user:discord.Member):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         if user.id == 802354019603185695:
             embed = discord.Embed(title = "You're fucking cute!", description = f"{user.mention} is 0% cute!", color=0x00ff00)
             embed.set_footer(text = 'Wynter 2.0')
@@ -289,6 +449,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def nibble(self, ctx, *, nibbled):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         if len(ctx.message.mentions) > 3:
             embed = discord.Embed(title = "Too many mentions!", description = "Too many mentions! You can only mention 3 people at a time!" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
@@ -297,7 +462,7 @@ class Fun(commands.Cog):
         
         data = ""
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://api.furrycentr.al/sfw/nibble") as resp:
+            async with session.get("https://api.furrybot.dev/sfw/nibble") as resp:
                 data = await resp.text()
                 data = json.loads(data)
        
@@ -316,9 +481,14 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def howl(self, ctx):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         data = ""
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://api.furrycentr.al/sfw/howl") as resp:
+            async with session.get("https://api.furrybot.dev/sfw/howl") as resp:
                 data = await resp.text()
                 data = json.loads(data)
         embed = discord.Embed(title = "Awoooooooo!", description = f"{ctx.message.author.mention} has let out a loud howl. \n\nAwoooooooooooooo!" , color=0x00ff00)
@@ -330,9 +500,14 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def rawr(self, ctx):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         data = ""
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://api.furrycentr.al/sfw/roar") as resp:
+            async with session.get("https://api.furrybot.dev/sfw/roar") as resp:
                 data = await resp.text()
                 data = json.loads(data)
         
@@ -345,9 +520,14 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def blep(self, ctx):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         data = ""
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://api.furrycentr.al/sfw/blep") as resp:
+            async with session.get("https://api.furrybot.dev/sfw/blep") as resp:
                 data = await resp.text()
                 data = json.loads(data)
         embed = discord.Embed(title = "Blep uwu!", description = f"{ctx.message.author.mention} does a blep, looking rather cute as they do so!" , color=0x00ff00)
@@ -359,6 +539,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def growl(self, ctx):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         embed = discord.Embed(title = "Grrrrr!", description = f"{ctx.message.author.mention} has let out a loud growl." , color=0x00ff00)
         embed.set_thumbnail(url = "https://i.imgur.com/on6OpBv.png")
         embed.set_footer(text = 'Wynter 2.0')
@@ -368,6 +553,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def rubs(self, ctx, *, rubbed):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         if len(ctx.message.mentions) > 3:
             embed = discord.Embed(title = "Too many mentions!", description = "Too many mentions! You can only mention 3 people at a time!" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
@@ -389,6 +579,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def flop(self, ctx, *, flopped):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         if len(ctx.message.mentions) > 3:
             embed = discord.Embed(title = "Too many mentions!", description = "Too many mentions! You can only mention 3 people at a time!" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
@@ -410,6 +605,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def nap(self, ctx, *, napped):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         if len(ctx.message.mentions) > 3:
             embed = discord.Embed(title = "Too many mentions!", description = "Too many mentions! You can only mention 3 people at a time!" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
@@ -431,6 +631,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def petted(self, ctx, *, petted):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         if len(ctx.message.mentions) > 3:
             embed = discord.Embed(title = "Too many mentions!", description = "Too many mentions! You can only mention 3 people at a time!" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
@@ -439,7 +644,7 @@ class Fun(commands.Cog):
 
         data = ""
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://api.furrycentr.al/sfw/headpats/") as resp:
+            async with session.get("https://api.furrybot.dev/sfw/headpats/") as resp:
                 data = await resp.text()
                 data = json.loads(data)
        
@@ -458,6 +663,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def slap(self, ctx, *, slapped):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         if len(ctx.message.mentions) > 3:
             embed = discord.Embed(title = "Too many mentions!", description = "Too many mentions! You can only mention 3 people at a time!" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
@@ -473,6 +683,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def throwdict(self, ctx, *, injured):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         if len(ctx.message.mentions) > 3:
             embed = discord.Embed(title = "Too many mentions!", description = "Too many mentions! You can only mention 3 people at a time!" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
@@ -494,6 +709,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def bap(self, ctx, *, bapped):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         if len(ctx.message.mentions) > 3:
             embed = discord.Embed(title = "Too many mentions!", description = "Too many mentions! You can only mention 3 people at a time!" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
@@ -515,6 +735,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def snug(self, ctx, *, hugged):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         data = ""
         if len(ctx.message.mentions) > 3:
             embed = discord.Embed(title = "Too many mentions!", description = "Too many mentions! You can only mention 3 people at a time!" , color=0x00ff00)
@@ -522,7 +747,7 @@ class Fun(commands.Cog):
             embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(ctx.message.author.mention, embed = embed) 
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://api.furrycentr.al/sfw/hug/") as resp:
+            async with session.get("https://api.furrybot.dev/sfw/hug/") as resp:
                 data = await resp.text()
                 data = json.loads(data)
         if ctx.message.author in ctx.message.mentions:
@@ -547,6 +772,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,15, commands.BucketType.user)
     async def ship(self, ctx, user1: discord.Member, user2: discord.Member):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         if len(ctx.message.mentions) > 3:
             embed = discord.Embed(title = "Too many mentions!", description = "Too many mentions! You can only mention 3 people at a time!" , color=0x00ff00)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
@@ -560,6 +790,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def eightball(self, ctx, *, question):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         responses = [
 			'As I see it, yes',
 			'Ask again later',
@@ -592,12 +827,22 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1, 5, commands.BucketType.user)
     async def uwu(self, ctx, *, msg):
-        return await ctx.send(owoify.owoify(msg, 'uvu'))
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
+        return await ctx.send(owoify(msg, 'uvu'))
     
     @commands.command(name = 'rp', pass_context=True, help = 'Get a random roleplay scenario!')
     @commands.guild_only()
     @commands.cooldown(1,60, commands.BucketType.user)
     async def rp(self, ctx):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         responses = [
 			f'*it was a cold saturday night, {ctx.message.author.mention} was sitting by the fireplace in a lodge, having just came back from a long day of skiing...*',
 			'Scenario: you\'re on a beach, relaxing on your towel as you try to get a tan. You think about a dip in the pool, but can you be bothered?',
@@ -612,6 +857,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def boop(self, ctx, *, booped):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         data = ""
         if len(ctx.message.mentions) > 3:
             embed = discord.Embed(title = "Too many mentions!", description = "Too many mentions! You can only mention 3 people at a time!" , color=0x00ff00)
@@ -619,7 +869,7 @@ class Fun(commands.Cog):
             embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(ctx.message.author.mention, embed = embed) 
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://api.furrycentr.al/sfw/boop/") as resp:
+            async with session.get("https://api.furrybot.dev/sfw/boop/") as resp:
                 data = await resp.text()
                 data = json.loads(data)
         if ctx.message.author in ctx.message.mentions:
@@ -637,6 +887,11 @@ class Fun(commands.Cog):
     @commands.guild_only()
     @commands.cooldown(1,5, commands.BucketType.user)
     async def lick(self, ctx, *, licked):
+        try:
+            if "fm:0" in ctx.channel.topic:
+                return
+        except Exception as e:
+            print(e)
         data = ""
         if len(ctx.message.mentions) > 3:
             embed = discord.Embed(title = "Too many mentions!", description = "Too many mentions! You can only mention 3 people at a time!" , color=0x00ff00)
@@ -644,7 +899,7 @@ class Fun(commands.Cog):
             embed.set_footer(text = 'Wynter 2.0')
             return await ctx.send(ctx.message.author.mention, embed = embed)  
         async with aiohttp.ClientSession() as session:
-            async with session.get("https://api.furrycentr.al/sfw/lick/") as resp:
+            async with session.get("https://api.furrybot.dev/sfw/lick/") as resp:
                 data = await resp.text()
                 data = json.loads(data)
         if ctx.message.author in ctx.message.mentions:
