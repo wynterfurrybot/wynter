@@ -1,18 +1,19 @@
 # bot.py
 import os
+from this import d
 
 import discord
 from discord import Embed
-from discord.ext import commands
-from discord_components import DiscordComponents, Button, ButtonStyle, InteractionType
+from discord.ext import commands, bridge
 from dotenv import load_dotenv
-
+import math
 import pymysql.cursors
 import json
 import sys, traceback
 import time
 import random
 import asyncio
+
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -57,7 +58,8 @@ def get_prefix(bot,msg):
         
 intents = discord.Intents.default()
 intents.members = True
-client = commands.Bot(command_prefix=get_prefix, case_insensitive = True, intents = intents)
+intents.message_content = True
+client = bridge.AutoShardedBot(shard_count=5, command_prefix=get_prefix, case_insensitive = True, intents = intents)
 
 
 @client.command(name='prefix', help= 'Sets server prefix')
@@ -89,7 +91,6 @@ async def resetawoo():
 
 @client.event
 async def on_ready():
-    DiscordComponents(client)
     print(f'{client.user} has connected to Discord!')
     while True:
         statuses = [discord.Activity(name='the snow fall | mention me for help!', type=discord.ActivityType.watching), discord.Activity(name='with the snow | mention me for help!', type=discord.ActivityType.playing), discord.Activity(name='people hug | mention me for help!', type=discord.ActivityType.watching), discord.Activity(name='RetroPi games | mention me for help!', type=discord.ActivityType.playing), discord.Activity(name='the kitchen burn | mention me for help!', type=discord.ActivityType.watching),discord.Activity(name='cookies bake in the oven | mention me for help!', type=discord.ActivityType.watching)]
@@ -225,42 +226,14 @@ async def on_button_click(res):
             )
     )
 
-    
 
 @client.event
 async def on_message(msg):
-    ## XP Gaining
-    '''connection = connecttodb()
-    if msg.author.id not in xpcooldown:
-        try:
-            with connection.cursor() as cursor:
-                # Read a single record
-                sql = "SELECT * from `xp` WHERE `user_id`=%s"
-                cursor.execute(sql, (msg.author.id))
-                result = cursor.fetchone()
-                result = json.dumps(result,sort_keys=True)
-                result = json.loads(result)
-
-                sql = "UPDATE `xp` SET xp = xp + 1 where `user_id` = %s"
-                cursor.execute(sql, (msg.author.id))
-                connection.commit()
-                print(f"Sucess! Updated XP for {msg.author.id}")
-                xpcooldown.append(msg.author.id)
-                await asyncio.sleep(10)
-                xpcooldown.remove(msg.author.id)
-                connection.close()
-        except Exception as err:
-            err = str(err)
-            if "NoneType" in err:
-                with connection.cursor() as cursor:
-                    # Insert a single record
-                    sql = "INSERT INTO `xp` (user_id, guild_id, xp) VALUES (%s, %s, %s)"
-                    cursor.execute(sql, (msg.author.id, msg.guild.id , 1))
-                    connection.commit()
-                    print(f"Sucess! Added a levelling profile for {msg.author.id}")
-                    connection.close()'''
-        
-    
+    if "darcutiemane" in msg.content.lower() or "dark" in msg.content.lower() and "cute" in msg.content.lower() or "dark" in msg.content.lower() and "cutie" in msg.content.lower() or "dark" in msg.content.lower() and "cut13" in msg.content.lower() or "dark" in msg.content.lower() and "cuwutie" in msg.content.lower() or "dar" in msg.content.lower() and "cuwutie" in msg.content.lower():
+        m = await msg.reply("You know that isn't true ;)")
+        await msg.delete()
+        await asyncio.sleep(3)
+        return await m.delete()
     if msg.content.lower() == '!d bump' and msg.guild.id == 797709586630443028:
         global bumped
         global bid
@@ -341,6 +314,8 @@ async def on_message(msg):
                     return await msg.channel.send(f"Hey {m}, I'm Wynter.")
         except Exception as err:
             print(err)
+    if msg.content.lower == f"*pets {client.user.mention}*":
+        return await msg.channel.send("I'm not lesserdog. My neck doesn't grow if you pet me.")
 
     #Wolf Pack Stuff
     if "http" in msg.content and msg.guild.id == 793961645856391169 or "www." in msg.content and msg.guild.id == 793961645856391169:
@@ -363,22 +338,22 @@ async def on_message(msg):
     if "http" in msg.content and msg.guild.id == 881358123389038654 or "www." in msg.content and msg.guild.id == 881358123389038654 or "discord.gg" in msg.content and msg.guild.id == 881358123389038654:
         memrole = discord.utils.get(msg.guild.roles, id= 881378170887086110)
         partrole = discord.utils.get(msg.guild.roles, id= 883072052851011604)
-        if memrole in msg.author.roles:
+        if partrole in msg.author.roles:
             if "discord.gg" in msg.content:
                 await msg.delete()
             else:
                 return
-        elif partrole in msg.author.roles:
-            if message.channel.id == 882622737925959742:
+        elif memrole in msg.author.roles and partrole not in msg.author.roles:
+            if msg.channel.id == 882622737925959742:
                 return
             else:
-                if "discord.gg" in message.content:
-                    await message.delete()
+                if "discord.gg" in msg.content:
+                    await msg.delete()
         else:
             await msg.delete()
             
 
-    if msg.content== f"<@!{client.user.id}>":
+    if msg.content== f"{client.user.mention}":
         try:
             connection = connecttodb()
             with connection.cursor() as cursor:
@@ -432,7 +407,8 @@ async def on_message(msg):
     
     await client.process_commands(msg)
 
-initial_extensions = ['info', 'fun', 'meme', 'moderation', 'nsfw', 'christmas', 'fursona', 'foodanddrink']
+
+initial_extensions = ['info', 'fun', 'moderation', 'nsfw', 'christmas', 'fursona', 'foodanddrink', 'test', 'level', 'eco']
 
 if __name__ == "__main__":
     for extension in initial_extensions:
@@ -442,13 +418,20 @@ if __name__ == "__main__":
             exc = '{}:{}'.format(type(e).__name__,e)
             print('Failed to load extension {}\n{}'.format(extension,exc))
 
+
 @client.event
 async def on_message_delete(message):
     if message.author.bot:
         return
-    embed = discord.Embed(title = "Message Deleted!", description = f"{message.content}" , color=0x00ff00)
+    embed = discord.Embed(title = f"Message deleted in #{message.channel.name}", color=0x00ff00)
+    embed.set_author(name= f"{message.author.display_name}", icon_url=f"{message.author.avatar.url}")
+    embed.add_field(name= "Content", value = message.content, inline= False)
+    embed.add_field(name = "Addtional Information", value = f"Message ID: `{message.id}` \nChannel ID: `{message.channel.id}`" )
     embed.set_footer(text = f'Wynter 2.0 | Message sent by {message.author.display_name}')
-    channel = discord.utils.get(message.guild.text_channels, name='message_logs')
+    if message.channel.is_nsfw():
+        channel = discord.utils.get(message.guild.text_channels, name='nsfw_message_logs')
+    else:
+        channel = discord.utils.get(message.guild.text_channels, name='message_logs')
     await channel.send(embed = embed)
 
 @client.event
@@ -470,9 +453,17 @@ async def on_bulk_message_delete(messages):
 async def on_message_edit(oldmessage, newmessage):
     if oldmessage.author.bot:
         return
-    embed = discord.Embed(title = "Message Edited!", description = f"Original Message: \n{oldmessage.content} \n\nNew Message: \n{newmessage.content}" , color=0x00ff00)
+    embed = discord.Embed(title = f"Message edited in #{oldmessage.channel.name}", color=0x00ff00)
+    embed.set_author(name= f"{oldmessage.author.display_name}", icon_url=f"{oldmessage.author.avatar.url}")
+    embed.add_field(name= "Old Message", value = oldmessage.content, inline= False)
+    embed.add_field(name= "New Message", value = newmessage.content, inline= False)
+    embed.add_field(name = "Addtional Information", value = f"Message ID: `{oldmessage.id}` \nChannel ID: `{oldmessage.channel.id}`" )
     embed.set_footer(text = f'Wynter 2.0 | Message sent by {oldmessage.author.display_name}')
-    channel = discord.utils.get(oldmessage.guild.text_channels, name='message_logs')
+    embed.set_footer(text = f'Wynter 2.0 | Message sent by {oldmessage.author.display_name}')
+    if oldmessage.channel.is_nsfw():
+        channel = discord.utils.get(oldmessage.guild.text_channels, name='nsfw_message_logs')
+    else:
+        channel = discord.utils.get(oldmessage.guild.text_channels, name='message_logs')
     await channel.send(embed = embed)
 
 @client.event
@@ -514,6 +505,17 @@ async def on_guild_join(guild):
     if guild.owner.id == 793212536081612801 or guild.owner.id == 726821503022399639 or guild.owner.id == 483677790449827844 or guild.owner.id == 816531184540057601:
         await guild.owner.send("Your guild has been blacklisted.")
         await guild.leave()
+    shard_id = guild.shard_id
+    shard = client.get_shard(shard_id)
+    ping = math.floor(shard.latency * 1000)
+    before = time.monotonic()
+    embed = discord.Embed(title = "Welcome!", description = 'Getting info, please wait...', color=0x00ff00)
+    embed.set_footer(text = 'Wynter 2.0')
+    msg = await guild.owner.send(embed = embed)
+    latency = math.floor((time.monotonic() - before) * 1000)
+    embed = discord.Embed(title = "Welcome", description = f'Your server is running on Shard ID: {shard_id}! \n\nThe current ping it has is: \n{ping}ms\nand Message Latency is:\n{latency}ms \n\nType `!help` for a command list and join the support server at https://discord.gg/8pBNMV2hRx \n\nTrack bot uptime at https://uptime.furrycentr.al/', color=0x00ff00)
+    embed.set_footer(text = 'Wynter 2.0')
+    await msg.edit(embed=embed)
     try:
         connection = connecttodb()
         with connection.cursor() as cursor:
@@ -584,12 +586,128 @@ async def on_guild_channel_update(before, after):
 
 @client.event
 async def on_member_join(user):
+    if user.guild.id == 931357551768002610:
+        guild = user.guild
+        category = discord.utils.get(user.guild.categories, name = 'verification')
+        channel = await guild.create_text_channel(str(user.id), category=category)
+        def check(m):
+            return m.author.id == user.id
+        await channel.set_permissions(user, read_messages=True, send_messages = True)
+        role = discord.utils.get(guild.roles, name="@everyone")
+        staff = discord.utils.get(guild.roles, name="Staff")
+        await channel.set_permissions(role, read_messages=False)
+        await channel.set_permissions(staff, read_messages=True, manage_channels = True)
+
+        await channel.send(f"Welcome, {user.mention}. \n\nThanks for joining The Brumal Cafè. \n\nTo proceed through verification, I just need you to answer a few questions.")
+        await channel.send("First, what would you prefer to be called in this server?")
+        await asyncio.sleep(1)
+        msg = await client.wait_for('message', check = check)
+        await channel.send("Next, may I get your age? (Please provide a whole number)")
+        await asyncio.sleep(1)
+        msg = await client.wait_for('message', check = check)
+        try:
+            age = int(msg.content)
+        except:
+            await channel.send("That is an invalid age. \n\nYour registration has been aborted. Please contact staff to continue.")
+        if age < 13:
+            await user.send("You are underaged. According to discord TOS, users under 13 are not allowed to use the application. Read more here \n\nhttps://discord.com/terms")
+            await user.guild.ban(user, reason = "Underaged user, banned due to TOS violation.")
+            await channel.delete()
+        await channel.send("Thank you, next, may I know what gender and pronouns you identify as?")
+        await asyncio.sleep(1)
+        msg = await client.wait_for('message', check = check)
+        await channel.send("Great, may I ask your preference on DMs? ALLOW/DENY/ASK FIRST")
+        await asyncio.sleep(1)
+        msg = await client.wait_for('message', check = check)
+        if msg.content.lower() != "allow" or msg.content.lower() != "deny" or msg.content.lower() != "ask" or msg.content.lower() != "ask first":
+            channel.send("That is an invalid answer. Your registration has been aborted. Please contact staff to continue.")
+        await channel.send("Great, may I ask your preference on mentions? YES/NO")
+        await asyncio.sleep(1)
+        msg = await client.wait_for('message', check = check)
+        if msg.content.lower() != "yes" or msg.content.lower() != "no":
+            channel.send("That is an invalid answer. Your registration has been aborted. Please contact staff to continue.")
+        await channel.send("Finally, tell me about your fursona. \n\nWhat species are they? What's their favourite activites? What gender are they? Do they like sleeping all day? Anything! \n\nNote: if you don't have a fursona, tell us info of what you imagine your fursona to be!")
+        await asyncio.sleep(1)
+        msg = await client.wait_for('message', check = check)
+        await channel.send("All done! \n\n<@&931367540289060915> will now review your application. Please wait. \n\nShould you need any further assistance, please type here and a member of staff will get to you ASAP.")
+        await channel.send("Also, may I ask you, what did you think of this registration process? All feedback is welcome, including any suggestions for improvements.")
+    
+    if user.guild.id == 986242703866081320:
+        guild = user.guild
+        category = discord.utils.get(user.guild.categories, name = '『📃』Welcome')
+        channel = await guild.create_text_channel(str(user.id), category=category)
+        def check(m):
+            return m.author.id == user.id
+        await channel.set_permissions(user, read_messages=True, read_message_history = True, send_messages= True)
+        role = discord.utils.get(guild.roles, name="@everyone")
+        goobs = discord.utils.get(guild.roles, id = 990655069387100170) 
+        staff = discord.utils.get(guild.roles, id = 990671590217908224) 
+        wynter = discord.utils.get(guild.roles, id = 1003063184564944909)
+        
+        await channel.set_permissions(role, read_messages=False)
+        await channel.set_permissions(goobs, read_messages=False)
+        await channel.set_permissions(staff, read_messages=True, manage_channels = True)
+        await channel.set_permissions(wynter, send_messages=True)
+       
+
+        await channel.send(f"Welcome, {user.mention}. \n\nThanks for joining The The Goob'n Crew. \n\nTo proceed through verification, I just need you to answer a few questions.")
+        await channel.send("First, what made you join the server?")
+        await asyncio.sleep(1)
+        msg = await client.wait_for('message', check = check)
+        join = msg.content
+        await channel.send("Next, may I get your date of birth? (DD/MM/YYYY please)")
+        await asyncio.sleep(1)
+        msg = await client.wait_for('message', check = check)
+        dob = msg.content
+        await channel.send("Thank you, next, may I know what country you reside in?")
+        await asyncio.sleep(1)
+        msg = await client.wait_for('message', check = check)
+        country = msg.content
+        await channel.send("Great, Now, may I ask what species is your fursona, if you have one? Or what species is your OC (original character)?")
+        await asyncio.sleep(1)
+        msg = await client.wait_for('message', check = check)
+        species = msg.content
+        await channel.send("Great, Now, if your friends could describe you in a few sentences, what would they say?")
+        await asyncio.sleep(1)
+        msg = await client.wait_for('message', check = check)
+        you = msg.content
+        await channel.send("Great, Now, in your own words, what is a furry?")
+        await asyncio.sleep(1)
+        msg = await client.wait_for('message', check = check)
+        furry = msg.content
+        await channel.send("Great, how has the fandom benefitted you, and how has it not?")
+        await asyncio.sleep(1)
+        msg = await client.wait_for('message', check = check)
+        benefits = msg.content
+        
+        
+
+        intros = discord.utils.get(user.guild.text_channels, id = 990660754841698325)
+        embed = discord.Embed(title = "Introduction!", description = f"{user.mention}'s Introduction" , color=0x00ff00)
+        if user.avatar:
+                embed.set_thumbnail(url = user.avatar.url) 
+        embed.add_field(name='What made you join the server?', value=f"{join}", inline=False)
+        embed.add_field(name='DOB', value=f"{dob}", inline=False)
+        embed.add_field(name='Resides in', value=f"{country}", inline=False)
+        embed.add_field(name='Fursona details', value=f"{species}", inline=False)
+        embed.add_field(name='Friends describe them as', value=f"{you}", inline=False)
+        embed.add_field(name='In own words, what is a furry', value=f"{furry}", inline=False)
+        embed.add_field(name='How was the fandom benefitted you?', value=f"{benefits}", inline=False)
+        embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+        await intros.send(embed = embed)
+        await channel.send("Great, finally, have you made sure to read the <#990656415687389325> and do you agree to them? \n\n(If you answer yes and have not read the rules, it will be assumed that you have and that you understand them)")
+        await asyncio.sleep(1)
+        msg = await client.wait_for('message', check = check)
+        await channel.send("All done! \n\n<@&990671590217908224> will now review your application. Please wait. \n\nShould you need any further assistance, please type here and a member of staff will get to you ASAP.")
+        await channel.send("Also, may I ask you, what did you think of this registration process? All feedback is welcome, including any suggestions for improvements.")
+        
+    
+    
     if user.guild.id == 754816860133916822:
         channel = discord.utils.get(user.guild.text_channels, name='register')
         embed = discord.Embed(title = "Hi there!", description = f"Hey {user.display_name}! Please register to the chat by typing `!register` in chat :)" , color=0x00ff00)
         embed.set_footer(text = f'{user.name}#{user.discriminator} ')
         await channel.send(f"{user.mention}", embed = embed)
-
     embed = discord.Embed(title = "Member joined!", description = f"{user.display_name} has joined the guild" , color=0x00ff00)
     embed.set_footer(text = f'{user.name}#{user.discriminator} ')
     channel = discord.utils.get(user.guild.text_channels, name='user_logs')
@@ -611,26 +729,53 @@ async def on_member_update(before, after):
         embed.set_footer(text = 'New Member! ')
         channel = discord.utils.get(before.guild.text_channels, id= 754816860133916825)
         await channel.send("<@&755152376700076032>",embed = embed)
+    
+    role = discord.utils.get(before.guild.roles, id= 931359323186135041)
+
+    if role not in before.roles and role in after.roles:
+        embed = discord.Embed(title = "Welcome!", description = f"{after.mention} has joined! \n\nPlease welcome them to the guild! \n\nFeel free to get some roles from <#931591538671239178>" , color=0x00ff00)
+        embed.set_footer(text = 'New Member! ')
+        channel = discord.utils.get(before.guild.text_channels, id= 931357551768002613)
+        await channel.send("<@&932054177717293096>",embed = embed)
+    
+    role = discord.utils.get(before.guild.roles, id= 1091050056414666882)
+
+    if role not in before.roles and role in after.roles:
+        embed = discord.Embed(title = "Welcome!", description = f"{after.mention} has joined! \n\nPlease welcome them to the guild! \n\nBe sure to claim your free welcome cookie from Wynter and get additional roles from the Channels & Roles section" , color=0x00ff00)
+        embed.set_footer(text = 'New Member! ')
+        channel = discord.utils.get(before.guild.text_channels, id= 1091048510394212446)
+        await channel.send("<@&1091172070945214476>",embed = embed)
         
 
     cvar = False
     changed = ""
+    embed = discord.Embed(title = "User Info Updated!", color=0x00ff00)
+    embed.add_field(name = "User",value = after.mention, inline=False)
     if not before.display_name == after.display_name:
         print ("Name Change")
         cvar = True
-        changed = changed + f"User display name changed!\n\n New name:\n{after.display_name} \nOld name:\n{before.display_name}\n\n"
+        embed.add_field(name= "Old name", value = before.display_name, inline=True)
+        embed.add_field(name= "New name", value = after.display_name, inline=True)
     if not len(before.roles) == len(after.roles):
         print("Roles change")
         cvar = True
-        changed = changed + f"User roles changed!\n\n Old Roles:\n"
         for role in before.roles:
-            changed = changed + role.mention
-        changed = changed + "\n\nNew Roles:\n"
+            if role not in after.roles:
+                embed.add_field(name = "Role Removed", value = role.mention, inline=True)
         for role in after.roles:
-            changed = changed + role.mention
+            if role in before.roles:
+                pass
+            else: 
+                embed.add_field(name = "Role Added", value = role.mention, inline=True)
+        await asyncio.sleep(2)
+        entries = await after.guild.audit_logs(limit=1, action=discord.AuditLogAction.member_role_update).flatten()
+        event = entries[0]
+        embed.add_field(name = "Performed by", value = event.user.display_name, inline=True)
+        
+        
     if cvar == True:
-        embed = discord.Embed(title = "User Info Updated!", description = f"{after.mention} \n\n{changed}" , color=0x00ff00)
-        embed.set_thumbnail(url = after.avatar_url)
+        
+        embed.set_thumbnail(url = after.avatar.url)
         embed.set_footer(text = f'{after.name}#{after.discriminator} ')
         channel = discord.utils.get(before.guild.text_channels, name='user_logs')
         await channel.send(embed = embed)
@@ -656,7 +801,7 @@ async def on_reaction_add(reaction, user):
         await message.edit(embed=embed)
 
     embed = discord.Embed(title = "Reaction Added!", description = f"Reaction added by {user.mention} \n\n{reaction.emoji}" , color=0x00ff00)
-    embed.set_thumbnail(url = user.avatar_url)
+    embed.set_thumbnail(url = user.avatar.url)
     embed.set_footer(text = f'{user.name}#{user.discriminator} ')
     channel = discord.utils.get(reaction.message.guild.text_channels, name='reaction_logging')
     await channel.send(embed = embed)
@@ -667,7 +812,7 @@ async def on_reaction_add(reaction, user):
 @client.event
 async def on_reaction_remove(reaction, user):
     embed = discord.Embed(title = "Reaction Removed!", description = f"Reaction removed by {user.mention} \n\n{reaction.emoji}" , color=0x00ff00)
-    embed.set_thumbnail(url = user.avatar_url)
+    embed.set_thumbnail(url = user.avatar.url)
     embed.set_footer(text = f'{user.name}#{user.discriminator} ')
     channel = discord.utils.get(reaction.message.guild.text_channels, name='reaction_logging')
     await channel.send(embed = embed)
@@ -675,25 +820,29 @@ async def on_reaction_remove(reaction, user):
 @client.event
 async def on_user_update(before, after):
     changed = ""
-    if not before.avatar_url == after.avatar_url:
+    embed = discord.Embed(title = "User Info Updated!", color=0x00ff00)
+    embed.add_field(name = "User", value = after.mention, inline=False)
+    if not before.avatar.url == after.avatar.url:
         print ("Avatar Change")
-        changed = changed + f"User avatar changed!\n\n [Reverse Image Search](https://images.google.com/searchbyimage?image_url={after.avatar_url})\n\n"
+        changed = "User avatar changed"
+        embed.add_field(name= "User avatar changed!" , value ="[Reverse Image Search](https://images.google.com/searchbyimage?image_url={after.avatar.url})\n\n")
     if not before.name == after.name:
         print ("Name Change")
-        changed = changed + f"User name changed!\n\n New name:\n{after.name} \nOld name:\n{before.name}\n\n"
+        embed.add_field(name = "New Name", value = after.name)
+        embed.add_field(name = "Old Name", value = before.name)
     if not before.discriminator == after.discriminator:
         print("Discriminator change")
-        changed = changed + f"User discriminator changed!\n\n Old Discriminator:\n #{before.discriminator} \nNew Discriminator: \n#{after.discriminator}"
+        embed.add_field(name = "New Discriminator", value = f"#{after.discriminator}")
+        embed.add_field(name = "Old Discriminator", value = f"#{before.discriminator}")
     for guild in client.guilds:
         if guild.get_member(before.id) is not None:
-            embed = discord.Embed(title = "User Info Updated!", description = f"{after.mention} \n\n{changed}" , color=0x00ff00)
             embed.set_footer(text = f'{after.name}#{after.discriminator} ')
             channel = discord.utils.get(guild.text_channels, name='user_logs')
             if "User avatar changed" in changed:
                 channel = discord.utils.get(guild.text_channels, name='pfp_logging')
-                embed.set_image(url = after.avatar_url)
+                embed.set_image(url = after.avatar.url)
             else:
-                embed.set_thumbnail(url = after.avatar_url)
+                embed.set_thumbnail(url = after.avatar.url)
             await channel.send(embed = embed)
             
                 
@@ -705,8 +854,10 @@ async def on_resumed():
 @client.event
 async def on_command_error(ctx,err):
     if isinstance(err, commands.errors.CommandOnCooldown):
-        #Darkmane ID, MarrzRover ID
-        if ctx.message.author.id == 802354019603185695 or ctx.message.author.id == 315646924151586826:
+        #Darkmane ID, MarrzRover ID, Keira ID
+        donators = [802354019603185695, 315646924151586826, 819863452029026304]
+        if ctx.message.author.id in donators:
+            await ctx.message.author.send("Thanks for donating. Command cooldown bypassed.")
             await ctx.reinvoke()
             return
         embed = discord.Embed(title = "Cooldown!", description = f"You cannot run the following command: `{ctx.message.content}` \n\nas it is currently on cooldown - try again in {err.retry_after} seconds!" , color=0x00ff00)
