@@ -9,9 +9,9 @@ discord.py - 1.6.0a
 
 Fully open sourced.
 
-Docs: https://docs.furrycentr.al/
+Docs: https://docs.furrybot.dev/
 
-Support: https://discord.gg/5eNDkdd
+Support: [https://discord.gg/5eNDkdd](https://discord.gg/EG5pUEmnXb)
 
 How to self host Wynter: 
 ```
