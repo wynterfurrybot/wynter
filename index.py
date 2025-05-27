@@ -1,10 +1,11 @@
 # bot.py
 import os
+import re
 from this import d
 
 import discord
 from discord import Embed
-from discord.ext import commands, bridge
+from discord.ext import commands
 from dotenv import load_dotenv
 import math
 import pymysql.cursors
@@ -36,6 +37,11 @@ def connecttodb():
                                 charset='utf8mb4',
                                 cursorclass=pymysql.cursors.DictCursor)
     return connection
+async def load_cogs():
+    for filename in os.listdir("./cogs"):
+        if filename.endswith(".py"):
+            # cut off the .py from the file name
+            client.load_extension(f"cogs.{filename[:-3]}")
 
 
 def get_prefix(bot,msg):
@@ -59,30 +65,8 @@ def get_prefix(bot,msg):
 intents = discord.Intents.default()
 intents.members = True
 intents.message_content = True
-client = bridge.AutoShardedBot(shard_count=5, command_prefix=get_prefix, case_insensitive = True, intents = intents)
+client = commands.AutoShardedBot(shard_count=5, command_prefix=get_prefix, case_insensitive = True, intents = intents)
 
-
-@client.command(name='prefix', help= 'Sets server prefix')
-@commands.has_guild_permissions(manage_guild = True)
-async def test(ctx, prefix):
-    try:
-            connection = connecttodb()
-            with connection.cursor() as cursor:
-                # Read a single record
-                sql = "UPDATE guilds SET `prefix` = %s WHERE `id`=%s"
-                cursor.execute(sql, (prefix,ctx.guild.id,))
-                connection.commit()
-                sql = "SELECT `prefix` from guilds WHERE `id`=%s"
-                cursor.execute(sql, (ctx.guild.id,))
-                result = cursor.fetchone()
-                result = json.dumps(result,sort_keys=True)
-                result = json.loads(result)
-                prefix = result['prefix']
-                return await ctx.send(f"My prefix has now been set to {prefix}")
-    except Exception as err:
-        print(err)
-        prefix = '!'
-        return await ctx.send(f"My current prefix is {prefix} - I was unable to change it at this time. \nError: {err}")
 
 async def resetawoo():
     while True:
@@ -92,6 +76,18 @@ async def resetawoo():
 @client.event
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
+    try:
+        connection = connecttodb()
+        with connection.cursor() as cursor:
+            # Read a single record
+            sql = "UPDATE `eco` SET `wages_docked` = 0"
+            cursor.execute(sql)
+            sql = "UPDATE `eco` SET `in_jail` = 0"
+            cursor.execute(sql)
+            connection.commit()
+            connection.close()
+    except Exception as err:
+        print(err)
     while True:
         statuses = [discord.Activity(name='the snow fall | mention me for help!', type=discord.ActivityType.watching), discord.Activity(name='with the snow | mention me for help!', type=discord.ActivityType.playing), discord.Activity(name='people hug | mention me for help!', type=discord.ActivityType.watching), discord.Activity(name='RetroPi games | mention me for help!', type=discord.ActivityType.playing), discord.Activity(name='the kitchen burn | mention me for help!', type=discord.ActivityType.watching),discord.Activity(name='cookies bake in the oven | mention me for help!', type=discord.ActivityType.watching)]
         activity = random.choice(statuses)
@@ -100,135 +96,26 @@ async def on_ready():
         await asyncio.sleep(120)
     
 
-
-xpcooldown = []
-votes = {}
-voted = {}
-@client.event
-async def on_button_click(res):
-    """
-    Possible interaction types:
-    - Pong
-    - ChannelMessageWithSource
-    - DeferredChannelMessageWithSource
-    - DeferredUpdateMessage
-    - UpdateMessage
-    """
-    
-    global votes
-    previous_vote = ""
-
-    try:
-        connection = connecttodb()
-        with connection.cursor() as cursor:
-            # Read a single record
-            sql = "SELECT * FROM `polls` WHERE `messageid`=%s"
-            cursor.execute(sql, (int(res.message.id)))
-            result = cursor.fetchone()
-            result = json.dumps(result,sort_keys=True)
-            result = json.loads(result)
-            title = result['title']
-            total_yes = result['yes']
-            total_no = result['no']
-            connection.close()
-    except Exception as err:
-        print(f"error selecting from polls: {err}")
-    
-    try:
-        connection = connecttodb()
-        with connection.cursor() as cursor:
-            # Read a single record
-            sql = "SELECT * FROM `poll_votes` WHERE `userid`=%s and messageid = %s"
-            cursor.execute(sql, (res.user.id, res.message.id))
-            result = cursor.fetchone()
-            result = json.dumps(result,sort_keys=True)
-            result = json.loads(result)
-            if result is None:
-                previous_vote = "none"
-                print(f"previous vote = {previous_vote}")
-            else:
-                previous_vote = result['vote']
-                print(f"previous vote = {previous_vote}")
-            connection.close()
-    except Exception as err:
-        print(f"error selecting from poll results: {err}")
-    if res.component.label.lower() == "yes":
-        try:
-                connection = connecttodb()
-                with connection.cursor() as cursor:
-                    # Read a single record
-                    if previous_vote == "none":
-                        sql = "UPDATE polls SET `yes` = yes + 1 WHERE `messageid`=%s"
-                        cursor.execute(sql, (res.message.id))
-                        connection.commit()
-                        sql = "INSERT INTO `poll_votes` (messageid, userid, vote) VALUES (%s, %s, %s)"
-                        cursor.execute(sql, (res.message.id, res.user.id, "yes"))
-                        connection.commit()
-                        connection.close()
-                        total_yes = total_yes +1
-                    elif previous_vote == "yes":
-                        sql = "UPDATE poll_votes SET `vote` = 'yes' WHERE `userid`=%s"
-                        cursor.execute(sql, (res.user.id))
-                        connection.commit()
-                    elif previous_vote == "no":
-                        sql = "UPDATE polls SET `no` = no - 1 WHERE `messageid`=%s"
-                        cursor.execute(sql, (res.message.id))
-                        connection.commit()
-                        sql = "UPDATE polls SET `yes` = yes + 1 WHERE `messageid`=%s"
-                        cursor.execute(sql, (res.message.id))
-                        connection.commit()
-                        sql = "UPDATE poll_votes SET `vote` = 'yes' WHERE `userid`=%s"
-                        cursor.execute(sql, (res.user.id))
-                        connection.commit()
-                        total_no = total_no - 1
-                        total_yes = total_yes + 1
-        except Exception as err:
-            print(f"error updating from poll results: {err}")
-    if res.component.label.lower() == "no":
-        try:
-                connection = connecttodb()
-                with connection.cursor() as cursor:
-                    # Read a single record
-                    if previous_vote == "none":
-                        sql = "UPDATE polls SET `no` = no + 1 WHERE `messageid`=%s"
-                        cursor.execute(sql, (res.message.id))
-                        connection.commit()
-                        sql = "INSERT INTO `poll_votes` (messageid, userid, vote) VALUES (%s, %s, %s)"
-                        cursor.execute(sql, (res.message.id, res.user.id, "no"))
-                        connection.commit()
-                        connection.close()
-                        total_no = total_no +1
-                    elif previous_vote == "no":
-                        sql = "UPDATE poll_votes SET `vote` = 'no' WHERE `userid`=%s"
-                        cursor.execute(sql, (res.user.id))
-                        connection.commit()
-                    elif previous_vote == "yes":
-                        sql = "UPDATE polls SET `yes` = yes - 1 WHERE `messageid`=%s"
-                        cursor.execute(sql, (res.message.id))
-                        connection.commit()
-                        sql = "UPDATE polls SET `no` = no + 1 WHERE `messageid`=%s"
-                        cursor.execute(sql, (res.message.id))
-                        connection.commit()
-                        sql = "UPDATE poll_votes SET `vote` = 'no' WHERE `userid`=%s"
-                        cursor.execute(sql, (res.user.id))
-                        connection.commit()
-                        total_yes = total_yes - 1
-                        total_no = total_no + 1
-        except Exception as err:
-            print(f"error selecting from poll results: {err}")
-
-
-    await res.respond(
-        type=7, embed=Embed(
-                color=0xF5F5F5,
-                title=title,
-                description=f"Results: \n\nYes: {total_yes} \nNo: {total_no}",
-            )
-    )
-
-
 @client.event
 async def on_message(msg):
+    regex = r"^[*_#]{0,2}\s?be+ep(?:[.!?…]*|\s:3)?[*_#]{0,2}$"
+    if not re.match(regex, msg.content.lower()):
+        if msg.channel.id == 1269035319991210085:
+             if msg.author.bot:
+                return
+             # Debug: print the message content and why it doesn't match
+             print(f"Message does not match regex. Content: {msg.content}")
+             
+             m = await msg.reply(f"No {msg.content} -- Only beep!")
+             await msg.delete()
+             await asyncio.sleep(3)
+             return await m.delete()
+
+    else:
+        print(f"Message matches regex: {msg.content}")
+    
+   
+ 
     if "darcutiemane" in msg.content.lower() or "dark" in msg.content.lower() and "cute" in msg.content.lower() or "dark" in msg.content.lower() and "cutie" in msg.content.lower() or "dark" in msg.content.lower() and "cut13" in msg.content.lower() or "dark" in msg.content.lower() and "cuwutie" in msg.content.lower() or "dar" in msg.content.lower() and "cuwutie" in msg.content.lower():
         m = await msg.reply("You know that isn't true ;)")
         await msg.delete()
@@ -246,6 +133,23 @@ async def on_message(msg):
             await asyncio.sleep(7200)
             bumped = False
             await msg.channel.send("Time to bump! @here")
+    if msg.content.lower() == 'i didn\'t say diet':
+        if msg.author.bot:
+            return
+        try:
+            connection = connecttodb()
+            with connection.cursor() as cursor:
+                # Read a single record
+                sql = "SELECT * from guilds WHERE `id`=%s"
+                cursor.execute(sql, (msg.guild.id,))
+                result = cursor.fetchone()
+                result = json.dumps(result,sort_keys=True)
+                result = json.loads(result)
+                data = result['enablefandx']
+                if data == 1:
+                    return await msg.channel.send(f"No, but your thighs did. I heard you walking a mile away \n\n\"Here comes {msg.author.mention}, here comes {msg.author.mention}.\"", reference = msg)
+        except Exception as err:
+            print(err)
     if msg.content.lower()== 'f':
         if msg.author.bot:
             return
@@ -411,23 +315,18 @@ async def on_message(msg):
 initial_extensions = ['info', 'fun', 'moderation', 'nsfw', 'christmas', 'fursona', 'foodanddrink', 'test', 'level', 'eco']
 
 if __name__ == "__main__":
-    for extension in initial_extensions:
-        try:
-            client.load_extension('cogs.'+ extension)
-        except Exception as e:
-            exc = '{}:{}'.format(type(e).__name__,e)
-            print('Failed to load extension {}\n{}'.format(extension,exc))
+    asyncio.run(load_cogs())
 
 
 @client.event
 async def on_message_delete(message):
     if message.author.bot:
         return
-    embed = discord.Embed(title = f"Message deleted in #{message.channel.name}", color=0x00ff00)
+    embed = discord.Embed(title = f"Message deleted in #{message.channel.name}", color=0xf03907)
     embed.set_author(name= f"{message.author.display_name}", icon_url=f"{message.author.avatar.url}")
     embed.add_field(name= "Content", value = message.content, inline= False)
     embed.add_field(name = "Addtional Information", value = f"Message ID: `{message.id}` \nChannel ID: `{message.channel.id}`" )
-    embed.set_footer(text = f'Wynter 2.0 | Message sent by {message.author.display_name}')
+    embed.set_footer(text = f'Wynter 3.0 | Message sent by {message.author.display_name}')
     if message.channel.is_nsfw():
         channel = discord.utils.get(message.guild.text_channels, name='nsfw_message_logs')
     else:
@@ -453,13 +352,13 @@ async def on_bulk_message_delete(messages):
 async def on_message_edit(oldmessage, newmessage):
     if oldmessage.author.bot:
         return
-    embed = discord.Embed(title = f"Message edited in #{oldmessage.channel.name}", color=0x00ff00)
+    embed = discord.Embed(title = f"Message edited in #{oldmessage.channel.name}", color=0xf08f07)
     embed.set_author(name= f"{oldmessage.author.display_name}", icon_url=f"{oldmessage.author.avatar.url}")
     embed.add_field(name= "Old Message", value = oldmessage.content, inline= False)
     embed.add_field(name= "New Message", value = newmessage.content, inline= False)
     embed.add_field(name = "Addtional Information", value = f"Message ID: `{oldmessage.id}` \nChannel ID: `{oldmessage.channel.id}`" )
-    embed.set_footer(text = f'Wynter 2.0 | Message sent by {oldmessage.author.display_name}')
-    embed.set_footer(text = f'Wynter 2.0 | Message sent by {oldmessage.author.display_name}')
+    embed.set_footer(text = f'Wynter 3.0 | Message sent by {oldmessage.author.display_name}')
+    embed.set_footer(text = f'Wynter 3.0 | Message sent by {oldmessage.author.display_name}')
     if oldmessage.channel.is_nsfw():
         channel = discord.utils.get(oldmessage.guild.text_channels, name='nsfw_message_logs')
     else:
@@ -471,29 +370,29 @@ async def on_member_ban(guild, user):
     await asyncio.sleep(5)
     entries = await guild.audit_logs(limit=1, action=discord.AuditLogAction.ban).flatten()
     event = entries[0]
-    embed = discord.Embed(title = "Member Banned!", description = f"{user.name} was banned by {event.user.display_name} \n\nReason given: \n{event.reason}" , color=0x00ff00)
-    embed.set_footer(text = f'Wynter 2.0')
+    embed = discord.Embed(title = "Member Banned!", description = f"{user.name} was banned by {event.user.display_name} \n\nReason given: \n{event.reason}" , color=0xf03907)
+    embed.set_footer(text = f'Wynter 3.0')
     channel = discord.utils.get(guild.text_channels, name='case_logs')
     await channel.send(embed = embed)
 
 @client.event
 async def on_member_unban(guild, user):
-    embed = discord.Embed(title = "Member Ban Revoked!", description = f"{user.name} has had their ban revoked!" , color=0x00ff00)
-    embed.set_footer(text = f'Wynter 2.0')
+    embed = discord.Embed(title = "Member Ban Revoked!", description = f"{user.name} has had their ban revoked!" , color=0xf08f07)
+    embed.set_footer(text = f'Wynter 3.0')
     channel = discord.utils.get(guild.text_channels, name='case_logs')
     await channel.send(embed = embed)
 
 @client.event
 async def on_guild_channel_delete(channel):
-    embed = discord.Embed(title = "Guild Channel Deleted!", description = f"Channel: {channel.name}" , color=0x00ff00)
-    embed.set_footer(text = f'Wynter 2.0')
+    embed = discord.Embed(title = "Guild Channel Deleted!", description = f"Channel: {channel.name}" , color=0xf03907)
+    embed.set_footer(text = f'Wynter 3.0')
     channel = discord.utils.get(channel.guild.text_channels, name='channel_logging')
     await channel.send(embed = embed)
 
 @client.event
 async def on_guild_channel_create(channel):
-    embed = discord.Embed(title = "Guild Channel Created!", description = f"Channel: {channel.mention}" , color=0x00ff00)
-    embed.set_footer(text = f'Wynter 2.0')
+    embed = discord.Embed(title = "Guild Channel Created!", description = f"Channel: {channel.mention}" , color=0x42c2f5)
+    embed.set_footer(text = f'Wynter 3.0')
     channel = discord.utils.get(channel.guild.text_channels, name='channel_logging')
     await channel.send(embed = embed)
 
@@ -510,11 +409,11 @@ async def on_guild_join(guild):
     ping = math.floor(shard.latency * 1000)
     before = time.monotonic()
     embed = discord.Embed(title = "Welcome!", description = 'Getting info, please wait...', color=0x00ff00)
-    embed.set_footer(text = 'Wynter 2.0')
+    embed.set_footer(text = 'Wynter 3.0')
     msg = await guild.owner.send(embed = embed)
     latency = math.floor((time.monotonic() - before) * 1000)
-    embed = discord.Embed(title = "Welcome", description = f'Your server is running on Shard ID: {shard_id}! \n\nThe current ping it has is: \n{ping}ms\nand Message Latency is:\n{latency}ms \n\nType `!help` for a command list and join the support server at https://discord.gg/8pBNMV2hRx \n\nTrack bot uptime at https://uptime.furrycentr.al/', color=0x00ff00)
-    embed.set_footer(text = 'Wynter 2.0')
+    embed = discord.Embed(title = "Welcome", description = f'Your server is running on Shard ID: {shard_id}! \n\nThe current ping it has is: \n{ping}ms\nand Message Latency is:\n{latency}ms \n\nJoin the support server at https://discord.gg/N8pJEvEvAH \n\nTrack bot uptime at https://uptime.furrybot.dev/', color=0x00ff00)
+    embed.set_footer(text = 'Wynter 3.0')
     await msg.edit(embed=embed)
     try:
         connection = connecttodb()
@@ -573,19 +472,33 @@ async def on_guild_remove(guild):
 @client.event
 async def on_guild_channel_update(before, after):
     if not before.topic == after.topic:
-        embed = discord.Embed(title = "Channel Topic Edited!", description = f"Previous Topic: \n{before.topic} \n\nNew Topic:\n{after.topic} \n" , color=0x00ff00)
-        embed.set_footer(text = f'Wynter 2.0 | Channel: {after.name}')
+        embed = discord.Embed(title = "Channel Topic Edited!", description = f"Previous Topic: \n{before.topic} \n\nNew Topic:\n{after.topic} \n" , color=0x42c2f5)
+        embed.set_footer(text = f'Wynter 3.0 | Channel: {after.name}')
         channel = discord.utils.get(before.guild.text_channels, name='channel_logging')
         await channel.send(embed = embed)
 
     if not before.name == after.name:
-        embed = discord.Embed(title = "Channel Name Edited!", description = f"Previous Name: \n{before.name} \n\nNew Name:\n{after.name} ({after.mention}) \n" , color=0x00ff00)
-        embed.set_footer(text = f'Wynter 2.0')
+        embed = discord.Embed(title = "Channel Name Edited!", description = f"Previous Name: \n{before.name} \n\nNew Name:\n{after.name} ({after.mention}) \n" , color=0x42c2f5)
+        embed.set_footer(text = f'Wynter 3.0')
         channel = discord.utils.get(before.guild.text_channels, name='channel_logging')
         await channel.send(embed = embed)
 
 @client.event
 async def on_member_join(user):
+    if user.guild.id == 1091048509404360724:
+        embed = discord.Embed(title = "Welcome!", description = f"{user.mention} has joined! \n\nPlease welcome them to the guild! \n\nBe sure to claim your free welcome cookie from Wynter and get additional roles from the Channels & Roles section" , color=0x42c2f5)
+        embed.set_footer(text = 'New Member! ')
+        channel = discord.utils.get(user.guild.text_channels, id= 1091048510394212446)
+        await channel.send("<@&1091172070945214476>",embed = embed)
+    if user.guild.id == 1300478006699229306:
+        embed = discord.Embed(title = "Welcome!", description = f"{user.mention} has joined! \n\nPlease welcome them to the guild! \n\nBe sure to claim your free welcome cookie from Wynter and get additional roles from the Channels & Roles section" , color=0x42c2f5)
+        embed.set_footer(text = 'New Member! ')
+        channel = discord.utils.get(user.guild.text_channels, id= 1300478007399551066)
+        await channel.send("<@&1300478006699229315>",embed = embed)
+
+    if user.guild.id == 881358123389038654:
+        channel = discord.utils.get(user.guild.text_channels, id = 881548380969500702)
+        await channel.send(f"Beep boop beep! Hey {user.mention}, welcome to The Rusted Rover! Beep beep! Remember to be polite to other patrons and staff. First drink is on us! 🍻✨ Boop beep boop!")
     if user.guild.id == 931357551768002610:
         guild = user.guild
         category = discord.utils.get(user.guild.categories, name = 'verification')
@@ -693,7 +606,7 @@ async def on_member_join(user):
         embed.add_field(name='Friends describe them as', value=f"{you}", inline=False)
         embed.add_field(name='In own words, what is a furry', value=f"{furry}", inline=False)
         embed.add_field(name='How was the fandom benefitted you?', value=f"{benefits}", inline=False)
-        embed.set_footer(text = 'Wynter 2.0 | Made by Darkmane Arweinydd#0069')
+        embed.set_footer(text = 'Wynter 3.0 | Made by purefurrytrash')
         await intros.send(embed = embed)
         await channel.send("Great, finally, have you made sure to read the <#990656415687389325> and do you agree to them? \n\n(If you answer yes and have not read the rules, it will be assumed that you have and that you understand them)")
         await asyncio.sleep(1)
@@ -708,14 +621,17 @@ async def on_member_join(user):
         embed = discord.Embed(title = "Hi there!", description = f"Hey {user.display_name}! Please register to the chat by typing `!register` in chat :)" , color=0x00ff00)
         embed.set_footer(text = f'{user.name}#{user.discriminator} ')
         await channel.send(f"{user.mention}", embed = embed)
-    embed = discord.Embed(title = "Member joined!", description = f"{user.display_name} has joined the guild" , color=0x00ff00)
+    embed = discord.Embed(title = "Member joined!", description = f"{user.display_name} has joined the guild" , color=0x42c2f5)
     embed.set_footer(text = f'{user.name}#{user.discriminator} ')
     channel = discord.utils.get(user.guild.text_channels, name='user_logs')
     await channel.send(embed = embed)
 
 @client.event
 async def on_member_remove(user):
-    embed = discord.Embed(title = "Member left!", description = f"{user.display_name} has left the guild." , color=0x00ff00)
+    if user.guild.id == 881358123389038654:
+        channel = discord.utils.get(user.guild.text_channels, id = 881548380969500702)
+        await channel.send(f"Beep boop! Uh… **{user.name}** just left the pub. Boop beep... Anyone wanna pick up their tab? 😅🚀 Beep boop!")
+    embed = discord.Embed(title = "Member left!", description = f"{user.display_name} has left the guild." , color=0xf03907)
     embed.set_footer(text = f'{user.name}#{user.discriminator} ')
     channel = discord.utils.get(user.guild.text_channels, name='user_logs')
     await channel.send(embed = embed)
@@ -725,7 +641,7 @@ async def on_member_update(before, after):
     role = discord.utils.get(before.guild.roles, id= 754820807896596520)
 
     if role not in before.roles and role in after.roles:
-        embed = discord.Embed(title = "Welcome!", description = f"{after.mention} has joined! \n\nPlease welcome them to the guild! \n\nFeel free to get some roles from <#756597666011676742>" , color=0x00ff00)
+        embed = discord.Embed(title = "Welcome!", description = f"{after.mention} has joined! \n\nPlease welcome them to the guild! \n\nFeel free to get some roles from <#756597666011676742>" , color=0x42c2f5)
         embed.set_footer(text = 'New Member! ')
         channel = discord.utils.get(before.guild.text_channels, id= 754816860133916825)
         await channel.send("<@&755152376700076032>",embed = embed)
@@ -733,29 +649,29 @@ async def on_member_update(before, after):
     role = discord.utils.get(before.guild.roles, id= 931359323186135041)
 
     if role not in before.roles and role in after.roles:
-        embed = discord.Embed(title = "Welcome!", description = f"{after.mention} has joined! \n\nPlease welcome them to the guild! \n\nFeel free to get some roles from <#931591538671239178>" , color=0x00ff00)
+        embed = discord.Embed(title = "Welcome!", description = f"{after.mention} has joined! \n\nPlease welcome them to the guild! \n\nFeel free to get some roles from <#931591538671239178>" , color=0x42c2f5)
         embed.set_footer(text = 'New Member! ')
         channel = discord.utils.get(before.guild.text_channels, id= 931357551768002613)
         await channel.send("<@&932054177717293096>",embed = embed)
     
-    role = discord.utils.get(before.guild.roles, id= 1091050056414666882)
 
-    if role not in before.roles and role in after.roles:
-        embed = discord.Embed(title = "Welcome!", description = f"{after.mention} has joined! \n\nPlease welcome them to the guild! \n\nBe sure to claim your free welcome cookie from Wynter and get additional roles from the Channels & Roles section" , color=0x00ff00)
-        embed.set_footer(text = 'New Member! ')
-        channel = discord.utils.get(before.guild.text_channels, id= 1091048510394212446)
-        await channel.send("<@&1091172070945214476>",embed = embed)
+      
         
 
     cvar = False
     changed = ""
-    embed = discord.Embed(title = "User Info Updated!", color=0x00ff00)
+    embed = discord.Embed(title = "User Info Updated!", color=0x42c2f5)
     embed.add_field(name = "User",value = after.mention, inline=False)
     if not before.display_name == after.display_name:
         print ("Name Change")
         cvar = True
         embed.add_field(name= "Old name", value = before.display_name, inline=True)
         embed.add_field(name= "New name", value = after.display_name, inline=True)
+        embed.set_thumbnail(url = after.avatar.url)
+        embed.set_footer(text = f'{after.name}#{after.discriminator} ')
+        channel = discord.utils.get(before.guild.text_channels, name='user_logs')
+        await channel.send(embed = embed)
+
     if not len(before.roles) == len(after.roles):
         print("Roles change")
         cvar = True
@@ -771,15 +687,14 @@ async def on_member_update(before, after):
         entries = await after.guild.audit_logs(limit=1, action=discord.AuditLogAction.member_role_update).flatten()
         event = entries[0]
         embed.add_field(name = "Performed by", value = event.user.display_name, inline=True)
-        
-        
-    if cvar == True:
-        
         embed.set_thumbnail(url = after.avatar.url)
         embed.set_footer(text = f'{after.name}#{after.discriminator} ')
         channel = discord.utils.get(before.guild.text_channels, name='user_logs')
         await channel.send(embed = embed)
 
+        
+    
+       
 @client.event
 async def on_reaction_add(reaction, user):
     if user.id == 548269826020343809:
@@ -800,27 +715,29 @@ async def on_reaction_add(reaction, user):
         embed.title = f"Member denied by {user.display_name}"
         await message.edit(embed=embed)
 
-    embed = discord.Embed(title = "Reaction Added!", description = f"Reaction added by {user.mention} \n\n{reaction.emoji}" , color=0x00ff00)
+    embed = discord.Embed(title = "Reaction Added!", description = f"Reaction added by {user.mention} \n\n{reaction.emoji}" , color=0x42c2f5)
     embed.set_thumbnail(url = user.avatar.url)
     embed.set_footer(text = f'{user.name}#{user.discriminator} ')
     channel = discord.utils.get(reaction.message.guild.text_channels, name='reaction_logging')
     await channel.send(embed = embed)
-    await channel.send(f"{reaction.message.channel.id}")
+    await channel.send(f"https://discord.com/channels/{reaction.message.guild.id}/{reaction.message.channel.id}/{reaction.message.id}")
     
     
 
 @client.event
 async def on_reaction_remove(reaction, user):
-    embed = discord.Embed(title = "Reaction Removed!", description = f"Reaction removed by {user.mention} \n\n{reaction.emoji}" , color=0x00ff00)
+    embed = discord.Embed(title = "Reaction Removed!", description = f"Reaction removed by {user.mention} \n\n{reaction.emoji}" , color=0xf03907)
     embed.set_thumbnail(url = user.avatar.url)
     embed.set_footer(text = f'{user.name}#{user.discriminator} ')
     channel = discord.utils.get(reaction.message.guild.text_channels, name='reaction_logging')
     await channel.send(embed = embed)
+    await channel.send(embed = embed)
+    await channel.send(f"https://discord.com/channels/{reaction.message.guild.id}/{reaction.message.channel.id}/{reaction.message.id}")
 
 @client.event
 async def on_user_update(before, after):
     changed = ""
-    embed = discord.Embed(title = "User Info Updated!", color=0x00ff00)
+    embed = discord.Embed(title = "User Info Updated!", color=0x42c2f5)
     embed.add_field(name = "User", value = after.mention, inline=False)
     if not before.avatar.url == after.avatar.url:
         print ("Avatar Change")
@@ -843,7 +760,8 @@ async def on_user_update(before, after):
                 embed.set_image(url = after.avatar.url)
             else:
                 embed.set_thumbnail(url = after.avatar.url)
-            await channel.send(embed = embed)
+            if not changed == "":
+                await channel.send(embed = embed)
             
                 
 
@@ -860,29 +778,29 @@ async def on_command_error(ctx,err):
             await ctx.message.author.send("Thanks for donating. Command cooldown bypassed.")
             await ctx.reinvoke()
             return
-        embed = discord.Embed(title = "Cooldown!", description = f"You cannot run the following command: `{ctx.message.content}` \n\nas it is currently on cooldown - try again in {err.retry_after} seconds!" , color=0x00ff00)
+        embed = discord.Embed(title = "Cooldown!", description = f"You cannot run the following command: `{ctx.message.content}` \n\nas it is currently on cooldown - try again in {err.retry_after} seconds!" , color=0xf03907)
         embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
-        embed.set_footer(text = 'Wynter 2.0')
+        embed.set_footer(text = 'Wynter 3.0')
         return await ctx.send(embed = embed, reference = ctx.message)
     if isinstance(err, commands.errors.NSFWChannelRequired):
-        embed = discord.Embed(title = "Bad Furry!", description = f"You cannot run the following command: `{ctx.message.content}` \n\nin a SFW channel!" , color=0x00ff00)
+        embed = discord.Embed(title = "Bad Furry!", description = f"You cannot run the following command: `{ctx.message.content}` \n\nin a SFW channel!" , color=0xf03907)
         embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
-        embed.set_footer(text = 'Wynter 2.0')
+        embed.set_footer(text = 'Wynter 3.0')
         return await ctx.send(embed = embed, reference = ctx.message)
     if isinstance(err, commands.MissingPermissions):
-        embed = discord.Embed(title = "No Permission!", description = f"You lack the permissions to run the following command: \n\n{ctx.message.content}" , color=0x00ff00)
+        embed = discord.Embed(title = "No Permission!", description = f"You lack the permissions to run the following command: \n\n{ctx.message.content}" , color=0xf03907)
         embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
-        embed.set_footer(text = 'Wynter 2.0')
+        embed.set_footer(text = 'Wynter 3.0')
         return await ctx.send(embed = embed, reference = ctx.message)
     if "prefix" in ctx.message.content:
         if isinstance(err, commands.MissingRequiredArgument):
-            embed = discord.Embed(title = "Missing argument!", description = f"Hey, to set a prefix, you need to type {ctx.message.content} <prefix>! \n\nTo find the current guild prefix, just mention me!" , color=0x00ff00)
+            embed = discord.Embed(title = "Missing argument!", description = f"Hey, to set a prefix, you need to type {ctx.message.content} <prefix>! \n\nTo find the current guild prefix, just mention me!" , color=0xf03907)
         embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
-        embed.set_footer(text = 'Wynter 2.0')
+        embed.set_footer(text = 'Wynter 3.0')
         return await ctx.send(embed = embed, reference = ctx.message)
     if isinstance(err, commands.MissingRequiredArgument):
-            embed = discord.Embed(title = "Missing argument!", description = "Hey, you're missing an argument in this command! \n\nCommands like hug are executed like !hug <user(s)>" , color=0x00ff00)
+            embed = discord.Embed(title = "Missing argument!", description = "Hey, you're missing an argument in this command! \n\nCommands like hug are executed like !hug <user(s)>" , color=0xf03907)
             embed.set_thumbnail(url = "https://freeiconshop.com/wp-content/uploads/edd/cross-flat.png")
-            embed.set_footer(text = 'Wynter 2.0 ')
+            embed.set_footer(text = 'Wynter 3.0 ')
             return await ctx.send(embed = embed, reference = ctx.message)
 client.run(TOKEN, reconnect = True)
