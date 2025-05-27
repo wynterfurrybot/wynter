@@ -1,6 +1,5 @@
 # bot.py
 import os
-import re
 from this import d
 
 import discord
@@ -27,16 +26,10 @@ bumped = False
 bid = 0
 
 
-
 def connecttodb():
-# Connect to the database
-    connection = pymysql.connect(host=DBHOST,
-                                user=DBUSER,
-                                password=DBPW,
-                                db=DB,
-                                charset='utf8mb4',
-                                cursorclass=pymysql.cursors.DictCursor)
-    return connection
+    return False
+
+
 async def load_cogs():
     for filename in os.listdir("./cogs"):
         if filename.endswith(".py"):
@@ -45,22 +38,8 @@ async def load_cogs():
 
 
 def get_prefix(bot,msg):
-    try:
-        connection = connecttodb()
-        with connection.cursor() as cursor:
-            # Read a single record
-            sql = "SELECT `prefix` FROM `guilds` WHERE `id`=%s"
-            cursor.execute(sql, (msg.guild.id,))
-            result = cursor.fetchone()
-            result = json.dumps(result,sort_keys=True)
-            result = json.loads(result)
-            prefix = result['prefix']
-            connection.close()
-            return commands.when_mentioned_or(prefix)(bot,msg)
-    except Exception as err:
-        print(err)
-        prefix = '!'
-        return commands.when_mentioned_or(prefix)(bot,msg)
+    prefix = '!'
+    return commands.when_mentioned_or(prefix)(bot,msg)
         
 intents = discord.Intents.default()
 intents.members = True
@@ -76,18 +55,6 @@ async def resetawoo():
 @client.event
 async def on_ready():
     print(f'{client.user} has connected to Discord!')
-    try:
-        connection = connecttodb()
-        with connection.cursor() as cursor:
-            # Read a single record
-            sql = "UPDATE `eco` SET `wages_docked` = 0"
-            cursor.execute(sql)
-            sql = "UPDATE `eco` SET `in_jail` = 0"
-            cursor.execute(sql)
-            connection.commit()
-            connection.close()
-    except Exception as err:
-        print(err)
     while True:
         statuses = [discord.Activity(name='the snow fall | mention me for help!', type=discord.ActivityType.watching), discord.Activity(name='with the snow | mention me for help!', type=discord.ActivityType.playing), discord.Activity(name='people hug | mention me for help!', type=discord.ActivityType.watching), discord.Activity(name='RetroPi games | mention me for help!', type=discord.ActivityType.playing), discord.Activity(name='the kitchen burn | mention me for help!', type=discord.ActivityType.watching),discord.Activity(name='cookies bake in the oven | mention me for help!', type=discord.ActivityType.watching)]
         activity = random.choice(statuses)
@@ -98,24 +65,6 @@ async def on_ready():
 
 @client.event
 async def on_message(msg):
-    regex = r"^[*_#]{0,2}\s?be+ep(?:[.!?…]*|\s:3)?[*_#]{0,2}$"
-    if not re.match(regex, msg.content.lower()):
-        if msg.channel.id == 1269035319991210085:
-             if msg.author.bot:
-                return
-             # Debug: print the message content and why it doesn't match
-             print(f"Message does not match regex. Content: {msg.content}")
-             
-             m = await msg.reply(f"No {msg.content} -- Only beep!")
-             await msg.delete()
-             await asyncio.sleep(3)
-             return await m.delete()
-
-    else:
-        print(f"Message matches regex: {msg.content}")
-    
-   
- 
     if "darcutiemane" in msg.content.lower() or "dark" in msg.content.lower() and "cute" in msg.content.lower() or "dark" in msg.content.lower() and "cutie" in msg.content.lower() or "dark" in msg.content.lower() and "cut13" in msg.content.lower() or "dark" in msg.content.lower() and "cuwutie" in msg.content.lower() or "dar" in msg.content.lower() and "cuwutie" in msg.content.lower():
         m = await msg.reply("You know that isn't true ;)")
         await msg.delete()
@@ -133,7 +82,7 @@ async def on_message(msg):
             await asyncio.sleep(7200)
             bumped = False
             await msg.channel.send("Time to bump! @here")
-    if msg.content.lower() == 'i didn\'t say diet':
+    ''' if msg.content.lower() == 'i didn\'t say diet':
         if msg.author.bot:
             return
         try:
@@ -217,7 +166,7 @@ async def on_message(msg):
                 if data == 1:
                     return await msg.channel.send(f"Hey {m}, I'm Wynter.")
         except Exception as err:
-            print(err)
+            print(err) '''
     if msg.content.lower == f"*pets {client.user.mention}*":
         return await msg.channel.send("I'm not lesserdog. My neck doesn't grow if you pet me.")
 
@@ -257,7 +206,7 @@ async def on_message(msg):
             await msg.delete()
             
 
-    if msg.content== f"{client.user.mention}":
+    '''if msg.content== f"{client.user.mention}":
         try:
             connection = connecttodb()
             with connection.cursor() as cursor:
@@ -276,9 +225,9 @@ async def on_message(msg):
             print(err)
             if msg.author.id == 802354019603185695:
                     await msg.channel.send(f"Hello creator,")
-            return await msg.channel.send("I could not get the prefix at this time. Most likely a database error occured. Please try `!`")
+            return await msg.channel.send("I could not get the prefix at this time. Most likely a database error occured. Please try `!`")'''
 
-    blacklistedids = [726821503022399639, 814308339617366077,  814305843431342100, 816531184540057601, 703382839491821568, 782770244174610432, 763107932753362995, 717428892205580408, 793212536081612801,483677790449827844]
+    '''blacklistedids = [726821503022399639, 814308339617366077,  814305843431342100, 816531184540057601, 703382839491821568, 782770244174610432, 763107932753362995, 717428892205580408, 793212536081612801,483677790449827844]
     try:
         connection = connecttodb()
         with connection.cursor() as cursor:
@@ -306,7 +255,7 @@ async def on_message(msg):
             await msg.channel.send("This guild is banned from using this bot.", reference = msg)
             return await msg.guild.leave()
         if msg.author.id in blacklistedids and msg.content.startswith('!'):
-            return await msg.channel.send("You are banned from using this bot.", reference = msg)
+            return await msg.channel.send("You are banned from using this bot.", reference = msg)'''
         
     
     await client.process_commands(msg)
@@ -412,7 +361,7 @@ async def on_guild_join(guild):
     embed.set_footer(text = 'Wynter 3.0')
     msg = await guild.owner.send(embed = embed)
     latency = math.floor((time.monotonic() - before) * 1000)
-    embed = discord.Embed(title = "Welcome", description = f'Your server is running on Shard ID: {shard_id}! \n\nThe current ping it has is: \n{ping}ms\nand Message Latency is:\n{latency}ms \n\nJoin the support server at https://discord.gg/N8pJEvEvAH \n\nTrack bot uptime at https://uptime.furrybot.dev/', color=0x00ff00)
+    embed = discord.Embed(title = "Welcome", description = f'Your server is running on Shard ID: {shard_id}! \n\nThe current ping it has is: \n{ping}ms\nand Message Latency is:\n{latency}ms \n\nType `!help` for a command list and join the support server at https://discord.gg/8pBNMV2hRx \n\nTrack bot uptime at https://uptime.furrycentr.al/', color=0x00ff00)
     embed.set_footer(text = 'Wynter 3.0')
     await msg.edit(embed=embed)
     try:
@@ -485,17 +434,6 @@ async def on_guild_channel_update(before, after):
 
 @client.event
 async def on_member_join(user):
-    if user.guild.id == 1091048509404360724:
-        embed = discord.Embed(title = "Welcome!", description = f"{user.mention} has joined! \n\nPlease welcome them to the guild! \n\nBe sure to claim your free welcome cookie from Wynter and get additional roles from the Channels & Roles section" , color=0x42c2f5)
-        embed.set_footer(text = 'New Member! ')
-        channel = discord.utils.get(user.guild.text_channels, id= 1091048510394212446)
-        await channel.send("<@&1091172070945214476>",embed = embed)
-    if user.guild.id == 1300478006699229306:
-        embed = discord.Embed(title = "Welcome!", description = f"{user.mention} has joined! \n\nPlease welcome them to the guild! \n\nBe sure to claim your free welcome cookie from Wynter and get additional roles from the Channels & Roles section" , color=0x42c2f5)
-        embed.set_footer(text = 'New Member! ')
-        channel = discord.utils.get(user.guild.text_channels, id= 1300478007399551066)
-        await channel.send("<@&1300478006699229315>",embed = embed)
-
     if user.guild.id == 881358123389038654:
         channel = discord.utils.get(user.guild.text_channels, id = 881548380969500702)
         await channel.send(f"Beep boop beep! Hey {user.mention}, welcome to The Rusted Rover! Beep beep! Remember to be polite to other patrons and staff. First drink is on us! 🍻✨ Boop beep boop!")
@@ -654,8 +592,13 @@ async def on_member_update(before, after):
         channel = discord.utils.get(before.guild.text_channels, id= 931357551768002613)
         await channel.send("<@&932054177717293096>",embed = embed)
     
+    role = discord.utils.get(before.guild.roles, id= 1091050056414666882)
 
-      
+    if role not in before.roles and role in after.roles:
+        embed = discord.Embed(title = "Welcome!", description = f"{after.mention} has joined! \n\nPlease welcome them to the guild! \n\nBe sure to claim your free welcome cookie from Wynter and get additional roles from the Channels & Roles section" , color=0x42c2f5)
+        embed.set_footer(text = 'New Member! ')
+        channel = discord.utils.get(before.guild.text_channels, id= 1091048510394212446)
+        await channel.send("<@&1091172070945214476>",embed = embed)
         
 
     cvar = False
@@ -720,7 +663,7 @@ async def on_reaction_add(reaction, user):
     embed.set_footer(text = f'{user.name}#{user.discriminator} ')
     channel = discord.utils.get(reaction.message.guild.text_channels, name='reaction_logging')
     await channel.send(embed = embed)
-    await channel.send(f"https://discord.com/channels/{reaction.message.guild.id}/{reaction.message.channel.id}/{reaction.message.id}")
+    await channel.send(f"{reaction.message.channel.id}")
     
     
 
@@ -731,8 +674,6 @@ async def on_reaction_remove(reaction, user):
     embed.set_footer(text = f'{user.name}#{user.discriminator} ')
     channel = discord.utils.get(reaction.message.guild.text_channels, name='reaction_logging')
     await channel.send(embed = embed)
-    await channel.send(embed = embed)
-    await channel.send(f"https://discord.com/channels/{reaction.message.guild.id}/{reaction.message.channel.id}/{reaction.message.id}")
 
 @client.event
 async def on_user_update(before, after):
