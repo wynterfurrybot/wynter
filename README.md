@@ -37,6 +37,49 @@ $ python3 -m pip install --upgrade pip
 then repeat the command to install requirements.
 ```
 
+Database structures:
+
+(I totally forgot to include this before today, lol, whoops)
+
+```
+CREATE TABLE `eco` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` varchar(255) NOT NULL,
+  `server_id` varchar(255) NOT NULL,
+  `money` int NOT NULL DEFAULT '100',
+  `in_jail` tinyint(1) DEFAULT '0',
+  `bank` int DEFAULT '0',
+  `wages_docked` tinyint(1) DEFAULT '0',
+  `server_currency` varchar(255) DEFAULT 'pounds',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_server_unique` (`user_id`,`server_id`)
+);
+
+ CREATE TABLE `guilds` (
+  `id` varchar(20) COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Guild ID',
+  `name` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'The Guild Name',
+  `prefix` varchar(255) COLLATE utf8mb4_general_ci DEFAULT '!' COMMENT 'The Prefix',
+  `deleteinvlinks` tinyint DEFAULT '0' COMMENT 'Delete inv links or not',
+  `enablefandx` tinyint DEFAULT '0' COMMENT 'Enable F and X commands or not',
+  `dadjokes` tinyint(1) NOT NULL DEFAULT '0',
+  `enfandximages` tinyint DEFAULT '0' COMMENT 'Enable / disable f and x command images.',
+  `muterole` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'The guilds mute role',
+  PRIMARY KEY (`id`)
+);
+
+CREATE TABLE `punishments` (
+  `id` int NOT NULL AUTO_INCREMENT COMMENT 'Incremented ID',
+  `servername` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'The Guild Name',
+  `serverid` varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT 'The server ID',
+  `offender` varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT 'The offender name',
+  `offenderid` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `moderator` varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT 'The moderator name',
+  `type` varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Type of punishment',
+  `reason` varchar(255) COLLATE utf8mb4_general_ci NOT NULL COMMENT 'Reason of punishment',
+  PRIMARY KEY (`id`)
+);
+```
+
 # Branches:
 
 Beta - for development use only, these updates may not be finished, or ever come to the master branch.
