@@ -67,6 +67,8 @@ CREATE TABLE `eco` (
   PRIMARY KEY (`id`)
 );
 
+-- Note: Punishments table is currently not in use, we need to fix this! --
+
 CREATE TABLE `punishments` (
   `id` int NOT NULL AUTO_INCREMENT COMMENT 'Incremented ID',
   `servername` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT 'The Guild Name',
